@@ -74,6 +74,22 @@
       <button id="restart-btn" class="hud-btn">↻ Restart</button>
       <button id="menu-btn" class="hud-btn">☰ Menu</button>
     </div>
+
+    <!-- Congratulations Screen -->
+    <div id="congrats-screen" class="menu-screen">
+      <h1 class="congrats-title">🎉 Congratulations! 🎉</h1>
+      <p class="congrats-message">You've completed all 10 levels!</p>
+      <div class="congrats-stats">
+        <div class="stat-item">
+          <span class="stat-label">Final Score:</span>
+          <span class="stat-value" id="final-score">0</span>
+        </div>
+      </div>
+      <div class="menu-buttons">
+        <button class="menu-btn" id="play-again-btn">Play Again</button>
+        <button class="menu-btn secondary" id="back-to-menu-btn">Main Menu</button>
+      </div>
+    </div>
   </div>
 
   <script src="game.js"></script>

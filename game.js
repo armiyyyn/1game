@@ -50,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitBtn = document.getElementById('exit-btn');
   const brightnessSlider = document.getElementById('brightness-slider');
   const brightnessValue = document.getElementById('brightness-value');
+  const congratsScreen = document.getElementById('congrats-screen');
+  const playAgainBtn = document.getElementById('play-again-btn');
+  const backToMenuBtn = document.getElementById('back-to-menu-btn');
+  const finalScoreEl = document.getElementById('final-score');
 
   scoreEl = document.getElementById('score');
   levelEl = document.getElementById('level');
@@ -58,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(mainMenu) mainMenu.classList.remove('active');
     if(settingsMenu) settingsMenu.classList.remove('active');
     if(characterMenu) characterMenu.classList.remove('active');
+    if(congratsScreen) congratsScreen.classList.remove('active');
   }
 
   // Character customization
@@ -80,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (restartBtn) restartBtn.addEventListener('click', () => { if(game && game.scene.scenes[0]) game.scene.scenes[0].scene.restart(); });
   if (menuBtn) menuBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); if(gameHud) gameHud.classList.add('hidden'); if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); });
   if (exitBtn) exitBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); if(gameHud) gameHud.classList.add('hidden'); if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); });
+  if (playAgainBtn) playAgainBtn.addEventListener('click', () => { hideAllMenus(); if(gameHud) gameHud.classList.remove('hidden'); startGame(); });
+  if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); });
 
   if (brightnessSlider) brightnessSlider.addEventListener('input', e => { const v = e.target.value; if(brightnessValue) brightnessValue.textContent = v+'%'; document.body.style.filter = `brightness(${v}%)`; });
 });
@@ -500,14 +507,20 @@ function update(){
 function nextLevel(scene){
   score++;
   if(scoreEl) scoreEl.textContent='Score: '+score;
-  levelIndex++; // Sequential progression: 0→1→2→3→4
+  levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
   if(levelIndex>=totalLevels){
-    const menu=document.getElementById('main-menu');
-    const hud=document.getElementById('game-hud');
+    // Show congratulations screen
+    const congratsScreen = document.getElementById('congrats-screen');
+    const finalScoreEl = document.getElementById('final-score');
+    const hud = document.getElementById('game-hud');
+    
+    if(finalScoreEl) finalScoreEl.textContent = score;
     if(hud) hud.classList.add('hidden');
-    if(menu) menu.classList.add('active');
-    levelIndex=0;
-    score=0;
+    if(congratsScreen) congratsScreen.classList.add('active');
+    
+    // Reset for next playthrough
+    levelIndex = 0;
+    score = 0;
     return;
   }
   if(levelEl) levelEl.textContent='Level: '+(levelIndex+1);
