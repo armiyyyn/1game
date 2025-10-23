@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceDex Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+  <div id="game-container">
+    <!-- Main Menu -->
+    <div id="main-menu" class="menu-screen active">
+      <h1 class="game-title">SpaceDex</h1>
+      <div class="menu-buttons">
+        <button class="menu-btn" id="play-btn">Play</button>
+        <button class="menu-btn" id="settings-btn">Settings</button>
+        <button class="menu-btn" id="exit-btn">Exit</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings-menu" class="menu-screen">
+      <h2 class="menu-title">Settings</h2>
+      <div class="settings-content">
+        <div class="setting-item">
+          <label>Sound</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sound-toggle" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>Brightness</label>
+          <input type="range" id="brightness-slider" min="60" max="150" value="100" />
+          <span id="brightness-value">100%</span>
+        </div>
+      </div>
+      <button class="menu-btn" id="back-btn">Back</button>
+    </div>
+
+    <!-- Character Customization -->
+    <div id="character-menu" class="menu-screen">
+      <h2 class="menu-title">Customize Character</h2>
+      <div class="customize-content">
+        <div class="color-picker-section">
+          <label>Character Color</label>
+          <div class="color-options">
+            <div class="color-box" data-color="#6C5CE7" style="background:#6C5CE7"></div>
+            <div class="color-box" data-color="#FF6B6B" style="background:#FF6B6B"></div>
+            <div class="color-box" data-color="#4ECDC4" style="background:#4ECDC4"></div>
+            <div class="color-box" data-color="#FFE66D" style="background:#FFE66D"></div>
+            <div class="color-box" data-color="#00D1FF" style="background:#00D1FF"></div>
+            <div class="color-box active" data-color="#9B59B6" style="background:#9B59B6"></div>
+          </div>
+        </div>
+        <div class="accessories-section">
+          <label>Accessories</label>
+          <div class="accessory-toggles">
+            <label><input type="checkbox" id="hat-toggle" /> Hat</label>
+            <label><input type="checkbox" id="glasses-toggle" /> Glasses</label>
+            <label><input type="checkbox" id="chain-toggle" /> Chain</label>
+            <label><input type="checkbox" id="hair-toggle" /> Hair</label>
+          </div>
+        </div>
+      </div>
+      <button class="menu-btn" id="start-game-btn">Start Game</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="game-hud" class="hidden">
+      <div id="level" class="hud-btn">Level: 1</div>
+      <div id="score" class="hud-btn">Score: 0</div>
+      <button id="restart-btn" class="hud-btn">↻ Restart</button>
+      <button id="menu-btn" class="hud-btn">☰ Menu</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
