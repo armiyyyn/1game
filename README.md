@@ -1,2 +1,2 @@
 # 1game
-Ai Platformer
+AI Platformer
