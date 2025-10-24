@@ -1,4 +1,4 @@
-// SpaceDex - Completely rebuilt for reliability
+// Avdeev's Universe - Completely rebuilt for reliability
 
 const GAME = { width: () => window.innerWidth, height: () => window.innerHeight };
 
@@ -160,57 +160,55 @@ function create(){
   // Build level based on levelIndex
   buildLevelLayout(this, levelIndex);
   
-  // Create Dex with accessories (bigger - 35x35)
+  // Create Avdeev with accessories (bigger - 50x60 for better detail visibility)
   player = this.physics.add.sprite(150, h-70, null);
-  player.setDisplaySize(35, 35);
+  player.setDisplaySize(50, 60);
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
   player.setDrag(0, 0); // No drag - instant speed
   player.setMaxVelocity(280, 1200); // Cap at movement speed
   
-  // Draw Dex with eyes, hands, and accessories (bigger canvas)
+  // Draw Avdeev as pixel boy with judogi (bigger canvas - 50x60)
   const gfx = this.add.graphics();
-  gfx.fillStyle(playerConfig.color, 1);
-  gfx.fillRoundedRect(0, 0, 35, 35, 5); // body
+  
+  // Brown hair on top
+  gfx.fillStyle(0x5D4037, 1); // Dark brown
+  gfx.fillRect(14, 0, 22, 10); // Hair
+  gfx.fillRect(11, 3, 6, 8); // Left hair tuft
+  gfx.fillRect(33, 3, 6, 8); // Right hair tuft
+  
+  // Head (skin tone)
+  gfx.fillStyle(0xFFDBAC, 1); // Light skin
+  gfx.fillRect(14, 8, 22, 16); // Head
+  
   // Eyes
-  gfx.fillStyle(0xffffff, 1);
-  gfx.fillCircle(11, 12, 5);
-  gfx.fillCircle(24, 12, 5);
   gfx.fillStyle(0x000000, 1);
-  gfx.fillCircle(11, 12, 3);
-  gfx.fillCircle(24, 12, 3);
-  // Hands
-  gfx.fillStyle(playerConfig.color, 1);
-  gfx.fillRect(-5, 15, 5, 10); // left hand
-  gfx.fillRect(35, 15, 5, 10); // right hand
+  gfx.fillRect(18, 15, 4, 4); // Left eye
+  gfx.fillRect(28, 15, 4, 4); // Right eye
   
-  // Accessories
-  if(playerConfig.hat){
-    gfx.fillStyle(0xFF6B6B, 1);
-    gfx.fillTriangle(8, 0, 17, -14, 27, 0); // red hat (bigger, better positioned)
-  }
-  if(playerConfig.glasses){
-    gfx.lineStyle(3, 0x000000, 1);
-    gfx.strokeCircle(11, 12, 7);
-    gfx.strokeCircle(24, 12, 7);
-    gfx.lineBetween(18, 12, 17, 12); // bridge
-  }
-  if(playerConfig.chain){
-    gfx.lineStyle(4, 0xFFD700, 1);
-    gfx.beginPath();
-    gfx.arc(17, 24, 10, 0, Math.PI, false);
-    gfx.strokePath();
-  }
-  if(playerConfig.hair){
-    gfx.fillStyle(0x8B4513, 1);
-    gfx.fillRect(8, -5, 5, 8);
-    gfx.fillRect(14, -6, 6, 9);
-    gfx.fillRect(21, -5, 5, 8);
-  }
+  // White judogi top (kimono)
+  gfx.fillStyle(0xFFFFFF, 1);
+  gfx.fillRect(11, 24, 28, 20); // Main body
+  gfx.fillRect(6, 26, 8, 14); // Left arm
+  gfx.fillRect(36, 26, 8, 14); // Right arm
   
-  gfx.generateTexture('dex', 36, 28);
+  // Red belt (obi)
+  gfx.fillStyle(0xD32F2F, 1); // Red
+  gfx.fillRect(11, 37, 28, 7); // Belt across waist
+  
+  // Naked legs (skin tone)
+  gfx.fillStyle(0xFFDBAC, 1);
+  gfx.fillRect(16, 44, 7, 14); // Left leg
+  gfx.fillRect(27, 44, 7, 14); // Right leg
+  
+  // Small black feet
+  gfx.fillStyle(0x000000, 1);
+  gfx.fillRect(15, 57, 8, 4); // Left foot
+  gfx.fillRect(27, 57, 8, 4); // Right foot
+  
+  gfx.generateTexture('avdeev', 50, 61);
   gfx.destroy();
-  player.setTexture('dex');
+  player.setTexture('avdeev');
   
   // Controls
   cursors = this.input.keyboard.createCursorKeys();
@@ -257,6 +255,35 @@ function create(){
   // HUD
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
   if(scoreEl) scoreEl.textContent = 'Score: '+score;
+  
+  // Add help sign on level 1 only - positioned right above Avdeev
+  if(levelIndex === 0){
+    const signX = 150; // Same x position as Avdeev
+    const signY = h - 150; // Above Avdeev
+    
+    // Wooden sign (smaller and less conspicuous)
+    const signGfx = this.add.graphics();
+    signGfx.fillStyle(0x8B4513, 1); // Brown
+    signGfx.fillRect(signX-1.5, signY, 3, 25); // Thinner post
+    
+    // Sign board (smaller)
+    signGfx.fillStyle(0xD2691E, 1); // Light brown
+    signGfx.fillRect(signX-60, signY-25, 120, 35);
+    
+    // Border
+    signGfx.lineStyle(2, 0x654321, 1);
+    signGfx.strokeRect(signX-60, signY-25, 120, 35);
+    
+    // Text (smaller font)
+    const helpText = this.add.text(signX, signY-8, 'Help Avdeev reach\nthe door!', {
+      fontSize: '11px',
+      fontFamily: 'Arial',
+      color: '#000000',
+      align: 'center',
+      fontStyle: 'bold'
+    });
+    helpText.setOrigin(0.5, 0.5);
+  }
 }
 
 function buildLevelLayout(scene, level){
@@ -468,15 +495,30 @@ function addSpike(scene, x, y){
 }
 
 function addFinish(scene, x, y){
-  const gfx = scene.add.graphics();
-  for(let r=0; r<6; r++){
-    for(let c=0; c<4; c++){
-      const col = (r+c)%2===0 ? 0x000000 : 0xffffff;
-      gfx.fillStyle(col, 1);
-      gfx.fillRect(x-40+c*20, y-60+r*20, 20, 20);
-    }
-  }
-  const finish = scene.add.rectangle(x, y, 80, 120, 0xffffff, 0);
+  // Brown door with black handle
+  const doorGfx = scene.add.graphics();
+  
+  // Door frame (darker brown)
+  doorGfx.fillStyle(0x4E342E, 1);
+  doorGfx.fillRect(x-45, y-65, 90, 130);
+  
+  // Door body (medium brown)
+  doorGfx.fillStyle(0x8D6E63, 1);
+  doorGfx.fillRect(x-40, y-60, 80, 120);
+  
+  // Door panels (darker brown inset)
+  doorGfx.fillStyle(0x6D4C41, 1);
+  doorGfx.fillRect(x-35, y-55, 30, 50); // Top left panel
+  doorGfx.fillRect(x+5, y-55, 30, 50); // Top right panel
+  doorGfx.fillRect(x-35, y, 30, 50); // Bottom left panel
+  doorGfx.fillRect(x+5, y, 30, 50); // Bottom right panel
+  
+  // Black door handle
+  doorGfx.fillStyle(0x000000, 1);
+  doorGfx.fillCircle(x+25, y, 8); // Round handle
+  doorGfx.fillRect(x+20, y-3, 15, 6); // Handle extension
+  
+  const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
   scene.physics.add.existing(finish, true);
   finishLine.add(finish);
 }
