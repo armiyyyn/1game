@@ -160,55 +160,60 @@ function create(){
   // Build level based on levelIndex
   buildLevelLayout(this, levelIndex);
   
-  // Create Avdeev with accessories (bigger - 50x60 for better detail visibility)
-  player = this.physics.add.sprite(150, h-70, null);
-  player.setDisplaySize(50, 60);
+  // Create Avdeev with accessories (10% smaller - 45x54 for better proportions)
+  // Spawn above the platform so he stands on top of it
+  player = this.physics.add.sprite(150, h-110, null);
+  player.setDisplaySize(45, 54);
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
   player.setDrag(0, 0); // No drag - instant speed
   player.setMaxVelocity(280, 1200); // Cap at movement speed
   
-  // Draw Avdeev as pixel boy with judogi (bigger canvas - 50x60)
+  // Draw Avdeev as pixel boy with judogi (canvas - 45x54)
   const gfx = this.add.graphics();
   
   // Brown hair on top
   gfx.fillStyle(0x5D4037, 1); // Dark brown
-  gfx.fillRect(14, 0, 22, 10); // Hair
-  gfx.fillRect(11, 3, 6, 8); // Left hair tuft
-  gfx.fillRect(33, 3, 6, 8); // Right hair tuft
+  gfx.fillRect(13, 0, 20, 9); // Hair
+  gfx.fillRect(10, 2, 5, 7); // Left hair tuft
+  gfx.fillRect(30, 2, 5, 7); // Right hair tuft
   
   // Head (skin tone)
   gfx.fillStyle(0xFFDBAC, 1); // Light skin
-  gfx.fillRect(14, 8, 22, 16); // Head
+  gfx.fillRect(13, 7, 20, 14); // Head
   
   // Eyes
   gfx.fillStyle(0x000000, 1);
-  gfx.fillRect(18, 15, 4, 4); // Left eye
-  gfx.fillRect(28, 15, 4, 4); // Right eye
+  gfx.fillRect(16, 13, 4, 4); // Left eye
+  gfx.fillRect(25, 13, 4, 4); // Right eye
   
   // White judogi top (kimono)
   gfx.fillStyle(0xFFFFFF, 1);
-  gfx.fillRect(11, 24, 28, 20); // Main body
-  gfx.fillRect(6, 26, 8, 14); // Left arm
-  gfx.fillRect(36, 26, 8, 14); // Right arm
+  gfx.fillRect(10, 21, 25, 18); // Main body
+  gfx.fillRect(5, 23, 7, 13); // Left arm
+  gfx.fillRect(33, 23, 7, 13); // Right arm
   
   // Red belt (obi)
   gfx.fillStyle(0xD32F2F, 1); // Red
-  gfx.fillRect(11, 37, 28, 7); // Belt across waist
+  gfx.fillRect(10, 33, 25, 6); // Belt across waist
   
   // Naked legs (skin tone)
   gfx.fillStyle(0xFFDBAC, 1);
-  gfx.fillRect(16, 44, 7, 14); // Left leg
-  gfx.fillRect(27, 44, 7, 14); // Right leg
+  gfx.fillRect(14, 39, 6, 13); // Left leg
+  gfx.fillRect(25, 39, 6, 13); // Right leg
   
   // Small black feet
   gfx.fillStyle(0x000000, 1);
-  gfx.fillRect(15, 57, 8, 4); // Left foot
-  gfx.fillRect(27, 57, 8, 4); // Right foot
+  gfx.fillRect(13, 51, 7, 3); // Left foot
+  gfx.fillRect(25, 51, 7, 3); // Right foot
   
-  gfx.generateTexture('avdeev', 50, 61);
+  gfx.generateTexture('avdeev', 45, 54);
   gfx.destroy();
   player.setTexture('avdeev');
+  
+  // Fix collision box so Avdeev stands properly on platforms (not sinking)
+  player.body.setSize(30, 50); // Smaller collision box
+  player.body.setOffset(7, 4); // Offset to align feet with platform
   
   // Controls
   cursors = this.input.keyboard.createCursorKeys();
@@ -256,33 +261,39 @@ function create(){
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
   if(scoreEl) scoreEl.textContent = 'Score: '+score;
   
-  // Add help sign on level 1 only - positioned right above Avdeev
+  // Add help sign on level 1 only - positioned higher above Avdeev
   if(levelIndex === 0){
     const signX = 150; // Same x position as Avdeev
-    const signY = h - 150; // Above Avdeev
+    const signY = h - 200; // Higher above Avdeev
     
-    // Wooden sign (smaller and less conspicuous)
+    // Wooden sign (bigger and better colored)
     const signGfx = this.add.graphics();
-    signGfx.fillStyle(0x8B4513, 1); // Brown
-    signGfx.fillRect(signX-1.5, signY, 3, 25); // Thinner post
+    signGfx.fillStyle(0x6D4C41, 1); // Darker brown post
+    signGfx.fillRect(signX-2.5, signY, 5, 35); // Thicker post
     
-    // Sign board (smaller)
-    signGfx.fillStyle(0xD2691E, 1); // Light brown
-    signGfx.fillRect(signX-60, signY-25, 120, 35);
+    // Sign board (bigger, more visible)
+    signGfx.fillStyle(0xF4A460, 1); // Sandy brown (more visible)
+    signGfx.fillRect(signX-75, signY-30, 150, 45);
     
     // Border
-    signGfx.lineStyle(2, 0x654321, 1);
-    signGfx.strokeRect(signX-60, signY-25, 120, 35);
+    signGfx.lineStyle(3, 0x4E342E, 1); // Dark brown border
+    signGfx.strokeRect(signX-75, signY-30, 150, 45);
     
-    // Text (smaller font)
+    // Text (bigger font)
     const helpText = this.add.text(signX, signY-8, 'Help Avdeev reach\nthe door!', {
-      fontSize: '11px',
+      fontSize: '14px',
       fontFamily: 'Arial',
-      color: '#000000',
+      color: '#2C1810',
       align: 'center',
       fontStyle: 'bold'
     });
     helpText.setOrigin(0.5, 0.5);
+    
+    // Make sign disappear after 4 seconds
+    this.time.delayedCall(4000, () => {
+      signGfx.destroy();
+      helpText.destroy();
+    });
   }
 }
 
@@ -294,7 +305,25 @@ function buildLevelLayout(scene, level){
   
   if(level === 0){
     // Level 1: Basic platforming
-   addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+
+    // Level 1: Basic platforming
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
+    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
+    addTrampoline(scene, w*0.2, h*0.61);
+    addSpike(scene, w*0.37, h*0.75);
+    addSpike(scene, w*0.38, h*0.72);
+    addSpike(scene, w*0.39, h*0.69);
+    addSpike(scene, w*0.40, h*0.66);
+    addSpike(scene, w*0.41, h*0.63);
+    addSpike(scene, w*0.42, h*0.6);
+    addSpike(scene, w*0.43, h*0.57);
+    addSpike(scene, w*0.44, h*0.54);
+    addSpike(scene, w*0.45, h*0.51);
+    addFinish(scene, w*0.9, 120);
+  }if(level === 0){
+    // Level 1: Basic platforming
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
     addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
     addTrampoline(scene, w*0.2, h*0.61);
@@ -335,15 +364,14 @@ function buildLevelLayout(scene, level){
   } 
    if(level === 3){
     // Level 4: Obstacle course
-     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x6B9BD1);
     addTrampoline(scene, w*0.68, h*0.5);
     addPlatform(scene, w*0.82, h*0.25, 120, 20, 0xffffff);
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.3, w*0.45, 2);
     addSpike(scene, w*0.32, h*0.76);
-    addSpike(scene, w*0.6, h*0.14);
-    addSpike(scene, w*0.6, h*0.17);
-    addSpike(scene, w*0.6, h*0.20);
+    addSpike(scene, w*0.6, h*0.08);
+    addSpike(scene, w*0.6, h*0.11);
     addSpike(scene, w*0.6, h*0.31);
     addSpike(scene, w*0.6, h*0.34);
     addSpike(scene, w*0.6, h*0.37);
@@ -351,9 +379,6 @@ function buildLevelLayout(scene, level){
     addSpike(scene, w*0.6, h*0.46);
     addSpike(scene, w*0.6, h*0.43);
     addSpike(scene, w*0.6, h*0.40);
-    addSpike(scene, w*0.6, h*0.49);
-    addSpike(scene, w*0.6, h*0.52);
-    addSpike(scene, w*0.6, h*0.55);
     addFinish(scene, w*0.88, 100);
   }
    if (level  === 4){
@@ -524,7 +549,7 @@ function addFinish(scene, x, y){
 }
 
 function respawnPlayer(scene){
-  player.setPosition(150, scene.scale.height - 70);
+  player.setPosition(150, scene.scale.height - 110);
   player.setVelocity(0, 0);
 }
 
