@@ -14,7 +14,11 @@ let particleEmitters = [];
 let backgroundMusic = null;
 let musicEnabled = true;
 
-const playerConfig = { color: 0x6C5CE7, hat:false, glasses:false, chain:false, hair:false };
+const playerConfig = { 
+  hairColor: 0x5D4037, // brown, red, green, or 'bald'
+  kimonoColor: 0xFFFFFF, // white or blue
+  beltColor: 0xD32F2F // white, yellow, orange, green, blue, brown, black (judo belts)
+};
 
 // Phaser config
 const config = {
@@ -74,16 +78,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Character customization
-  const colorBoxes = document.querySelectorAll('.color-box');
-  colorBoxes.forEach(b => b.addEventListener('click', () => {
-    colorBoxes.forEach(x => x.classList.remove('active'));
+  const hairBoxes = document.querySelectorAll('.color-box[data-hair]');
+  hairBoxes.forEach(b => b.addEventListener('click', () => {
+    hairBoxes.forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    playerConfig.color = parseInt(b.dataset.color.replace('#','0x'));
+    const hairValue = b.dataset.hair;
+    playerConfig.hairColor = hairValue === 'bald' ? 'bald' : parseInt(hairValue.replace('#','0x'));
   }));
-  const hatT = document.getElementById('hat-toggle'); if(hatT) hatT.addEventListener('change', e=> playerConfig.hat = e.target.checked);
-  const glT = document.getElementById('glasses-toggle'); if(glT) glT.addEventListener('change', e=> playerConfig.glasses = e.target.checked);
-  const chT = document.getElementById('chain-toggle'); if(chT) chT.addEventListener('change', e=> playerConfig.chain = e.target.checked);
-  const hrT = document.getElementById('hair-toggle'); if(hrT) hrT.addEventListener('change', e=> playerConfig.hair = e.target.checked);
+  
+  const kimonoBoxes = document.querySelectorAll('.kimono-box');
+  kimonoBoxes.forEach(b => b.addEventListener('click', () => {
+    kimonoBoxes.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    playerConfig.kimonoColor = parseInt(b.dataset.kimono.replace('#','0x'));
+  }));
+  
+  const beltBoxes = document.querySelectorAll('.belt-box');
+  beltBoxes.forEach(b => b.addEventListener('click', () => {
+    beltBoxes.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    playerConfig.beltColor = parseInt(b.dataset.belt.replace('#','0x'));
+  }));
   
   // Music toggle
   const musicToggle = document.getElementById('music-toggle');
@@ -169,43 +184,79 @@ function create(){
   player.setDrag(0, 0); // No drag - instant speed
   player.setMaxVelocity(280, 1200); // Cap at movement speed
   
-  // Draw Avdeev as pixel boy with judogi (canvas - 45x54)
+  // Draw Avdeev as detailed pixel boy with judogi (canvas - 45x54)
   const gfx = this.add.graphics();
   
-  // Brown hair on top
-  gfx.fillStyle(0x5D4037, 1); // Dark brown
-  gfx.fillRect(13, 0, 20, 9); // Hair
-  gfx.fillRect(10, 2, 5, 7); // Left hair tuft
-  gfx.fillRect(30, 2, 5, 7); // Right hair tuft
+  // Brown hair on top (if not bald)
+  if(playerConfig.hairColor !== 'bald'){
+    gfx.fillStyle(playerConfig.hairColor, 1);
+    gfx.fillRect(13, 0, 20, 9); // Hair
+    gfx.fillRect(10, 2, 5, 7); // Left hair tuft
+    gfx.fillRect(30, 2, 5, 7); // Right hair tuft
+  }
   
   // Head (skin tone)
   gfx.fillStyle(0xFFDBAC, 1); // Light skin
   gfx.fillRect(13, 7, 20, 14); // Head
   
-  // Eyes
-  gfx.fillStyle(0x000000, 1);
-  gfx.fillRect(16, 13, 4, 4); // Left eye
-  gfx.fillRect(25, 13, 4, 4); // Right eye
+  // Eyes - realistic with white eyeballs and black pupils
+  gfx.fillStyle(0xFFFFFF, 1); // White eyeballs
+  gfx.fillCircle(18, 15, 3); // Left eyeball
+  gfx.fillCircle(28, 15, 3); // Right eyeball
   
-  // White judogi top (kimono)
-  gfx.fillStyle(0xFFFFFF, 1);
+  gfx.fillStyle(0x000000, 1); // Black pupils
+  gfx.fillCircle(18, 15, 1.5); // Left pupil
+  gfx.fillCircle(28, 15, 1.5); // Right pupil
+  
+  // Judogi top with V-neck opening (kimono)
+  gfx.fillStyle(playerConfig.kimonoColor, 1);
   gfx.fillRect(10, 21, 25, 18); // Main body
-  gfx.fillRect(5, 23, 7, 13); // Left arm
-  gfx.fillRect(33, 23, 7, 13); // Right arm
+  gfx.fillRect(5, 23, 7, 13); // Left sleeve
+  gfx.fillRect(33, 23, 7, 13); // Right sleeve
   
-  // Red belt (obi)
-  gfx.fillStyle(0xD32F2F, 1); // Red
-  gfx.fillRect(10, 33, 25, 6); // Belt across waist
+  // V-neck chest opening (skin showing through)
+  gfx.fillStyle(0xFFDBAC, 1); // Skin tone
+  gfx.fillTriangle(22, 21, 18, 28, 27, 28); // V-shaped chest opening
   
-  // Naked legs (skin tone)
+  // Kimono collar lines (darker outline)
+  gfx.lineStyle(1, 0xCCCCCC, 1);
+  gfx.beginPath();
+  gfx.moveTo(18, 21);
+  gfx.lineTo(22, 21);
+  gfx.lineTo(18, 28);
+  gfx.strokePath();
+  
+  gfx.beginPath();
+  gfx.moveTo(27, 21);
+  gfx.lineTo(22, 21);
+  gfx.lineTo(27, 28);
+  gfx.strokePath();
+  
+  // Belt (obi) - judo belt colors (thinner)
+  gfx.fillStyle(playerConfig.beltColor, 1);
+  gfx.fillRect(10, 35, 25, 4); // Belt across waist (thinner - 4px instead of 6px)
+  
+  // White judogi pants
+  gfx.fillStyle(playerConfig.kimonoColor, 1);
+  gfx.fillRect(14, 39, 6, 10); // Left pant leg
+  gfx.fillRect(25, 39, 6, 10); // Right pant leg
+  
+  // Realistic naked legs below pants (skin tone with knees)
   gfx.fillStyle(0xFFDBAC, 1);
-  gfx.fillRect(14, 39, 6, 13); // Left leg
-  gfx.fillRect(25, 39, 6, 13); // Right leg
+  gfx.fillRect(14, 49, 6, 3); // Left lower leg (shin)
+  gfx.fillRect(25, 49, 6, 3); // Right lower leg (shin)
   
-  // Small black feet
-  gfx.fillStyle(0x000000, 1);
-  gfx.fillRect(13, 51, 7, 3); // Left foot
-  gfx.fillRect(25, 51, 7, 3); // Right foot
+  // Realistic feet (full foot shape)
+  gfx.fillStyle(0xFFDBAC, 1); // Skin tone for feet
+  // Left foot
+  gfx.fillRect(13, 51, 7, 3); // Foot base
+  gfx.fillCircle(13, 52, 1.5); // Heel roundness
+  gfx.fillRect(17, 51, 3, 2); // Toes
+  
+  // Right foot
+  gfx.fillRect(25, 51, 7, 3); // Foot base
+  gfx.fillCircle(25, 52, 1.5); // Heel roundness
+  gfx.fillRect(29, 51, 3, 2); // Toes
   
   gfx.generateTexture('avdeev', 45, 54);
   gfx.destroy();
@@ -280,7 +331,7 @@ function create(){
     signGfx.strokeRect(signX-75, signY-30, 150, 45);
     
     // Text (bigger font)
-    const helpText = this.add.text(signX, signY-8, 'Help Avdeev reach\nthe door!', {
+    const helpText = this.add.text(signX, signY-8, 'Help Avdeev get to\nthe training on time!', {
       fontSize: '14px',
       fontFamily: 'Arial',
       color: '#2C1810',
@@ -303,25 +354,7 @@ function buildLevelLayout(scene, level){
   
   finishLine = scene.physics.add.staticGroup();
   
-  if(level === 0){
-    // Level 1: Basic platforming
-
-    // Level 1: Basic platforming
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
-    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
-    addTrampoline(scene, w*0.2, h*0.61);
-    addSpike(scene, w*0.37, h*0.75);
-    addSpike(scene, w*0.38, h*0.72);
-    addSpike(scene, w*0.39, h*0.69);
-    addSpike(scene, w*0.40, h*0.66);
-    addSpike(scene, w*0.41, h*0.63);
-    addSpike(scene, w*0.42, h*0.6);
-    addSpike(scene, w*0.43, h*0.57);
-    addSpike(scene, w*0.44, h*0.54);
-    addSpike(scene, w*0.45, h*0.51);
-    addFinish(scene, w*0.9, 120);
-  }if(level === 0){
+if(level === 0){
     // Level 1: Basic platforming
     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
@@ -353,7 +386,7 @@ function buildLevelLayout(scene, level){
     // Level 3: Moving platforms
  addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.01, h*0.76, 110, 20, 0xA9C7F7);
-    addMovingPlatform(scene, w*0.25, h*0.65, w*0.2, w*0.35, 1.8);
+    addMovingPlatform(scene, w*0.25, h*0.6, w*0.2, w*0.35, 1.8);
     addMovingPlatform(scene, w*0.5, h*0.5, w*0.45, w*0.6, 2.2);
     addPlatform(scene, w*0.7, h*0.35, 100, 20, 0xA9C7F7);
     addSpike(scene, w*0.3, h*0.72);

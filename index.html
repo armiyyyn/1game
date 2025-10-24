@@ -46,26 +46,37 @@
 
     <!-- Character Customization -->
     <div id="character-menu" class="menu-screen">
-      <h2 class="menu-title">Customize Character</h2>
+      <h2 class="menu-title">Customize Avdeev</h2>
       <div class="customize-content">
-        <div class="color-picker-section">
-          <label>Character Color</label>
+        <div class="customization-section">
+          <div class="section-title">Hair Color</div>
           <div class="color-options">
-            <div class="color-box" data-color="#6C5CE7" style="background:#6C5CE7"></div>
-            <div class="color-box" data-color="#FF6B6B" style="background:#FF6B6B"></div>
-            <div class="color-box" data-color="#4ECDC4" style="background:#4ECDC4"></div>
-            <div class="color-box" data-color="#FFE66D" style="background:#FFE66D"></div>
-            <div class="color-box" data-color="#00D1FF" style="background:#00D1FF"></div>
-            <div class="color-box active" data-color="#9B59B6" style="background:#9B59B6"></div>
+            <div class="color-box active" data-hair="#5D4037" style="background:#5D4037" title="Brown"></div>
+            <div class="color-box" data-hair="#D32F2F" style="background:#D32F2F" title="Red"></div>
+            <div class="color-box" data-hair="#4CAF50" style="background:#4CAF50" title="Green"></div>
+            <div class="color-box" data-hair="bald" style="background:#FFDBAC; border:2px dashed #999" title="Bald"></div>
           </div>
         </div>
-        <div class="accessories-section">
-          <label>Accessories</label>
-          <div class="accessory-toggles">
-            <label><input type="checkbox" id="hat-toggle" /> Hat</label>
-            <label><input type="checkbox" id="glasses-toggle" /> Glasses</label>
-            <label><input type="checkbox" id="chain-toggle" /> Chain</label>
-            <label><input type="checkbox" id="hair-toggle" /> Hair</label>
+        
+        <div class="customization-section">
+          <div class="section-title">Kimono Color</div>
+          <div class="color-options">
+            <div class="color-box kimono-box active" data-kimono="#FFFFFF" style="background:#FFFFFF; border:2px solid #ccc" title="White"></div>
+            <div class="color-box kimono-box" data-kimono="#2196F3" style="background:#2196F3" title="Blue"></div>
+          </div>
+        </div>
+        
+        <div class="customization-section">
+          <div class="section-title">Belt Color (Judo Rank)</div>
+          <div class="color-options">
+            <div class="color-box belt-box" data-belt="#FFFFFF" style="background:#FFFFFF; border:2px solid #ccc" title="White - Beginner"></div>
+            <div class="color-box belt-box" data-belt="#FDD835" style="background:#FDD835" title="Yellow"></div>
+            <div class="color-box belt-box" data-belt="#FF9800" style="background:#FF9800" title="Orange"></div>
+            <div class="color-box belt-box" data-belt="#4CAF50" style="background:#4CAF50" title="Green"></div>
+            <div class="color-box belt-box" data-belt="#2196F3" style="background:#2196F3" title="Blue"></div>
+            <div class="color-box belt-box active" data-belt="#D32F2F" style="background:#D32F2F" title="Red"></div>
+            <div class="color-box belt-box" data-belt="#8D6E63" style="background:#8D6E63" title="Brown"></div>
+            <div class="color-box belt-box" data-belt="#000000" style="background:#000000" title="Black - Master"></div>
           </div>
         </div>
       </div>
