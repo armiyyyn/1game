@@ -7,10 +7,12 @@ let game;
 let player;
 let platforms, spikes, finishLine, movingPlatforms = [];
 let cursors, wasd;
-let score = 0, levelIndex = 0, totalLevels = 10; // Increased to 10 levels
+let score = 0, levelIndex = 0, totalLevels = 10;
 let scoreEl, levelEl;
 let hasDoubleJumped = false;
 let particleEmitters = [];
+let backgroundMusic = null;
+let musicEnabled = true;
 
 const playerConfig = { color: 0x6C5CE7, hat:false, glasses:false, chain:false, hair:false };
 
@@ -29,10 +31,16 @@ const config = {
 function startGame() {
   if (!window.Phaser) { console.error('Phaser not loaded'); return; }
   if (game) { try { game.destroy(true); } catch(e){} game = null; }
-  // Reset to level 1 when starting new game
   levelIndex = 0;
   score = 0;
   game = new Phaser.Game(config);
+  
+  // Start HTML5 audio music
+  const audioElement = document.getElementById('background-music');
+  if(audioElement && musicEnabled){
+    audioElement.volume = 0.8; // 80% volume
+    audioElement.play().catch(e => console.log('Music autoplay blocked:', e));
+  }
 }
 
 // UI wiring
@@ -76,6 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const glT = document.getElementById('glasses-toggle'); if(glT) glT.addEventListener('change', e=> playerConfig.glasses = e.target.checked);
   const chT = document.getElementById('chain-toggle'); if(chT) chT.addEventListener('change', e=> playerConfig.chain = e.target.checked);
   const hrT = document.getElementById('hair-toggle'); if(hrT) hrT.addEventListener('change', e=> playerConfig.hair = e.target.checked);
+  
+  // Music toggle
+  const musicToggle = document.getElementById('music-toggle');
+  const audioElement = document.getElementById('background-music');
+  
+  if(musicToggle) musicToggle.addEventListener('change', e => {
+    musicEnabled = e.target.checked;
+    if(audioElement){
+      if(musicEnabled){
+        audioElement.play();
+      } else {
+        audioElement.pause();
+      }
+    }
+  });
 
   // Menus
   if (playBtn) playBtn.addEventListener('click', () => { hideAllMenus(); if(characterMenu) characterMenu.classList.add('active'); });
@@ -91,7 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (brightnessSlider) brightnessSlider.addEventListener('input', e => { const v = e.target.value; if(brightnessValue) brightnessValue.textContent = v+'%'; document.body.style.filter = `brightness(${v}%)`; });
 });
 
-function preload(){}
+function preload(){
+  // Music handled by HTML5 audio tag
+}
 
 function create(){
   const w = this.scale.width;

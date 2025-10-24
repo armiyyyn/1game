@@ -8,6 +8,11 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
+  <!-- Background Music Player -->
+  <audio id="background-music" loop>
+    <source src="assets/music/background.mp3" type="audio/mpeg">
+  </audio>
+  
   <div id="game-container">
     <!-- Main Menu -->
     <div id="main-menu" class="menu-screen active">
@@ -24,9 +29,9 @@
       <h2 class="menu-title">Settings</h2>
       <div class="settings-content">
         <div class="setting-item">
-          <label>Sound</label>
+          <span class="setting-label">Music</span>
           <label class="toggle-switch">
-            <input type="checkbox" id="sound-toggle" checked />
+            <input type="checkbox" id="music-toggle" checked />
             <span class="toggle-slider"></span>
           </label>
         </div>
