@@ -312,10 +312,10 @@ function create(){
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
   if(scoreEl) scoreEl.textContent = 'Score: '+score;
   
-  // Add help sign on level 1 only - positioned higher above Avdeev
+  // Add help sign on level 1 only - positioned at edge of starting platform
   if(levelIndex === 0){
-    const signX = 150; // Same x position as Avdeev
-    const signY = h - 200; // Higher above Avdeev
+    const signX = 230; // At the edge of starting platform (150 + 140/2 = 220, plus some margin)
+    const signY = h - 90; // Just above the platform
     
     // Wooden sign (bigger and better colored)
     const signGfx = this.add.graphics();
@@ -340,12 +340,19 @@ function create(){
     });
     helpText.setOrigin(0.5, 0.5);
     
-    // Make sign disappear after 4 seconds
-    this.time.delayedCall(4000, () => {
-      signGfx.destroy();
-      helpText.destroy();
-    });
+    // Sign stays until level 2 (will be destroyed when scene restarts)
   }
+  
+  // Add fade-in transition at level start
+  const fadeOverlay = this.add.rectangle(w/2, h/2, w, h, 0x000000, 1);
+  fadeOverlay.setDepth(1000); // On top of everything
+  this.tweens.add({
+    targets: fadeOverlay,
+    alpha: 0,
+    duration: 500,
+    ease: 'Power2',
+    onComplete: () => fadeOverlay.destroy()
+  });
 }
 
 function buildLevelLayout(scene, level){
@@ -632,24 +639,39 @@ function update(){
 function nextLevel(scene){
   score++;
   if(scoreEl) scoreEl.textContent='Score: '+score;
-  levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
-  if(levelIndex>=totalLevels){
-    // Show congratulations screen
-    const congratsScreen = document.getElementById('congrats-screen');
-    const finalScoreEl = document.getElementById('final-score');
-    const hud = document.getElementById('game-hud');
-    
-    if(finalScoreEl) finalScoreEl.textContent = score;
-    if(hud) hud.classList.add('hidden');
-    if(congratsScreen) congratsScreen.classList.add('active');
-    
-    // Reset for next playthrough
-    levelIndex = 0;
-    score = 0;
-    return;
-  }
-  if(levelEl) levelEl.textContent='Level: '+(levelIndex+1);
-  scene.scene.restart();
+  
+  // Fade out transition before changing level
+  const w = scene.scale.width;
+  const h = scene.scale.height;
+  const fadeOverlay = scene.add.rectangle(w/2, h/2, w, h, 0x000000, 0);
+  fadeOverlay.setDepth(1000); // On top of everything
+  
+  scene.tweens.add({
+    targets: fadeOverlay,
+    alpha: 1,
+    duration: 300,
+    ease: 'Power2',
+    onComplete: () => {
+      levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
+      if(levelIndex>=totalLevels){
+        // Show congratulations screen
+        const congratsScreen = document.getElementById('congrats-screen');
+        const finalScoreEl = document.getElementById('final-score');
+        const hud = document.getElementById('game-hud');
+        
+        if(finalScoreEl) finalScoreEl.textContent = score;
+        if(hud) hud.classList.add('hidden');
+        if(congratsScreen) congratsScreen.classList.add('active');
+        
+        // Reset for next playthrough
+        levelIndex = 0;
+        score = 0;
+        return;
+      }
+      if(levelEl) levelEl.textContent='Level: '+(levelIndex+1);
+      scene.scene.restart(); // Restart with fade-in (handled in create())
+    }
+  });
 }
 
 window.addEventListener('resize',()=>{ if(game) game.scale.resize(GAME.width(),GAME.height()); });
