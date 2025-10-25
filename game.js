@@ -424,29 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.fillRect(13*scale, 5*scale, 24*scale, 18*scale); // Wider head
     ctx6.fillRect(10*scale, 8*scale, 30*scale, 15*scale); // Extra wide
     
-    // White oval speech bubble on LEFT side - "realjno?!" (doesn't cover dad's head)
-    const bubbleX = 40; // Positioned to the left
-    const bubbleY = 13; // Higher to prevent cut-off (moved from 8 to 13)
-    
-    ctx6.fillStyle = '#FFFFFF';
-    ctx6.beginPath();
-    ctx6.ellipse(bubbleX, bubbleY, 35, 12, 0, 0, Math.PI * 2); // Oval on left side
-    ctx6.fill();
-    
-    // Bubble border
-    ctx6.strokeStyle = '#000000';
-    ctx6.lineWidth = 2;
-    ctx6.beginPath();
-    ctx6.ellipse(bubbleX, bubbleY, 35, 12, 0, 0, Math.PI * 2);
-    ctx6.stroke();
-    
-    // Text "realjno?!" (inside oval bubble)
-    ctx6.fillStyle = '#000000';
-    ctx6.font = 'bold 12px Arial';
-    ctx6.textAlign = 'center';
-    ctx6.textBaseline = 'middle';
-    ctx6.fillText('realjno?!', bubbleX, bubbleY);
-    
     // Angry eyes (smaller, mean-looking)
     ctx6.fillStyle = '#FFFFFF';
     ctx6.beginPath();

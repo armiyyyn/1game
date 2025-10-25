@@ -182,6 +182,14 @@ canvas {
   transform: rotate(-8deg);
 }
 
+.dad-speech-bubble {
+  position: absolute;
+  left: 86%;
+  top: 45%;
+  pointer-events: none;
+  transform: rotate(-8deg);
+}
+
 .menu-buttons {
   display: flex;
   flex-direction: column;
