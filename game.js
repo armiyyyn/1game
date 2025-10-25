@@ -11,6 +11,7 @@ let score = 0, levelIndex = 0, totalLevels = 10;
 let burgerScore = 0; // Track collected burgers
 let scoreEl, levelEl, burgerEl;
 let hasDoubleJumped = false;
+let timeLeftGround = 0; // Track time since leaving ground for better double jump
 let particleEmitters = [];
 let backgroundMusic = null;
 let musicEnabled = true;
@@ -131,6 +132,126 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); });
 
   if (brightnessSlider) brightnessSlider.addEventListener('input', e => { const v = e.target.value; if(brightnessValue) brightnessValue.textContent = v+'%'; document.body.style.filter = `brightness(${v}%)`; });
+  
+  // Draw Avdeev avatar on main menu
+  const avatarCanvas = document.getElementById('avdeev-avatar');
+  if(avatarCanvas) {
+    const ctx = avatarCanvas.getContext('2d');
+    const scale = 3; // 3x scale for full height menu avatar
+    
+    // Brown hair
+    ctx.fillStyle = '#5D4037';
+    ctx.fillRect(13*scale, 0, 20*scale, 9*scale);
+    ctx.fillRect(10*scale, 2*scale, 5*scale, 7*scale);
+    ctx.fillRect(30*scale, 2*scale, 5*scale, 7*scale);
+    
+    // Head
+    ctx.fillStyle = '#FFDBAC';
+    ctx.fillRect(13*scale, 7*scale, 20*scale, 14*scale);
+    
+    // Eyes
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(28*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.arc(18*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Eyebrows
+    ctx.fillStyle = '#3E2723';
+    ctx.fillRect(16*scale, 10*scale, 5*scale, 1.5*scale);
+    ctx.fillRect(26*scale, 10*scale, 5*scale, 1.5*scale);
+    
+    // Mouth
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(20*scale, 17*scale, 6*scale, 1*scale);
+    ctx.fillRect(19*scale, 18*scale, 1*scale, 1*scale);
+    ctx.fillRect(26*scale, 18*scale, 1*scale, 1*scale);
+    
+    // White Kimono
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale);
+    ctx.fillRect(5*scale, 23*scale, 7*scale, 13*scale);
+    ctx.fillRect(33*scale, 23*scale, 7*scale, 13*scale);
+    
+    // V-neck
+    ctx.fillStyle = '#FFDBAC';
+    ctx.beginPath();
+    ctx.moveTo(22*scale, 21*scale);
+    ctx.lineTo(18*scale, 28*scale);
+    ctx.lineTo(27*scale, 28*scale);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Black Belt
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
+    
+    // White judogi pants
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(14*scale, 39*scale, 6*scale, 10*scale);
+    ctx.fillRect(25*scale, 39*scale, 6*scale, 10*scale);
+    
+    // Legs
+    ctx.fillStyle = '#FFDBAC';
+    ctx.fillRect(14*scale, 49*scale, 6*scale, 3*scale);
+    ctx.fillRect(25*scale, 49*scale, 6*scale, 3*scale);
+  }
+  
+  // Draw burger on main menu
+  const burgerCanvas = document.getElementById('menu-burger');
+  if(burgerCanvas) {
+    const ctx2 = burgerCanvas.getContext('2d');
+    
+    // Top bun (smoother, matches bottom bun shape)
+    ctx2.fillStyle = '#8B5A3C';
+    ctx2.fillRect(28, 8, 45, 4); // Rounded top edge
+    ctx2.fillRect(25, 12, 50, 8); // Main top bun
+    
+    // Sesame seeds
+    ctx2.fillStyle = '#FFD700';
+    ctx2.fillRect(33, 9, 4, 4);
+    ctx2.fillRect(45, 8, 4, 4);
+    ctx2.fillRect(58, 9, 4, 4);
+    
+    // Sparkles
+    ctx2.fillStyle = '#FFFFFF';
+    ctx2.fillRect(34, 9, 1, 1);
+    ctx2.fillRect(46, 8, 1, 1);
+    
+    // Lettuce (right below bun, no gap)
+    ctx2.fillStyle = '#7FD17F';
+    ctx2.fillRect(20, 20, 60, 9);
+    
+    // Meat
+    ctx2.fillStyle = '#8B4513';
+    ctx2.fillRect(20, 29, 60, 11);
+    
+    // Grill marks
+    ctx2.fillStyle = '#654321';
+    ctx2.fillRect(28, 29, 3, 11);
+    ctx2.fillRect(40, 29, 3, 11);
+    ctx2.fillRect(53, 29, 3, 11);
+    ctx2.fillRect(65, 29, 3, 11);
+    
+    // Tomato
+    ctx2.fillStyle = '#FF4444';
+    ctx2.fillRect(20, 40, 60, 9);
+    
+    // Bottom bun (matches top bun shape)
+    ctx2.fillStyle = '#8B5A3C';
+    ctx2.fillRect(25, 49, 50, 8); // Main bottom bun
+    ctx2.fillRect(28, 57, 45, 4); // Rounded bottom edge (same as top)
+  }
 });
 
 function preload(){
@@ -206,14 +327,25 @@ function create(){
   gfx.fillStyle(0xFFDBAC, 1); // Light skin
   gfx.fillRect(13, 7, 20, 14); // Head
   
-  // Eyes - realistic with white eyeballs and black pupils
+  // Eyes - realistic with white eyeballs and black pupils (moved higher)
   gfx.fillStyle(0xFFFFFF, 1); // White eyeballs
-  gfx.fillCircle(18, 15, 3); // Left eyeball
-  gfx.fillCircle(28, 15, 3); // Right eyeball
+  gfx.fillCircle(18, 13, 3); // Left eyeball (moved up from 15 to 13)
+  gfx.fillCircle(28, 13, 3); // Right eyeball (moved up from 15 to 13)
   
   gfx.fillStyle(0x000000, 1); // Black pupils
-  gfx.fillCircle(18, 15, 1.5); // Left pupil
-  gfx.fillCircle(28, 15, 1.5); // Right pupil
+  gfx.fillCircle(18, 13, 1.5); // Left pupil
+  gfx.fillCircle(28, 13, 1.5); // Right pupil
+  
+  // Eyebrows (small, dark brown, above eyes)
+  gfx.fillStyle(0x3E2723, 1); // Dark brown/black
+  gfx.fillRect(16, 10, 5, 1.5); // Left eyebrow
+  gfx.fillRect(26, 10, 5, 1.5); // Right eyebrow
+  
+  // Mouth (small smile)
+  gfx.fillStyle(0x000000, 1); // Black
+  gfx.fillRect(20, 17, 6, 1); // Mouth line
+  gfx.fillRect(19, 18, 1, 1); // Left corner
+  gfx.fillRect(26, 18, 1, 1); // Right corner
   
   // Judogi top with V-neck opening (kimono)
   gfx.fillStyle(playerConfig.kimonoColor, 1);
@@ -776,12 +908,25 @@ function update(){
   
   // Jump with double jump
   const onGround = player.body.touching.down;
-  if(onGround) hasDoubleJumped = false;
+  
+  // Track time since leaving ground (coyote time for better double jump)
+  if(onGround) {
+    hasDoubleJumped = false;
+    timeLeftGround = 0;
+  } else {
+    timeLeftGround++;
+  }
+  
+  // Allow double jump within 10 frames of leaving ground (coyote time)
+  const canDoubleJump = !hasDoubleJumped && timeLeftGround > 0;
   
   if(Phaser.Input.Keyboard.JustDown(wasd.up)){
-    if(onGround){
+    if(onGround || timeLeftGround < 10){
+      // Regular jump (works on ground or shortly after leaving)
       player.setVelocityY(-550); // Higher jump
-    } else if(!hasDoubleJumped){
+      hasDoubleJumped = false;
+    } else if(canDoubleJump){
+      // Double jump
       player.setVelocityY(-580); // More powerful double jump
       hasDoubleJumped = true;
     }

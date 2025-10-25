@@ -34,7 +34,7 @@ canvas {
 /* Animated Background Particles */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-15px); }
 }
 
 /* Menu Screens */
@@ -60,21 +60,27 @@ canvas {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Updated Game Title with white/silver shimmer */
 .game-title {
   font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 800;
-  color: #FFE66D;
-  text-shadow: 0 0 30px rgba(255, 230, 109, 0.8),
-               0 0 60px rgba(255, 230, 109, 0.5),
-               0 5px 20px rgba(0, 0, 0, 0.5);
-  margin-bottom: 1rem;
-  letter-spacing: 2px;
-  animation: glow 2s ease-in-out infinite alternate;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  background: linear-gradient(45deg, #FFFFFF, #E0E0E0, #FFFFFF, #C0C0C0, #FFFFFF);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleShimmer 3s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+               0 0 40px rgba(255, 255, 255, 0.3);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
 }
 
-@keyframes glow {
-  from { text-shadow: 0 0 20px rgba(255, 230, 109, 0.6), 0 0 40px rgba(255, 230, 109, 0.4); }
-  to { text-shadow: 0 0 30px rgba(255, 230, 109, 1), 0 0 60px rgba(255, 230, 109, 0.6); }
+@keyframes titleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .menu-subtitle {
@@ -91,6 +97,39 @@ canvas {
   color: #4ECDC4;
   margin-bottom: 2rem;
   text-shadow: 0 2px 10px rgba(78, 205, 196, 0.5);
+}
+
+/* Menu Decorations Container */
+.menu-decorations {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#avdeev-avatar {
+  position: absolute;
+  left: 10%;
+  top: 15%;
+  border-radius: 15px;
+  background: transparent;
+  padding: 10px;
+  box-shadow: none;
+  border: none;
+  transform: rotate(14deg);
+}
+
+#menu-burger {
+  position: absolute;
+  left: 68%;
+  top: 45%;
+  border-radius: 15px;
+  background: transparent;
+  padding: 10px;
+  box-shadow: none;
+  border: none;
+  transform: rotate(-9deg);
+  animation: float 3s ease-in-out infinite;
 }
 
 .menu-buttons {
@@ -143,6 +182,36 @@ canvas {
 
 .menu-btn.secondary {
   background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* Sparkles */
+.sparkle {
+  position: absolute;
+  font-size: 2rem;
+  animation: sparkle 2s ease-in-out infinite;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.sparkle-1 { top: 60%; left: 10%; animation-delay: 0s; }
+.sparkle-2 { top: 25%; right: 15%; animation-delay: 0.5s; }
+.sparkle-3 { top: 70%; left: 8%; animation-delay: 1s; }
+.sparkle-4 { top: 75%; right: 12%; animation-delay: 1.5s; }
+.sparkle-6 { top: 10%; left: 50%; transform: translateX(-50%); animation-delay: 0.3s; }
+.sparkle-8 { top: 35%; right: 25%; animation-delay: 1.2s; }
+.sparkle-9 { top: 85%; left: 20%; animation-delay: 0.6s; }
+.sparkle-10 { top: 80%; right: 20%; animation-delay: 1.8s; }
+.sparkle-12 { top: 65%; right: 30%; animation-delay: 1.4s; }
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: scale(1) rotate(0deg);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.3) rotate(180deg);
+  }
 }
 
 /* Settings */
