@@ -368,48 +368,48 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx4.stroke();
   }
   
-  // Draw Phone on main menu (bigger - 50x70)
+  // Draw Phone on main menu (2x smaller)
   const phoneCanvas = document.getElementById('menu-phone');
   if(phoneCanvas) {
     const ctx5 = phoneCanvas.getContext('2d');
     
-    // Phone body (black/dark gray)
+    // Phone body (black/dark gray) - scaled to 50%
     ctx5.fillStyle = '#212121';
-    ctx5.fillRect(7, 3.5, 36, 63);
-    ctx5.fillRect(8.5, 2, 33, 66);
+    ctx5.fillRect(5, 2.5, 25, 45);
+    ctx5.fillRect(6, 1.5, 23, 47);
     
     // Phone screen (light blue/cyan)
     ctx5.fillStyle = '#4FC3F7';
-    ctx5.fillRect(11, 10.5, 28, 42);
+    ctx5.fillRect(7.5, 7.5, 20, 30);
     
     // Screen icons/notifications
     ctx5.fillStyle = '#FFFFFF';
-    ctx5.fillRect(14, 14, 5.5, 5.5);
-    ctx5.fillRect(22.5, 14, 5.5, 5.5);
-    ctx5.fillRect(31, 14, 5.5, 5.5);
-    ctx5.fillRect(14, 24.5, 8.5, 8.5);
-    ctx5.fillRect(25.5, 24.5, 8.5, 8.5);
+    ctx5.fillRect(10, 10, 4, 4);
+    ctx5.fillRect(16, 10, 4, 4);
+    ctx5.fillRect(22, 10, 4, 4);
+    ctx5.fillRect(10, 17.5, 6, 6);
+    ctx5.fillRect(18, 17.5, 6, 6);
     
     // App icons (colorful)
     ctx5.fillStyle = '#FF5252';
-    ctx5.fillRect(14, 36.5, 7, 7);
+    ctx5.fillRect(10, 26, 5, 5);
     ctx5.fillStyle = '#4CAF50';
-    ctx5.fillRect(24, 36.5, 7, 7);
+    ctx5.fillRect(17, 26, 5, 5);
     ctx5.fillStyle = '#FFC107';
-    ctx5.fillRect(14, 45.5, 7, 7);
+    ctx5.fillRect(10, 32.5, 5, 5);
     ctx5.fillStyle = '#2196F3';
-    ctx5.fillRect(24, 45.5, 7, 7);
+    ctx5.fillRect(17, 32.5, 5, 5);
     
     // Home button
     ctx5.fillStyle = '#424242';
     ctx5.beginPath();
-    ctx5.arc(25, 59.5, 5.5, 0, Math.PI * 2);
+    ctx5.arc(17.5, 42.5, 4, 0, Math.PI * 2);
     ctx5.fill();
     
     // Camera at top
     ctx5.fillStyle = '#1565C0';
     ctx5.beginPath();
-    ctx5.arc(25, 7, 2, 0, Math.PI * 2);
+    ctx5.arc(17.5, 5, 1.5, 0, Math.PI * 2);
     ctx5.fill();
   }
   
@@ -834,7 +834,7 @@ if(level === 0){
     addFinish(scene, w*0.9, 90);
   } 
    if(level === 3){
-    // Level 4: Obstacle course
+  // Level 4: Obstacle course
     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x6B9BD1);
     addTrampoline(scene, w*0.68, h*0.5);
@@ -853,12 +853,13 @@ if(level === 0){
     
     // Burgers
     addBurger(scene, w*0.15, h*0.14); // Near moon
+    addTrampoline(scene, w*0.8598, h*0.9);
     addBurger(scene, w*0.86, h*0.85); // Below finish door
     
     addFinish(scene, w*0.88, 100);
   }
    if (level  === 4){
-    // Level 5: Final challenge
+  // Level 5: Final challenge
     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addTrampoline(scene, w*0.2, h*0.75);
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.28, w*0.42, 2.5);
@@ -868,12 +869,18 @@ if(level === 0){
     addTrampoline(scene, w*0.62, h*0.5);
     addMovingPlatform(scene, w*0.72, h*0.3, w*0.68, w*0.78, 2);
     addSpike(scene, w*0.58, h*0.48);
-    addSpike(scene, w*0.75, h*0.38);
-    addSpike(scene, w*0.8, h*0.38);
+    addSpike(scene, w*0.85, h*0.74);
+    addSpike(scene, w*0.75, h*0.74);
+    addSpike(scene, w*0.8, h*0.74);
+    addSpike(scene, w*0.9, h*0.74);
     addPlatform(scene, w*0.88, h*0.2, 100, 20, 0xffffff);
     
     // Burgers
     addBurger(scene, w*0.14, h*0.13); // Near moon
+    addTrampoline(scene, w*0.9, h*0.75);
+    addTrampoline(scene, w*0.85, h*0.75);
+    addTrampoline(scene, w*0.8, h*0.75);
+    addTrampoline(scene, w*0.75, h*0.75);
     addBurger(scene, w*0.90, h*0.82); // Below finish door
     
     addFinish(scene, w*0.92, 90);
