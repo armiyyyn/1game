@@ -22,6 +22,10 @@
       <div class="menu-decorations">
         <canvas id="avdeev-avatar" width="135" height="162"></canvas>
         <canvas id="menu-burger" width="100" height="100"></canvas>
+        <canvas id="menu-coke" width="60" height="120"></canvas>
+        <canvas id="menu-pizza" width="100" height="100"></canvas>
+        <canvas id="menu-phone" width="50" height="70"></canvas>
+        <canvas id="avdeev-dad" width="150" height="180"></canvas>
       </div>
       
       <!-- Sparkles/Stars scattered around -->
@@ -104,7 +108,6 @@
     <!-- HUD -->
     <div id="game-hud" class="hidden">
       <div id="level" class="hud-btn">Level: 1</div>
-      <div id="score" class="hud-btn">Score: 0</div>
       <div id="burger-score" class="hud-btn">🍔 0</div>
       <button id="restart-btn" class="hud-btn">↻ Restart</button>
       <button id="menu-btn" class="hud-btn">☰ Menu</button>
@@ -113,15 +116,16 @@
     <!-- Congratulations Screen -->
     <div id="congrats-screen" class="menu-screen">
       <h1 class="congrats-title">🎉 Congratulations! 🎉</h1>
-      <p class="congrats-message">You've completed all 10 levels!</p>
+      <p class="congrats-message" id="congrats-message">You've completed all 10 levels!</p>
+      
+      <!-- Avdeev's final expression based on burgers -->
+      <canvas id="final-avdeev-avatar" width="180" height="216"></canvas>
+      
       <div class="congrats-stats">
         <div class="stat-item">
           <span class="stat-label">🍔 Burgers Collected:</span>
           <span class="stat-value" id="final-burger-score">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Final Score:</span>
-          <span class="stat-value" id="final-score">0</span>
+          <span class="stat-label">/ 20</span>
         </div>
       </div>
       <div class="menu-buttons">

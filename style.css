@@ -132,6 +132,56 @@ canvas {
   animation: float 3s ease-in-out infinite;
 }
 
+#menu-coke {
+  position: absolute;
+  left: 60%;
+  top: 58%;
+  border-radius: 10px;
+  background: transparent;
+  padding: 5px;
+  box-shadow: none;
+  border: none;
+  animation: float 2.5s ease-in-out infinite;
+}
+
+#menu-pizza {
+  position: absolute;
+  left: 30%;
+  top: 75%;
+  transform: translateX(-50%) rotate(15deg);
+  border-radius: 10px;
+  background: transparent;
+  padding: 5px;
+  box-shadow: none;
+  border: none;
+  animation: float 3.2s ease-in-out infinite;
+}
+
+#menu-phone {
+  position: absolute;
+  left: 22%;
+  top: 56%;
+  border-radius: 10px;
+  background: transparent;
+  padding: 5px;
+  box-shadow: none;
+  border: none;
+  transform: rotate(6deg);
+  animation: float 2.8s ease-in-out infinite;
+}
+
+#avdeev-dad {
+  position: absolute;
+  left: 86%;
+  top: 45%;
+  border-radius: 15px;
+  background: transparent;
+  padding: 10px;
+  box-shadow: none;
+  border: none;
+  transform: rotate(-8deg);
+}
+
 .menu-buttons {
   display: flex;
   flex-direction: column;
@@ -529,6 +579,18 @@ canvas {
   color: #FFE66D;
   font-weight: 800;
   text-shadow: 0 0 10px rgba(255, 230, 109, 0.6);
+}
+
+/* Final Avdeev Avatar on Congrats Screen */
+#final-avdeev-avatar {
+  margin: 20px auto;
+  display: block;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+              0 0 30px rgba(255, 230, 109, 0.3);
+  border: 3px solid rgba(255, 230, 109, 0.5);
 }
 
 /* Responsive */

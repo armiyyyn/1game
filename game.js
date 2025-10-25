@@ -7,9 +7,10 @@ let game;
 let player;
 let platforms, spikes, finishLine, movingPlatforms = [];
 let cursors, wasd;
-let score = 0, levelIndex = 0, totalLevels = 10;
+let levelIndex = 0, totalLevels = 10;
 let burgerScore = 0; // Track collected burgers
-let scoreEl, levelEl, burgerEl;
+let levelBurgerScore = 0; // Burgers collected in current level attempt
+let levelEl, burgerEl;
 let hasDoubleJumped = false;
 let timeLeftGround = 0; // Track time since leaving ground for better double jump
 let particleEmitters = [];
@@ -39,8 +40,8 @@ function startGame() {
   if (!window.Phaser) { console.error('Phaser not loaded'); return; }
   if (game) { try { game.destroy(true); } catch(e){} game = null; }
   levelIndex = 0;
-  score = 0;
   burgerScore = 0; // Reset burger score
+  levelBurgerScore = 0; // Reset level burger score
   game = new Phaser.Game(config);
   
   // Start HTML5 audio music
@@ -71,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const backToMenuBtn = document.getElementById('back-to-menu-btn');
   const finalScoreEl = document.getElementById('final-score');
 
-  scoreEl = document.getElementById('score');
   levelEl = document.getElementById('level');
   burgerEl = document.getElementById('burger-score');
 
@@ -171,11 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillRect(16*scale, 10*scale, 5*scale, 1.5*scale);
     ctx.fillRect(26*scale, 10*scale, 5*scale, 1.5*scale);
     
-    // Mouth
+    // Mouth (smile - shorter)
     ctx.fillStyle = '#000000';
-    ctx.fillRect(20*scale, 17*scale, 6*scale, 1*scale);
-    ctx.fillRect(19*scale, 18*scale, 1*scale, 1*scale);
-    ctx.fillRect(26*scale, 18*scale, 1*scale, 1*scale);
+    ctx.fillRect(19*scale, 18*scale, 8*scale, 1.5*scale); // Shorter smile line (8px instead of 10px)
+    ctx.fillRect(18*scale, 16.5*scale, 1.5*scale, 1.5*scale); // Left corner ABOVE
+    ctx.fillRect(26.5*scale, 16.5*scale, 1.5*scale, 1.5*scale); // Right corner ABOVE
     
     // White Kimono
     ctx.fillStyle = '#FFFFFF';
@@ -252,6 +252,264 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx2.fillRect(25, 49, 50, 8); // Main bottom bun
     ctx2.fillRect(28, 57, 45, 4); // Rounded bottom edge (same as top)
   }
+  
+  // Draw Coke bottle on main menu
+  const cokeCanvas = document.getElementById('menu-coke');
+  if(cokeCanvas) {
+    const ctx3 = cokeCanvas.getContext('2d');
+    
+    // Bottle cap (red)
+    ctx3.fillStyle = '#D32F2F';
+    ctx3.fillRect(18, 5, 24, 8);
+    ctx3.fillRect(20, 0, 20, 5);
+    
+    // Cap ridges (darker red)
+    ctx3.fillStyle = '#B71C1C';
+    ctx3.fillRect(20, 2, 2, 3);
+    ctx3.fillRect(24, 2, 2, 3);
+    ctx3.fillRect(28, 2, 2, 3);
+    ctx3.fillRect(32, 2, 2, 3);
+    ctx3.fillRect(36, 2, 2, 3);
+    
+    // Bottle neck
+    ctx3.fillStyle = '#8B4513';
+    ctx3.fillRect(22, 13, 16, 15);
+    
+    // Main bottle body (brown glass)
+    ctx3.fillStyle = '#6D4C41';
+    ctx3.fillRect(15, 28, 30, 70);
+    
+    // Coke label (red with white text area)
+    ctx3.fillStyle = '#D32F2F';
+    ctx3.fillRect(15, 45, 30, 25);
+    
+    // Label highlight/text area
+    ctx3.fillStyle = '#FFFFFF';
+    ctx3.fillRect(18, 52, 24, 10);
+    
+    // Coca-Cola wave (red)
+    ctx3.fillStyle = '#D32F2F';
+    ctx3.beginPath();
+    ctx3.moveTo(18, 57);
+    ctx3.quadraticCurveTo(25, 54, 30, 57);
+    ctx3.quadraticCurveTo(35, 60, 42, 57);
+    ctx3.lineTo(42, 62);
+    ctx3.lineTo(18, 62);
+    ctx3.closePath();
+    ctx3.fill();
+    
+    // Bottle reflection (white highlight)
+    ctx3.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx3.fillRect(17, 30, 4, 40);
+    
+    // Bottom of bottle
+    ctx3.fillStyle = '#5D4037';
+    ctx3.fillRect(15, 98, 30, 10);
+    ctx3.fillRect(18, 108, 24, 4);
+  }
+  
+  // Draw Pizza slice on main menu
+  const pizzaCanvas = document.getElementById('menu-pizza');
+  if(pizzaCanvas) {
+    const ctx4 = pizzaCanvas.getContext('2d');
+    
+    // Pizza crust (golden brown triangle)
+    ctx4.fillStyle = '#D4A574';
+    ctx4.beginPath();
+    ctx4.moveTo(50, 10);
+    ctx4.lineTo(10, 90);
+    ctx4.lineTo(90, 90);
+    ctx4.closePath();
+    ctx4.fill();
+    
+    // Pizza sauce/cheese (yellow-orange)
+    ctx4.fillStyle = '#FDB813';
+    ctx4.beginPath();
+    ctx4.moveTo(50, 20);
+    ctx4.lineTo(18, 82);
+    ctx4.lineTo(82, 82);
+    ctx4.closePath();
+    ctx4.fill();
+    
+    // Pepperoni slices (red circles)
+    ctx4.fillStyle = '#C1440E';
+    ctx4.beginPath();
+    ctx4.arc(50, 35, 8, 0, Math.PI * 2);
+    ctx4.fill();
+    ctx4.beginPath();
+    ctx4.arc(40, 55, 7, 0, Math.PI * 2);
+    ctx4.fill();
+    ctx4.beginPath();
+    ctx4.arc(60, 55, 7, 0, Math.PI * 2);
+    ctx4.fill();
+    ctx4.beginPath();
+    ctx4.arc(35, 70, 6, 0, Math.PI * 2);
+    ctx4.fill();
+    ctx4.beginPath();
+    ctx4.arc(65, 70, 6, 0, Math.PI * 2);
+    ctx4.fill();
+    
+    // Pepperoni highlights
+    ctx4.fillStyle = '#A03C0B';
+    ctx4.fillRect(48, 33, 3, 3);
+    ctx4.fillRect(39, 54, 2, 2);
+    ctx4.fillRect(59, 54, 2, 2);
+    
+    // Cheese strings
+    ctx4.strokeStyle = '#FFE082';
+    ctx4.lineWidth = 2;
+    ctx4.beginPath();
+    ctx4.moveTo(45, 75);
+    ctx4.lineTo(48, 82);
+    ctx4.stroke();
+    ctx4.beginPath();
+    ctx4.moveTo(55, 75);
+    ctx4.lineTo(52, 82);
+    ctx4.stroke();
+  }
+  
+  // Draw Phone on main menu (bigger - 50x70)
+  const phoneCanvas = document.getElementById('menu-phone');
+  if(phoneCanvas) {
+    const ctx5 = phoneCanvas.getContext('2d');
+    
+    // Phone body (black/dark gray)
+    ctx5.fillStyle = '#212121';
+    ctx5.fillRect(7, 3.5, 36, 63);
+    ctx5.fillRect(8.5, 2, 33, 66);
+    
+    // Phone screen (light blue/cyan)
+    ctx5.fillStyle = '#4FC3F7';
+    ctx5.fillRect(11, 10.5, 28, 42);
+    
+    // Screen icons/notifications
+    ctx5.fillStyle = '#FFFFFF';
+    ctx5.fillRect(14, 14, 5.5, 5.5);
+    ctx5.fillRect(22.5, 14, 5.5, 5.5);
+    ctx5.fillRect(31, 14, 5.5, 5.5);
+    ctx5.fillRect(14, 24.5, 8.5, 8.5);
+    ctx5.fillRect(25.5, 24.5, 8.5, 8.5);
+    
+    // App icons (colorful)
+    ctx5.fillStyle = '#FF5252';
+    ctx5.fillRect(14, 36.5, 7, 7);
+    ctx5.fillStyle = '#4CAF50';
+    ctx5.fillRect(24, 36.5, 7, 7);
+    ctx5.fillStyle = '#FFC107';
+    ctx5.fillRect(14, 45.5, 7, 7);
+    ctx5.fillStyle = '#2196F3';
+    ctx5.fillRect(24, 45.5, 7, 7);
+    
+    // Home button
+    ctx5.fillStyle = '#424242';
+    ctx5.beginPath();
+    ctx5.arc(25, 59.5, 5.5, 0, Math.PI * 2);
+    ctx5.fill();
+    
+    // Camera at top
+    ctx5.fillStyle = '#1565C0';
+    ctx5.beginPath();
+    ctx5.arc(25, 7, 2, 0, Math.PI * 2);
+    ctx5.fill();
+  }
+  
+  // Draw Avdeev's Dad (fat, bald, angry)
+  const dadCanvas = document.getElementById('avdeev-dad');
+  if(dadCanvas) {
+    const ctx6 = dadCanvas.getContext('2d');
+    const scale = 3;
+    
+    // Bald head (larger, rounder)
+    ctx6.fillStyle = '#FFDBAC';
+    ctx6.fillRect(13*scale, 5*scale, 24*scale, 18*scale); // Wider head
+    ctx6.fillRect(10*scale, 8*scale, 30*scale, 15*scale); // Extra wide
+    
+    // Angry eyes (smaller, mean-looking)
+    ctx6.fillStyle = '#FFFFFF';
+    ctx6.beginPath();
+    ctx6.arc(18*scale, 14*scale, 2.5*scale, 0, Math.PI * 2);
+    ctx6.fill();
+    ctx6.beginPath();
+    ctx6.arc(32*scale, 14*scale, 2.5*scale, 0, Math.PI * 2);
+    ctx6.fill();
+    
+    ctx6.fillStyle = '#000000';
+    ctx6.beginPath();
+    ctx6.arc(18*scale, 14*scale, 1.2*scale, 0, Math.PI * 2);
+    ctx6.fill();
+    ctx6.beginPath();
+    ctx6.arc(32*scale, 14*scale, 1.2*scale, 0, Math.PI * 2);
+    ctx6.fill();
+    
+    // Smaller eyebrows (normal, not angry)
+    ctx6.fillStyle = '#3E2723';
+    ctx6.fillRect(16*scale, 11*scale, 4*scale, 1.5*scale);
+    ctx6.fillRect(30*scale, 11*scale, 4*scale, 1.5*scale);
+    
+    // Happy smile (corners above main line)
+    ctx6.fillStyle = '#000000';
+    ctx6.fillRect(20*scale, 19*scale, 10*scale, 1.5*scale); // Main smile line
+    ctx6.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale); // Left corner ABOVE
+    ctx6.fillRect(29.5*scale, 17.5*scale, 1.5*scale, 1.5*scale); // Right corner ABOVE
+    
+    // Fat neck (double chin) - rounded
+    ctx6.fillStyle = '#FFDBAC';
+    ctx6.beginPath();
+    ctx6.arc(25*scale, 23*scale, 10*scale, 0, Math.PI);
+    ctx6.fill();
+    ctx6.fillRect(15*scale, 23*scale, 20*scale, 6*scale);
+    
+    // Neck crease (double chin line)
+    ctx6.strokeStyle = '#E0C097';
+    ctx6.lineWidth = 1.5;
+    ctx6.beginPath();
+    ctx6.moveTo(15*scale, 27*scale);
+    ctx6.lineTo(35*scale, 27*scale);
+    ctx6.stroke();
+    
+    // Fat body (white t-shirt, very wide) - smoother with rounded corners
+    ctx6.fillStyle = '#FFFFFF';
+    
+    // Main body with rounded top corners
+    ctx6.beginPath();
+    ctx6.arc(12*scale, 32*scale, 4*scale, Math.PI, Math.PI * 1.5); // Top left corner
+    ctx6.arc(38*scale, 32*scale, 4*scale, Math.PI * 1.5, 0); // Top right corner
+    ctx6.lineTo(42*scale, 49*scale);
+    ctx6.lineTo(8*scale, 49*scale);
+    ctx6.closePath();
+    ctx6.fill();
+    
+    // Left arm RAISED (waving) - rotated 8 degrees to the left
+    ctx6.save(); // Save current state
+    ctx6.translate(7*scale, 27*scale); // Move to arm base
+    ctx6.rotate(-8 * Math.PI / 180); // Rotate -8 degrees (left)
+    
+    ctx6.beginPath();
+    ctx6.arc(0, -5*scale, 4*scale, 0, Math.PI * 2); // Hand at top (raised up)
+    ctx6.fill();
+    ctx6.fillRect(-4*scale, -5*scale, 8*scale, 10*scale); // Arm
+    
+    ctx6.restore(); // Restore to normal state
+    
+    // Right arm (normal, down)
+    ctx6.beginPath();
+    ctx6.arc(43*scale, 39*scale, 4*scale, 0, Math.PI * 2); // Right arm rounded end
+    ctx6.fill();
+    ctx6.fillRect(39*scale, 32*scale, 8*scale, 15*scale); // Right arm
+    
+    // Belt (struggling to hold belly)
+    ctx6.fillStyle = '#5D4037';
+    ctx6.fillRect(8*scale, 45*scale, 34*scale, 4*scale);
+    
+    // Belt buckle
+    ctx6.fillStyle = '#FFD700';
+    ctx6.fillRect(23*scale, 44*scale, 4*scale, 6*scale);
+    
+    // Dark pants
+    ctx6.fillStyle = '#424242';
+    ctx6.fillRect(12*scale, 49*scale, 12*scale, 10*scale);
+    ctx6.fillRect(26*scale, 49*scale, 12*scale, 10*scale);
+  }
 });
 
 function preload(){
@@ -265,6 +523,7 @@ function create(){
   // Reset state
   hasDoubleJumped = false;
   movingPlatforms = [];
+  levelBurgerScore = 0; // Reset burgers for this level attempt
   
   // Create burgers group
   burgers = this.physics.add.staticGroup();
@@ -426,6 +685,7 @@ function create(){
   this.physics.add.overlap(player, burgers, (player, burger) => {
     burger.destroy();
     burgerScore++;
+    levelBurgerScore++; // Track burgers in current level
     if(burgerEl) burgerEl.textContent = '🍔 ' + burgerScore;
   });
   
@@ -456,7 +716,6 @@ function create(){
   
   // HUD
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
-  if(scoreEl) scoreEl.textContent = 'Score: '+score;
   
   // Add help sign on level 1 only - positioned at edge of starting platform
   if(levelIndex === 0){
@@ -875,6 +1134,10 @@ function addFinish(scene, x, y){
 function respawnPlayer(scene){
   player.setPosition(150, scene.scale.height - 110);
   player.setVelocity(0, 0);
+  // Reset burger score to previous level completion
+  burgerScore -= levelBurgerScore;
+  levelBurgerScore = 0;
+  if(burgerEl) burgerEl.textContent = '🍔 ' + burgerScore;
 }
 
 function update(){
@@ -934,9 +1197,6 @@ function update(){
 }
 
 function nextLevel(scene){
-  score++;
-  if(scoreEl) scoreEl.textContent='Score: '+score;
-  
   // Fade out transition before changing level
   const w = scene.scale.width;
   const h = scene.scale.height;
@@ -951,27 +1211,246 @@ function nextLevel(scene){
     onComplete: () => {
       levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
       if(levelIndex>=totalLevels){
-        // Show congratulations screen
-        const congratsScreen = document.getElementById('congrats-screen');
-        const finalScoreEl = document.getElementById('final-score');
-        const finalBurgerScoreEl = document.getElementById('final-burger-score');
-        const hud = document.getElementById('game-hud');
-        
-        if(finalScoreEl) finalScoreEl.textContent = score;
-        if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
-        if(hud) hud.classList.add('hidden');
-        if(congratsScreen) congratsScreen.classList.add('active');
-        
-        // Reset for next playthrough
-        levelIndex = 0;
-        score = 0;
-        burgerScore = 0;
+        // Show congratulations screen with Avdeev expression based on burgers
+        showCongratsScreen();
         return;
       }
       if(levelEl) levelEl.textContent='Level: '+(levelIndex+1);
       scene.scene.restart(); // Restart with fade-in (handled in create())
     }
   });
+}
+
+function showCongratsScreen() {
+  const congratsScreen = document.getElementById('congrats-screen');
+  const finalBurgerScoreEl = document.getElementById('final-burger-score');
+  const hud = document.getElementById('game-hud');
+  
+  if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
+  if(hud) hud.classList.add('hidden');
+  
+  // Create Avdeev avatar based on burger score
+  const avatarCanvas = document.getElementById('final-avdeev-avatar');
+  if(avatarCanvas) {
+    const ctx = avatarCanvas.getContext('2d');
+    const scale = 4; // Large avatar for final screen
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+    
+    // Brown hair (if not bald)
+    if(playerConfig.hairColor !== 'bald'){
+      ctx.fillStyle = '#5D4037';
+      ctx.fillRect(13*scale, 0, 20*scale, 9*scale);
+      ctx.fillRect(10*scale, 2*scale, 5*scale, 7*scale);
+      ctx.fillRect(30*scale, 2*scale, 5*scale, 7*scale);
+    }
+    
+    // Head
+    ctx.fillStyle = '#FFDBAC';
+    ctx.fillRect(13*scale, 7*scale, 20*scale, 14*scale);
+    
+    // Draw eyes and mouth based on burger count
+    if(burgerScore >= 18) {
+      // 18-20: Very happy with stars
+      // Happy eyes
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(18*scale, 12*scale, 4*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 12*scale, 4*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(18*scale, 12*scale, 2*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 12*scale, 2*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Happy eyebrows
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(15*scale, 8*scale, 6*scale, 2*scale);
+      ctx.fillRect(25*scale, 8*scale, 6*scale, 2*scale);
+      
+      // Big smile
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(18*scale, 17*scale, 10*scale, 2*scale);
+      ctx.fillRect(17*scale, 19*scale, 2*scale, 2*scale);
+      ctx.fillRect(27*scale, 19*scale, 2*scale, 2*scale);
+      
+      // Draw stars below head
+      ctx.fillStyle = '#FFD700';
+      const starPositions = [
+        {x: 10*scale, y: 24*scale},
+        {x: 23*scale, y: 26*scale},
+        {x: 36*scale, y: 24*scale}
+      ];
+      starPositions.forEach(pos => {
+        ctx.beginPath();
+        for(let i = 0; i < 5; i++) {
+          const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+          const x = pos.x + Math.cos(angle) * 3*scale;
+          const y = pos.y + Math.sin(angle) * 3*scale;
+          if(i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+    } else if(burgerScore >= 14) {
+      // 14-17: Happy but not ecstatic
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Normal eyebrows
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(16*scale, 10*scale, 5*scale, 1.5*scale);
+      ctx.fillRect(26*scale, 10*scale, 5*scale, 1.5*scale);
+      
+      // Smile
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(20*scale, 17*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(19*scale, 18.5*scale, 1.5*scale, 1.5*scale);
+      ctx.fillRect(25.5*scale, 18.5*scale, 1.5*scale, 1.5*scale);
+      
+    } else if(burgerScore >= 8) {
+      // 8-13: Neutral/OK
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Flat eyebrows
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(16*scale, 11*scale, 5*scale, 1.5*scale);
+      ctx.fillRect(26*scale, 11*scale, 5*scale, 1.5*scale);
+      
+      // Straight mouth (neutral)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(19*scale, 17*scale, 8*scale, 1.5*scale);
+      
+    } else if(burgerScore >= 4) {
+      // 4-7: Angry/Bothered
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(18*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Angry eyebrows (angled down)
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(15*scale, 11*scale, 6*scale, 2*scale);
+      ctx.fillRect(25*scale, 9*scale, 6*scale, 2*scale);
+      ctx.fillRect(14*scale, 9*scale, 2*scale, 2*scale);
+      ctx.fillRect(30*scale, 11*scale, 2*scale, 2*scale);
+      
+      // Frown
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(20*scale, 19*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale);
+      ctx.fillRect(25.5*scale, 17.5*scale, 1.5*scale, 1.5*scale);
+      
+    } else {
+      // 0-3: Dead (crosses for eyes)
+      // X eyes (crosses)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(16*scale, 12*scale, 5*scale, 1.5*scale);
+      ctx.fillRect(18*scale, 10*scale, 1.5*scale, 5*scale);
+      ctx.fillRect(26*scale, 12*scale, 5*scale, 1.5*scale);
+      ctx.fillRect(28*scale, 10*scale, 1.5*scale, 5*scale);
+      
+      // Sad/dead eyebrows
+      ctx.fillStyle = '#3E2723';
+      ctx.fillRect(15*scale, 9*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(25*scale, 9*scale, 6*scale, 1.5*scale);
+      
+      // Dead mouth (O shape)
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(23*scale, 18*scale, 3*scale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // White Kimono body (same for all)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale);
+    ctx.fillRect(5*scale, 23*scale, 7*scale, 13*scale);
+    ctx.fillRect(33*scale, 23*scale, 7*scale, 13*scale);
+    
+    // V-neck
+    ctx.fillStyle = '#FFDBAC';
+    ctx.beginPath();
+    ctx.moveTo(22*scale, 21*scale);
+    ctx.lineTo(18*scale, 28*scale);
+    ctx.lineTo(27*scale, 28*scale);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Belt
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
+  }
+  
+  // Set message based on burger score
+  const congratsMessage = document.getElementById('congrats-message');
+  if(congratsMessage) {
+    if(burgerScore >= 18) {
+      congratsMessage.textContent = '🌟 Perfect! Avdeev is extremely satisfied! 🌟';
+    } else if(burgerScore >= 14) {
+      congratsMessage.textContent = '😊 Great job! Avdeev is happy!';
+    } else if(burgerScore >= 8) {
+      congratsMessage.textContent = '😐 OK, but not enough burgers...';
+    } else if(burgerScore >= 4) {
+      congratsMessage.textContent = '😠 Avdeev is not satisfied!';
+    } else {
+      congratsMessage.textContent = '💀 Avdeev died from lack of burgers...';
+    }
+  }
+  
+  if(congratsScreen) congratsScreen.classList.add('active');
+  
+  // Reset for next playthrough
+  levelIndex = 0;
+  burgerScore = 0;
+  levelBurgerScore = 0;
 }
 
 window.addEventListener('resize',()=>{ if(game) game.scale.resize(GAME.width(),GAME.height()); });
