@@ -661,10 +661,16 @@ function create(){
   
   // Burger collection
   this.physics.add.overlap(player, burgers, (player, burger) => {
+    const burgerX = burger.x;
+    const burgerY = burger.y;
+    
     burger.destroy();
     burgerScore++;
     levelBurgerScore++; // Track burgers in current level
     if(burgerEl) burgerEl.textContent = '🍔 ' + burgerScore;
+    
+    // Create burger crumbs particle effect
+    createBurgerCrumbs(this, burgerX, burgerY);
   });
   
   // Deadly spike floor at bottom - covers entire width
@@ -1155,6 +1161,37 @@ function addFinish(scene, x, y){
   const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
   scene.physics.add.existing(finish, true);
   finishLine.add(finish);
+}
+
+function createBurgerCrumbs(scene, x, y){
+  // Create 10-15 crumb particles
+  const numCrumbs = Phaser.Math.Between(10, 15);
+  
+  for(let i = 0; i < numCrumbs; i++){
+    // Random crumb colors (brown, yellow, green for lettuce, red for tomato)
+    const colors = [0x8B4513, 0xFFD700, 0x7FD17F, 0xFF4444, 0x8B5A3C];
+    const color = Phaser.Utils.Array.GetRandom(colors);
+    const size = Phaser.Math.Between(4, 8);
+    
+    // Create square crumb particle
+    const crumb = scene.add.rectangle(x, y, size, size, color);
+    scene.physics.add.existing(crumb);
+    
+    // Random velocity in all directions
+    const velocityX = Phaser.Math.Between(-200, 200);
+    const velocityY = Phaser.Math.Between(-300, -100); // Mostly upward
+    crumb.body.setVelocity(velocityX, velocityY);
+    crumb.body.setGravityY(600); // Gravity pulls crumbs down
+    
+    // Fade out and destroy after 1 second
+    scene.tweens.add({
+      targets: crumb,
+      alpha: 0,
+      duration: 1000,
+      ease: 'Power2',
+      onComplete: () => crumb.destroy()
+    });
+  }
 }
 
 function respawnPlayer(scene){
