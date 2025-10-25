@@ -467,35 +467,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.lineTo(35*scale, 27*scale);
     ctx6.stroke();
     
-    // Fat body (white t-shirt, very wide) - smoother with rounded corners
+    // Fat body (white t-shirt, very wide)
     ctx6.fillStyle = '#FFFFFF';
-    
-    // Main body with rounded top corners
-    ctx6.beginPath();
-    ctx6.arc(12*scale, 32*scale, 4*scale, Math.PI, Math.PI * 1.5); // Top left corner
-    ctx6.arc(38*scale, 32*scale, 4*scale, Math.PI * 1.5, 0); // Top right corner
-    ctx6.lineTo(42*scale, 49*scale);
-    ctx6.lineTo(8*scale, 49*scale);
-    ctx6.closePath();
-    ctx6.fill();
-    
-    // Left arm RAISED (waving) - rotated 8 degrees to the left
-    ctx6.save(); // Save current state
-    ctx6.translate(7*scale, 27*scale); // Move to arm base
-    ctx6.rotate(-8 * Math.PI / 180); // Rotate -8 degrees (left)
-    
-    ctx6.beginPath();
-    ctx6.arc(0, -5*scale, 4*scale, 0, Math.PI * 2); // Hand at top (raised up)
-    ctx6.fill();
-    ctx6.fillRect(-4*scale, -5*scale, 8*scale, 10*scale); // Arm
-    
-    ctx6.restore(); // Restore to normal state
-    
-    // Right arm (normal, down)
-    ctx6.beginPath();
-    ctx6.arc(43*scale, 39*scale, 4*scale, 0, Math.PI * 2); // Right arm rounded end
-    ctx6.fill();
-    ctx6.fillRect(39*scale, 32*scale, 8*scale, 15*scale); // Right arm
+    ctx6.fillRect(8*scale, 29*scale, 34*scale, 20*scale); // Very wide body
+    ctx6.fillRect(3*scale, 32*scale, 8*scale, 15*scale); // Fat left arm
+    ctx6.fillRect(39*scale, 32*scale, 8*scale, 15*scale); // Fat right arm
     
     // Belt (struggling to hold belly)
     ctx6.fillStyle = '#5D4037';
@@ -859,7 +835,7 @@ if(level === 0){
     addFinish(scene, w*0.88, 100);
   }
    if (level  === 4){
-  // Level 5: Final challenge
+    // Level 5: Final challenge
     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addTrampoline(scene, w*0.2, h*0.75);
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.28, w*0.42, 2.5);
@@ -888,23 +864,63 @@ if(level === 0){
   
   // Additional levels 6-10
   if(level === 5){
-    // Level 6: Speed run
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addMovingPlatform(scene, w*0.22, h*0.7, w*0.15, w*0.30, 3);
-    addMovingPlatform(scene, w*0.45, h*0.55, w*0.38, w*0.52, 3);
-    addMovingPlatform(scene, w*0.68, h*0.4, w*0.62, w*0.75, 3);
-    addTrampoline(scene, w*0.32, h*0.78);
-    addTrampoline(scene, w*0.58, h*0.63);
-    addSpike(scene, w*0.4, h*0.76);
-    addSpike(scene, w*0.53, h*0.6);
-    addSpike(scene, w*0.78, h*0.46);
-    addPlatform(scene, w*0.87, h*0.25, 110, 20, 0xffffff);
+    // Level 6: Path goes RIGHT → UP → LEFT to finish (upper left corner)
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
     
-    // Burgers
-    addBurger(scene, w*0.15, h*0.13); // Near moon
-    addBurger(scene, w*0.88, h*0.80); // Below finish door
+    // Path going RIGHT first
+    addPlatform(scene, w*0.3, h*0.75, 100, 20, 0x6B9BD1);
+    addMovingPlatform(scene, w*0.45, h*0.75, w*0.40, w*0.52, 2.5);
+    addPlatform(scene, w*0.62, h*0.75, 100, 20, 0xA9C7F7);
+    addSpike(scene, w*0.38, h*0.81);
+    addSpike(scene, w*0.54, h*0.71);
     
-    addFinish(scene, w*0.91, 100);
+    // Burger on the right side
+    addBurger(scene, w*0.88, h*0.70);
+    addPlatform(scene, w*0.88, h*0.78, 90, 20, 0x6B9BD1); // Platform for right burger
+    
+    // Path going UP from right
+    addPlatform(scene, w*0.8, h*0.5, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.8, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
+    addPlatform(scene, w*0.75, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
+    addPlatform(scene, w*0.70, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
+    addUpsideDownSpike(scene, w*0.79, h*0.66);
+    addUpsideDownSpike(scene, w*0.775, h*0.66);
+    addUpsideDownSpike(scene, w*0.76, h*0.66);
+    addUpsideDownSpike(scene, w*0.745, h*0.66);
+    addUpsideDownSpike(scene, w*0.73, h*0.66);
+    addUpsideDownSpike(scene, w*0.715, h*0.66);
+ 
+    addSpike(scene, w*0.71, h*0.5);
+    
+    // Path going LEFT to finish
+    addPlatform(scene, w*0.58, h*0.35, 90, 20, 0x6B9BD1);
+    addPlatform(scene, w*0.49, h*0.25, 90, 20, 0x6B9BD1);
+    addSpike(scene, w*0.65, h*0.41);
+    addSpike(scene, w*0.48, h*0.51);
+    
+    // TRAP: Three REAL trampolines close together with spikes above (Avdeev can fit between)
+    addTrampoline(scene, w*0.28, h*0.25); // Real trampoline 1
+    addTrampoline(scene, w*0.32, h*0.25); // Real trampoline 2  
+    addTrampoline(scene, w*0.36, h*0.25); // Real trampoline 3
+    addTrampoline(scene, w*0.4, h*0.25);
+    
+    // Red spikes ABOVE the trampolines (pointing DOWN) - with enough space for Avdeev (60px gap)
+    addUpsideDownSpike(scene, w*0.273, h*0.12);
+    addUpsideDownSpike(scene, w*0.288, h*0.12);
+    addUpsideDownSpike(scene, w*0.303, h*0.12);
+    addUpsideDownSpike(scene, w*0.318, h*0.12);
+    addUpsideDownSpike(scene, w*0.333, h*0.12);
+    addUpsideDownSpike(scene, w*0.348, h*0.12);
+    addUpsideDownSpike(scene, w*0.363, h*0.12);
+    addUpsideDownSpike(scene, w*0.378, h*0.12);
+    addUpsideDownSpike(scene, w*0.393, h*0.12);
+    addUpsideDownSpike(scene, w*0.408, h*0.12);
+    
+    // Burger on left side before finish (stays at same place)
+    addBurger(scene, w*0.18, h*0.125);
+    
+    // Finish door at upper left corner
+    addFinish(scene, w*0.12, h*0.08);
   }
   
   if(level === 6){
