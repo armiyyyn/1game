@@ -424,6 +424,29 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.fillRect(13*scale, 5*scale, 24*scale, 18*scale); // Wider head
     ctx6.fillRect(10*scale, 8*scale, 30*scale, 15*scale); // Extra wide
     
+    // White oval speech bubble on LEFT side - "realjno?!" (doesn't cover dad's head)
+    const bubbleX = 40; // Positioned to the left
+    const bubbleY = 13; // Higher to prevent cut-off (moved from 8 to 13)
+    
+    ctx6.fillStyle = '#FFFFFF';
+    ctx6.beginPath();
+    ctx6.ellipse(bubbleX, bubbleY, 35, 12, 0, 0, Math.PI * 2); // Oval on left side
+    ctx6.fill();
+    
+    // Bubble border
+    ctx6.strokeStyle = '#000000';
+    ctx6.lineWidth = 2;
+    ctx6.beginPath();
+    ctx6.ellipse(bubbleX, bubbleY, 35, 12, 0, 0, Math.PI * 2);
+    ctx6.stroke();
+    
+    // Text "realjno?!" (inside oval bubble)
+    ctx6.fillStyle = '#000000';
+    ctx6.font = 'bold 12px Arial';
+    ctx6.textAlign = 'center';
+    ctx6.textBaseline = 'middle';
+    ctx6.fillText('realjno?!', bubbleX, bubbleY);
+    
     // Angry eyes (smaller, mean-looking)
     ctx6.fillStyle = '#FFFFFF';
     ctx6.beginPath();
@@ -441,25 +464,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.arc(32*scale, 14*scale, 1.2*scale, 0, Math.PI * 2);
     ctx6.fill();
     
-    // Smaller eyebrows (normal, not angry)
+    // Angry eyebrows (angled down toward center)
     ctx6.fillStyle = '#3E2723';
-    ctx6.fillRect(16*scale, 11*scale, 4*scale, 1.5*scale);
-    ctx6.fillRect(30*scale, 11*scale, 4*scale, 1.5*scale);
+    ctx6.fillRect(15*scale, 11*scale, 6*scale, 2*scale);
+    ctx6.fillRect(29*scale, 11*scale, 6*scale, 2*scale);
+    ctx6.fillRect(14*scale, 9*scale, 2*scale, 2*scale);
+    ctx6.fillRect(34*scale, 9*scale, 2*scale, 2*scale);
     
-    // Happy smile (corners above main line)
+    // Angry frown
     ctx6.fillStyle = '#000000';
-    ctx6.fillRect(20*scale, 19*scale, 10*scale, 1.5*scale); // Main smile line
-    ctx6.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale); // Left corner ABOVE
-    ctx6.fillRect(29.5*scale, 17.5*scale, 1.5*scale, 1.5*scale); // Right corner ABOVE
+    ctx6.fillRect(20*scale, 19*scale, 10*scale, 1.5*scale);
+    ctx6.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale);
+    ctx6.fillRect(29.5*scale, 17.5*scale, 1.5*scale, 1.5*scale);
     
-    // Fat neck (double chin) - rounded
+    // Fat neck (double chin)
     ctx6.fillStyle = '#FFDBAC';
     ctx6.beginPath();
     ctx6.arc(25*scale, 23*scale, 10*scale, 0, Math.PI);
     ctx6.fill();
     ctx6.fillRect(15*scale, 23*scale, 20*scale, 6*scale);
     
-    // Neck crease (double chin line)
+    // Neck crease
     ctx6.strokeStyle = '#E0C097';
     ctx6.lineWidth = 1.5;
     ctx6.beginPath();
@@ -467,13 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.lineTo(35*scale, 27*scale);
     ctx6.stroke();
     
-    // Fat body (white t-shirt, very wide)
+    // Fat body (white t-shirt)
     ctx6.fillStyle = '#FFFFFF';
-    ctx6.fillRect(8*scale, 29*scale, 34*scale, 20*scale); // Very wide body
-    ctx6.fillRect(3*scale, 32*scale, 8*scale, 15*scale); // Fat left arm
-    ctx6.fillRect(39*scale, 32*scale, 8*scale, 15*scale); // Fat right arm
+    ctx6.fillRect(8*scale, 29*scale, 34*scale, 20*scale);
+    ctx6.fillRect(3*scale, 32*scale, 8*scale, 15*scale);
+    ctx6.fillRect(39*scale, 32*scale, 8*scale, 15*scale);
     
-    // Belt (struggling to hold belly)
+    // Belt
     ctx6.fillStyle = '#5D4037';
     ctx6.fillRect(8*scale, 45*scale, 34*scale, 4*scale);
     
@@ -693,31 +718,32 @@ function create(){
   // HUD
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
   
-  // Add help sign on level 1 only - positioned at edge of starting platform
+  // Add help sign on level 1 only - positioned at left corner
   if(levelIndex === 0){
-    const signX = 230; // At the edge of starting platform (150 + 140/2 = 220, plus some margin)
-    const signY = h - 90; // Just above the platform
+    const signX = 90; // At the left corner of starting platform
+    const signY = h - 180; // Much higher to give space for full Avdeev
     
-    // Wooden sign (bigger and better colored)
+    // Wooden sign
     const signGfx = this.add.graphics();
     signGfx.fillStyle(0x6D4C41, 1); // Darker brown post
-    signGfx.fillRect(signX-2.5, signY, 5, 35); // Thicker post
+    signGfx.fillRect(signX-2.5, signY, 5, 140); // Much taller post (140px)
     
-    // Sign board (bigger, more visible)
-    signGfx.fillStyle(0xF4A460, 1); // Sandy brown (more visible)
-    signGfx.fillRect(signX-75, signY-30, 150, 45);
+    // Sign board
+    signGfx.fillStyle(0xF4A460, 1); // Sandy brown
+    signGfx.fillRect(signX-75, signY-30, 150, 48); // Slightly taller board for 3 lines
     
     // Border
-    signGfx.lineStyle(3, 0x4E342E, 1); // Dark brown border
-    signGfx.strokeRect(signX-75, signY-30, 150, 45);
+    signGfx.lineStyle(3, 0x4E342E, 1);
+    signGfx.strokeRect(signX-75, signY-30, 150, 48);
     
-    // Text (bigger font)
-    const helpText = this.add.text(signX, signY-8, 'Help Avdeev get to\nthe training on time!', {
-      fontSize: '14px',
+    // Text - updated with feeding message
+    const helpText = this.add.text(signX, signY-6, 'Help Avdeev get to\nthe training and\nfeed him on his way!', {
+      fontSize: '13px',
       fontFamily: 'Arial',
       color: '#2C1810',
       align: 'center',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      lineSpacing: 1
     });
     helpText.setOrigin(0.5, 0.5);
     
