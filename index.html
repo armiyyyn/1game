@@ -87,6 +87,7 @@
     <div id="game-hud" class="hidden">
       <div id="level" class="hud-btn">Level: 1</div>
       <div id="score" class="hud-btn">Score: 0</div>
+      <div id="burger-score" class="hud-btn">🍔 0</div>
       <button id="restart-btn" class="hud-btn">↻ Restart</button>
       <button id="menu-btn" class="hud-btn">☰ Menu</button>
     </div>
@@ -96,6 +97,10 @@
       <h1 class="congrats-title">🎉 Congratulations! 🎉</h1>
       <p class="congrats-message">You've completed all 10 levels!</p>
       <div class="congrats-stats">
+        <div class="stat-item">
+          <span class="stat-label">🍔 Burgers Collected:</span>
+          <span class="stat-value" id="final-burger-score">0</span>
+        </div>
         <div class="stat-item">
           <span class="stat-label">Final Score:</span>
           <span class="stat-value" id="final-score">0</span>

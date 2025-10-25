@@ -8,11 +8,13 @@ let player;
 let platforms, spikes, finishLine, movingPlatforms = [];
 let cursors, wasd;
 let score = 0, levelIndex = 0, totalLevels = 10;
-let scoreEl, levelEl;
+let burgerScore = 0; // Track collected burgers
+let scoreEl, levelEl, burgerEl;
 let hasDoubleJumped = false;
 let particleEmitters = [];
 let backgroundMusic = null;
 let musicEnabled = true;
+let burgers; // Group for collectible burgers
 
 const playerConfig = { 
   hairColor: 0x5D4037, // brown, red, green, or 'bald'
@@ -37,6 +39,7 @@ function startGame() {
   if (game) { try { game.destroy(true); } catch(e){} game = null; }
   levelIndex = 0;
   score = 0;
+  burgerScore = 0; // Reset burger score
   game = new Phaser.Game(config);
   
   // Start HTML5 audio music
@@ -69,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   scoreEl = document.getElementById('score');
   levelEl = document.getElementById('level');
+  burgerEl = document.getElementById('burger-score');
 
   function hideAllMenus(){
     if(mainMenu) mainMenu.classList.remove('active');
@@ -130,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function preload(){
-  // Music handled by HTML5 audio tag
+  // No external assets needed - burger created with graphics
 }
 
 function create(){
@@ -140,6 +144,9 @@ function create(){
   // Reset state
   hasDoubleJumped = false;
   movingPlatforms = [];
+  
+  // Create burgers group
+  burgers = this.physics.add.staticGroup();
   
   // Enhanced background
   this.add.rectangle(w/2, h/2, w, h, 0x1b1336);
@@ -283,6 +290,13 @@ function create(){
   movingPlatforms.forEach(mp => this.physics.add.collider(player, mp));
   this.physics.add.overlap(player, finishLine, ()=>nextLevel(this));
   
+  // Burger collection
+  this.physics.add.overlap(player, burgers, (player, burger) => {
+    burger.destroy();
+    burgerScore++;
+    if(burgerEl) burgerEl.textContent = '🍔 ' + burgerScore;
+  });
+  
   // Deadly spike floor at bottom - covers entire width
   const spikeFloorY = h - 15;
   const spikeWidth = 30;
@@ -362,11 +376,14 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
-    // Level 1: Basic platforming
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
+ // Level 1: Basic platforming
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
     addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
-    addTrampoline(scene, w*0.2, h*0.61);
+    addTrampoline(scene, w*0.2, h*0.55); // Trampoline on left side
+    
+    // Middle platform to help reach finish
+    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x6B9BD1); // Blue platform between trampoline and finish
+    
     addSpike(scene, w*0.37, h*0.75);
     addSpike(scene, w*0.38, h*0.72);
     addSpike(scene, w*0.39, h*0.69);
@@ -376,7 +393,15 @@ if(level === 0){
     addSpike(scene, w*0.43, h*0.57);
     addSpike(scene, w*0.44, h*0.54);
     addSpike(scene, w*0.45, h*0.51);
-    addFinish(scene, w*0.9, 120);
+    
+    // Burgers (no additional platforms - you'll add them later)
+    addBurger(scene, w*0.15, h*0.16); // Near moon
+    addBurger(scene, w*0.88, h*0.88); // Below finish door
+    
+    // Trampolines under burgers
+    addTrampoline(scene, w*0.88, h*0.92); // Trampoline under burger 2
+    
+    addFinish(scene, w*0.9, h*0.25); // Finish door at top righ
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -387,19 +412,34 @@ if(level === 0){
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.3, w*0.45, 2);
     addSpike(scene, w*0.32, h*0.76);
     addSpike(scene, w*0.6, h*0.46);
+    
+    // Burgers
+    addBurger(scene, w*0.16, h*0.14); // Near moon
+    addBurger(scene, w*0.86, h*0.84); // Below finish door
+    
+    // Trampoline under burger 2
+    addTrampoline(scene, w*0.86, h*0.88); // Trampoline under burger 2
+    
     addFinish(scene, w*0.88, 100);
   } 
   if(level === 2){
-    // Level 3: Moving platforms
- addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+   // Level 3: Moving platforms
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.01, h*0.76, 110, 20, 0xA9C7F7);
     addMovingPlatform(scene, w*0.25, h*0.6, w*0.2, w*0.35, 1.8);
+    addPlatform(scene, w*0.01, h*0.5, 80, 20, 0x6B9BD1); // Additional platform to reach first burger
     addMovingPlatform(scene, w*0.5, h*0.5, w*0.45, w*0.6, 2.2);
-    addPlatform(scene, w*0.7, h*0.35, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.8, h*0.60, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.98, h*0.40, 100, 20, 0xA9C7F7);
     addSpike(scene, w*0.3, h*0.72);
     addSpike(scene, w*0.4, h*0.7);
     addSpike(scene, w*0.58, h*0.58);
     addSpike(scene, w*0.65, h*0.55);
+    
+    // Burgers
+    addBurger(scene, w*0.16, h*0.12); // Near moon
+    addBurger(scene, w*0.88, h*0.83); // Below finish door
+    addTrampoline(scene, w*0.8804, h*0.88);
     addFinish(scene, w*0.9, 90);
   } 
    if(level === 3){
@@ -419,6 +459,11 @@ if(level === 0){
     addSpike(scene, w*0.6, h*0.46);
     addSpike(scene, w*0.6, h*0.43);
     addSpike(scene, w*0.6, h*0.40);
+    
+    // Burgers
+    addBurger(scene, w*0.15, h*0.14); // Near moon
+    addBurger(scene, w*0.86, h*0.85); // Below finish door
+    
     addFinish(scene, w*0.88, 100);
   }
    if (level  === 4){
@@ -435,6 +480,11 @@ if(level === 0){
     addSpike(scene, w*0.75, h*0.38);
     addSpike(scene, w*0.8, h*0.38);
     addPlatform(scene, w*0.88, h*0.2, 100, 20, 0xffffff);
+    
+    // Burgers
+    addBurger(scene, w*0.14, h*0.13); // Near moon
+    addBurger(scene, w*0.90, h*0.82); // Below finish door
+    
     addFinish(scene, w*0.92, 90);
   }
   
@@ -451,6 +501,11 @@ if(level === 0){
     addSpike(scene, w*0.53, h*0.6);
     addSpike(scene, w*0.78, h*0.46);
     addPlatform(scene, w*0.87, h*0.25, 110, 20, 0xffffff);
+    
+    // Burgers
+    addBurger(scene, w*0.15, h*0.13); // Near moon
+    addBurger(scene, w*0.88, h*0.80); // Below finish door
+    
     addFinish(scene, w*0.91, 100);
   }
   
@@ -467,6 +522,11 @@ if(level === 0){
     addSpike(scene, w*0.61, h*0.52);
     addSpike(scene, w*0.75, h*0.4);
     addTrampoline(scene, w*0.15, h*0.8);
+    
+    // Burgers
+    addBurger(scene, w*0.14, h*0.12); // Near moon
+    addBurger(scene, w*0.87, h*0.78); // Below finish door
+    
     addFinish(scene, w*0.9, 85);
   }
   
@@ -484,6 +544,11 @@ if(level === 0){
     addSpike(scene, w*0.63, h*0.51);
     addSpike(scene, w*0.77, h*0.38);
     addTrampoline(scene, w*0.35, h*0.68);
+    
+    // Burgers
+    addBurger(scene, w*0.15, h*0.14); // Near moon
+    addBurger(scene, w*0.88, h*0.76); // Below finish door
+    
     addFinish(scene, w*0.92, 80);
   }
   
@@ -502,6 +567,11 @@ if(level === 0){
     addMovingPlatform(scene, w*0.82, h*0.25, w*0.78, w*0.88, 2.2);
     addSpike(scene, w*0.85, h*0.31);
     addPlatform(scene, w*0.92, h*0.18, 80, 20, 0xffffff);
+    
+    // Burgers
+    addBurger(scene, w*0.14, h*0.11); // Near moon
+    addBurger(scene, w*0.90, h*0.75); // Below finish door
+    
     addFinish(scene, w*0.94, 75);
   }
   
@@ -521,6 +591,11 @@ if(level === 0){
     addPlatform(scene, w*0.88, h*0.22, 75, 20, 0xffffff);
     addSpike(scene, w*0.85, h*0.28);
     addSpike(scene, w*0.91, h*0.28);
+    
+    // Burgers
+    addBurger(scene, w*0.15, h*0.10); // Near moon
+    addBurger(scene, w*0.92, h*0.73); // Below finish door
+    
     addFinish(scene, w*0.94, 80);
   }
 }
@@ -557,6 +632,83 @@ function addSpike(scene, x, y){
   spike.body.setSize(20, 24);
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
+}
+
+function addBurger(scene, x, y){
+  // Create burger using HTML Canvas (bypasses all loading issues!)
+  if (!scene.textures.exists('burgerImage')) {
+    // Create an HTML canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = 60;
+    canvas.height = 60;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw burger pixel art on canvas
+    // Top bun (darker brown - more brownish)
+    ctx.fillStyle = '#8B5A3C'; // Darker brown
+    ctx.fillRect(12, 3, 36, 3); // Very top
+    ctx.fillRect(10, 6, 40, 8); // Main top bun
+    
+    // Sesame seeds (golden/yellow - highlighted)
+    ctx.fillStyle = '#FFD700'; // Golden
+    ctx.fillRect(16, 4, 3, 3);
+    ctx.fillRect(26, 3, 3, 3);
+    ctx.fillRect(36, 4, 3, 3);
+    ctx.fillRect(42, 5, 2, 2);
+    ctx.fillRect(22, 7, 2, 2);
+    
+    // Sparkle highlights on seeds (bright white)
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(17, 4, 1, 1);
+    ctx.fillRect(27, 3, 1, 1);
+    ctx.fillRect(37, 4, 1, 1);
+    
+    // Lettuce (bright green - BIGGER than buns)
+    ctx.fillStyle = '#7FD17F';
+    ctx.fillRect(6, 14, 48, 7); // Main lettuce layer
+    ctx.fillRect(4, 16, 2, 2); // Left wavy edge
+    ctx.fillRect(54, 16, 2, 2); // Right wavy edge
+    ctx.fillRect(3, 18, 2, 2); // Extra left wave
+    ctx.fillRect(55, 18, 2, 2); // Extra right wave
+    
+    // Tomato (red - BIGGER than buns)
+    ctx.fillStyle = '#FF4444';
+    ctx.fillRect(6, 21, 48, 7); // Bigger tomato layer
+    
+    // Meat patty (dark brown - BIGGER than buns)
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(6, 28, 48, 9); // Bigger meat patty
+    
+    // Grill marks on meat (darker brown)
+    ctx.fillStyle = '#654321';
+    ctx.fillRect(12, 28, 2, 9);
+    ctx.fillRect(22, 28, 2, 9);
+    ctx.fillRect(32, 28, 2, 9);
+    ctx.fillRect(42, 28, 2, 9);
+    
+    // Bottom bun (same darker brown as top)
+    ctx.fillStyle = '#8B5A3C'; // Same darker brown
+    ctx.fillRect(10, 37, 40, 8); // Main bottom bun
+    ctx.fillRect(12, 45, 36, 3); // Very bottom (rounded)
+    
+    // Convert canvas to Phaser texture
+    scene.textures.addCanvas('burgerImage', canvas);
+    console.log('✅ Burger created using HTML Canvas!');
+  }
+  
+  const burger = burgers.create(x, y, 'burgerImage');
+  burger.setDisplaySize(60, 60);
+  burger.refreshBody();
+  
+  // Add floating/levitating animation
+  scene.tweens.add({
+    targets: burger,
+    y: y - 10, // Float up 10 pixels
+    duration: 1000, // 1 second
+    ease: 'Sine.easeInOut',
+    yoyo: true, // Return back down
+    repeat: -1 // Loop forever
+  });
 }
 
 function addFinish(scene, x, y){
@@ -657,15 +809,18 @@ function nextLevel(scene){
         // Show congratulations screen
         const congratsScreen = document.getElementById('congrats-screen');
         const finalScoreEl = document.getElementById('final-score');
+        const finalBurgerScoreEl = document.getElementById('final-burger-score');
         const hud = document.getElementById('game-hud');
         
         if(finalScoreEl) finalScoreEl.textContent = score;
+        if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
         if(hud) hud.classList.add('hidden');
         if(congratsScreen) congratsScreen.classList.add('active');
         
         // Reset for next playthrough
         levelIndex = 0;
         score = 0;
+        burgerScore = 0;
         return;
       }
       if(levelEl) levelEl.textContent='Level: '+(levelIndex+1);
