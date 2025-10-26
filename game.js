@@ -22,7 +22,7 @@ let isDying = false; // Prevent multiple death animations
 const playerConfig = { 
   hairColor: 0x3E2723, // Darker brown (was 0x5D4037)
   kimonoColor: 0xFFFFFF, // White kimono (default - matches HTML active state)
-  beltColor: 0x2196F3 // Blue belt (default - matches HTML active state)
+  beltColor: 0x1976D2 // Darker blue belt (was 0x2196F3)
 };
 
 // Phaser config
@@ -197,26 +197,84 @@ document.addEventListener('DOMContentLoaded', () => {
     // White Kimono
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale);
-    ctx.fillRect(5*scale, 23*scale, 7*scale, 13*scale);
-    ctx.fillRect(33*scale, 23*scale, 7*scale, 13*scale);
     
-    // V-neck
+    // Hand sleeves
+    ctx.fillRect(5*scale, 23*scale, 6*scale, 13*scale);
+    ctx.fillRect(34*scale, 23*scale, 6*scale, 13*scale);
+    
+    // Hands (skin tone)
+    ctx.fillStyle = '#FFDBAC';
+    ctx.fillRect(3*scale, 30*scale, 4*scale, 6*scale);
+    ctx.fillRect(38*scale, 30*scale, 4*scale, 6*scale);
+    
+    // V-neck triangle (skin showing through)
     ctx.fillStyle = '#FFDBAC';
     ctx.beginPath();
-    ctx.moveTo(22*scale, 21*scale);
-    ctx.lineTo(18*scale, 28*scale);
-    ctx.lineTo(27*scale, 28*scale);
+    ctx.moveTo(18*scale, 21*scale);
+    ctx.lineTo(27*scale, 21*scale);
+    ctx.lineTo(22.5*scale, 28*scale);
     ctx.closePath();
     ctx.fill();
     
-    // Black Belt
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
-    
-    // White judogi pants
+    // Pants (BEFORE belt endings)
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(14*scale, 39*scale, 6*scale, 10*scale);
     ctx.fillRect(25*scale, 39*scale, 6*scale, 10*scale);
+    
+    // Legs (BEFORE belt endings - behind belt)
+    ctx.fillStyle = '#FFDBAC';
+    ctx.fillRect(14*scale, 49*scale, 6*scale, 3*scale);
+    ctx.fillRect(25*scale, 49*scale, 6*scale, 3*scale);
+    
+    // Belt endings - DRAWN BEFORE knot so they appear BEHIND it
+    ctx.fillStyle = '#1976D2'; // Darker blue belt (was #2196F3)
+    // Left ending
+    ctx.beginPath();
+    ctx.moveTo(21*scale, 38*scale);
+    ctx.lineTo(18*scale, 38*scale);
+    ctx.lineTo(15*scale, 44*scale); // Back to original length
+    ctx.lineTo(18*scale, 44*scale); // Back to original length
+    ctx.closePath();
+    ctx.fill();
+    // Right ending
+    ctx.beginPath();
+    ctx.moveTo(25*scale, 38*scale);
+    ctx.lineTo(28*scale, 38*scale);
+    ctx.lineTo(31*scale, 44*scale); // Back to original length
+    ctx.lineTo(28*scale, 44*scale); // Back to original length
+    ctx.closePath();
+    ctx.fill();
+    
+    // Belt endings borders
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = scale * 0.3;
+    ctx.beginPath();
+    ctx.moveTo(21*scale, 38*scale);
+    ctx.lineTo(18*scale, 38*scale);
+    ctx.lineTo(15*scale, 44*scale);
+    ctx.lineTo(18*scale, 44*scale);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(25*scale, 38*scale);
+    ctx.lineTo(28*scale, 38*scale);
+    ctx.lineTo(31*scale, 44*scale);
+    ctx.lineTo(28*scale, 44*scale);
+    ctx.closePath();
+    ctx.stroke();
+    
+    // Blue Belt (AFTER endings)
+    ctx.fillStyle = '#1976D2'; // Darker blue belt (was #2196F3)
+    ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
+    
+    // Belt knot center (SMALLER)
+    ctx.fillRect(21.5*scale, 35*scale, 3*scale, 4*scale); // SMALLER knot (3x4)
+    
+    // Belt outline
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = scale * 0.3;
+    ctx.strokeRect(10*scale, 35*scale, 25*scale, 4*scale);
+    ctx.strokeRect(21.5*scale, 35*scale, 3*scale, 4*scale);
     
     // Legs
     ctx.fillStyle = '#FFDBAC';
@@ -556,11 +614,21 @@ function updatePreviewAvatar() {
     ctx.fillRect(13*scale, 0, 20*scale, 9*scale);
     ctx.fillRect(10*scale, 2*scale, 5*scale, 7*scale);
     ctx.fillRect(30*scale, 2*scale, 5*scale, 7*scale);
+    
+    // Hair outline
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = scale * 0.3;
+    ctx.strokeRect(13*scale, 0, 20*scale, 9*scale);
   }
   
   // Head
   ctx.fillStyle = '#FFDBAC';
   ctx.fillRect(13*scale, 7*scale, 20*scale, 14*scale);
+  
+  // Head outline (darker)
+  ctx.strokeStyle = '#D4A574';
+  ctx.lineWidth = scale;
+  ctx.strokeRect(13*scale, 7*scale, 20*scale, 14*scale);
   
   // Eyes
   ctx.fillStyle = '#FFFFFF';
@@ -592,32 +660,149 @@ function updatePreviewAvatar() {
   
   // Kimono
   ctx.fillStyle = kimonoColor;
-  ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale);
-  ctx.fillRect(5*scale, 23*scale, 7*scale, 13*scale);
-  ctx.fillRect(33*scale, 23*scale, 7*scale, 13*scale);
+  ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale); // Main body
   
-  // V-neck
+  // Kimono outline
+  ctx.strokeStyle = '#CCCCCC';
+  ctx.lineWidth = scale * 0.5;
+  ctx.strokeRect(10*scale, 21*scale, 25*scale, 18*scale);
+  
+  // V-neck - TRIANGLE AT TOP (point down)
   ctx.fillStyle = '#FFDBAC';
   ctx.beginPath();
-  ctx.moveTo(22*scale, 21*scale);
-  ctx.lineTo(18*scale, 28*scale);
-  ctx.lineTo(27*scale, 28*scale);
+  ctx.moveTo(18*scale, 21*scale); // Left top
+  ctx.lineTo(27*scale, 21*scale); // Right top
+  ctx.lineTo(22.5*scale, 28*scale); // Point down (at top of kimono)
   ctx.closePath();
   ctx.fill();
   
-  // Belt
+  // Kimono collar lines (darker outline)
+  ctx.strokeStyle = '#999999';
+  ctx.lineWidth = scale * 1.5;
+  ctx.beginPath();
+  ctx.moveTo(18*scale, 21*scale);
+  ctx.lineTo(22.5*scale, 28*scale);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(27*scale, 21*scale);
+  ctx.lineTo(22.5*scale, 28*scale);
+  ctx.stroke();
+  
+  // Hand sleeves (kimono color extending to hands)
+  ctx.fillStyle = kimonoColor;
+  ctx.fillRect(5*scale, 23*scale, 6*scale, 13*scale); // Left sleeve (raised, taller)
+  ctx.fillRect(34*scale, 23*scale, 6*scale, 13*scale); // Right sleeve (raised, taller)
+  
+  // Sleeve outlines
+  ctx.strokeStyle = '#CCCCCC';
+  ctx.lineWidth = scale * 0.5;
+  ctx.strokeRect(5*scale, 23*scale, 6*scale, 13*scale);
+  ctx.strokeRect(34*scale, 23*scale, 6*scale, 13*scale);
+  
+  // Hands (same skin tone as head) - WITHOUT ROUNDED ENDS
+  ctx.fillStyle = '#FFDBAC';
+  // Left hand
+  ctx.fillRect(3*scale, 30*scale, 4*scale, 6*scale);
+  // Right hand
+  ctx.fillRect(38*scale, 30*scale, 4*scale, 6*scale);
+  
+  // Hand outlines
+  ctx.strokeStyle = '#D4A574';
+  ctx.lineWidth = scale;
+  ctx.strokeRect(3*scale, 30*scale, 4*scale, 6*scale);
+  ctx.strokeRect(38*scale, 30*scale, 4*scale, 6*scale);
+  
+  // Belt with detailed knot
   ctx.fillStyle = beltColor;
   ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
   
-  // Pants
+  // Belt outline
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = scale * 0.3;
+  ctx.strokeRect(10*scale, 35*scale, 25*scale, 4*scale);
+  
+  // Pants (DRAWN BEFORE belt knot so knot appears on top)
   ctx.fillStyle = kimonoColor;
   ctx.fillRect(14*scale, 39*scale, 6*scale, 10*scale);
   ctx.fillRect(25*scale, 39*scale, 6*scale, 10*scale);
+  
+  // Pants outline
+  ctx.strokeStyle = '#CCCCCC';
+  ctx.lineWidth = scale * 0.5;
+  ctx.strokeRect(14*scale, 39*scale, 6*scale, 10*scale);
+  ctx.strokeRect(25*scale, 39*scale, 6*scale, 10*scale);
+  
+  // Legs (DRAWN BEFORE belt endings - behind belt)
+  ctx.fillStyle = '#FFDBAC';
+  ctx.fillRect(14*scale, 49*scale, 6*scale, 3*scale);
+  ctx.fillRect(25*scale, 49*scale, 6*scale, 3*scale);
+  
+  // Legs outline
+  ctx.strokeStyle = '#D4A574';
+  ctx.lineWidth = scale;
+  ctx.strokeRect(14*scale, 49*scale, 6*scale, 3*scale);
+  ctx.strokeRect(25*scale, 49*scale, 6*scale, 3*scale);
+  
+  // Belt endings - DRAWN BEFORE knot so they appear BEHIND it
+  // Left ending - angled LEFT (parallelogram)
+  ctx.fillStyle = beltColor;
+  ctx.beginPath();
+  ctx.moveTo(21*scale, 38*scale); // Top right (INSIDE knot)
+  ctx.lineTo(18*scale, 38*scale); // Top left (INSIDE knot)
+  ctx.lineTo(15*scale, 44*scale); // Bottom left (back to original)
+  ctx.lineTo(18*scale, 44*scale); // Bottom right (back to original)
+  ctx.closePath();
+  ctx.fill();
+  
+  // Right ending - angled RIGHT (parallelogram)
+  ctx.beginPath();
+  ctx.moveTo(25*scale, 38*scale); // Top left (INSIDE knot)
+  ctx.lineTo(28*scale, 38*scale); // Top right (INSIDE knot)
+  ctx.lineTo(31*scale, 44*scale); // Bottom right (back to original)
+  ctx.lineTo(28*scale, 44*scale); // Bottom left (back to original)
+  ctx.closePath();
+  ctx.fill();
+  
+  // Borders for endings
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = scale * 0.3; // Same as belt outline (matches main belt)
+  // Left ending border
+  ctx.beginPath();
+  ctx.moveTo(21*scale, 38*scale);
+  ctx.lineTo(18*scale, 38*scale);
+  ctx.lineTo(15*scale, 44*scale);
+  ctx.lineTo(18*scale, 44*scale);
+  ctx.closePath();
+  ctx.stroke();
+  // Right ending border
+  ctx.beginPath();
+  ctx.moveTo(25*scale, 38*scale);
+  ctx.lineTo(28*scale, 38*scale);
+  ctx.lineTo(31*scale, 44*scale);
+  ctx.lineTo(28*scale, 44*scale);
+  ctx.closePath();
+  ctx.stroke();
+  
+  // Belt knot in center - DRAWN AFTER endings so it appears ON TOP (SMALLER)
+  ctx.fillStyle = beltColor;
+  ctx.fillRect(21.5*scale, 35*scale, 3*scale, 4*scale); // SMALLER knot (3x4)
+  
+  // Knot center outline
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = scale * 0.4;
+  ctx.strokeRect(21.5*scale, 35*scale, 3*scale, 4*scale);
   
   // Legs
   ctx.fillStyle = '#FFDBAC';
   ctx.fillRect(14*scale, 49*scale, 6*scale, 3*scale);
   ctx.fillRect(25*scale, 49*scale, 6*scale, 3*scale);
+  
+  // Legs outline
+  ctx.strokeStyle = '#D4A574';
+  ctx.lineWidth = scale;
+  ctx.strokeRect(14*scale, 49*scale, 6*scale, 3*scale);
+  ctx.strokeRect(25*scale, 49*scale, 6*scale, 3*scale);
 }
 
 function preload(){
@@ -700,11 +885,19 @@ function create(){
     gfx.fillRect(13, 0, 20, 9); // Hair
     gfx.fillRect(10, 2, 5, 7); // Left hair tuft
     gfx.fillRect(30, 2, 5, 7); // Right hair tuft
+    
+    // Hair outline
+    gfx.lineStyle(1, 0x000000, 0.3);
+    gfx.strokeRect(13, 0, 20, 9);
   }
   
-  // Head (skin tone)
+  // Head (skin tone) with darker outline
   gfx.fillStyle(0xFFDBAC, 1); // Light skin
   gfx.fillRect(13, 7, 20, 14); // Head
+  
+  // Head outline
+  gfx.lineStyle(1, 0xD4A574, 1); // Darker skin outline
+  gfx.strokeRect(13, 7, 20, 14);
   
   // Eyes - realistic with white eyeballs and black pupils (moved higher)
   gfx.fillStyle(0xFFFFFF, 1); // White eyeballs
@@ -729,42 +922,121 @@ function create(){
   // Judogi top with V-neck opening (kimono)
   gfx.fillStyle(playerConfig.kimonoColor, 1);
   gfx.fillRect(10, 21, 25, 18); // Main body
-  gfx.fillRect(5, 23, 7, 13); // Left sleeve
-  gfx.fillRect(33, 23, 7, 13); // Right sleeve
   
-  // V-neck chest opening (skin showing through)
+  // Kimono outline
+  gfx.lineStyle(1, 0xCCCCCC, 0.5);
+  gfx.strokeRect(10, 21, 25, 18);
+  
+  // V-neck chest opening (skin showing through) - TRIANGLE AT TOP (point down)
   gfx.fillStyle(0xFFDBAC, 1); // Skin tone
-  gfx.fillTriangle(22, 21, 18, 28, 27, 28); // V-shaped chest opening
+  gfx.fillTriangle(18, 21, 27, 21, 22.5, 28); // Triangle at top of kimono (point at 28)
   
   // Kimono collar lines (darker outline)
-  gfx.lineStyle(1, 0xCCCCCC, 1);
+  gfx.lineStyle(1.5, 0x999999, 1);
   gfx.beginPath();
   gfx.moveTo(18, 21);
-  gfx.lineTo(22, 21);
-  gfx.lineTo(18, 28);
+  gfx.lineTo(22.5, 28);
   gfx.strokePath();
   
   gfx.beginPath();
   gfx.moveTo(27, 21);
-  gfx.lineTo(22, 21);
-  gfx.lineTo(27, 28);
+  gfx.lineTo(22.5, 28);
   gfx.strokePath();
   
-  // Belt (obi) - judo belt colors (thinner)
-  gfx.fillStyle(playerConfig.beltColor, 1);
-  gfx.fillRect(10, 35, 25, 4); // Belt across waist (thinner - 4px instead of 6px)
+  // Hand sleeves (kimono color extending to hands) - RAISED HIGHER
+  gfx.fillStyle(playerConfig.kimonoColor, 1);
+  gfx.fillRect(5, 23, 6, 13); // Left sleeve (raised from 28 to 23, height 13)
+  gfx.fillRect(34, 23, 6, 13); // Right sleeve (raised from 28 to 23, height 13)
   
-  // White judogi pants
+  // Sleeve outlines
+  gfx.lineStyle(1, 0xCCCCCC, 0.5);
+  gfx.strokeRect(5, 23, 6, 13);
+  gfx.strokeRect(34, 23, 6, 13);
+  
+  // Hands (same skin tone as head) - WITHOUT ROUNDED ENDS
+  gfx.fillStyle(0xFFDBAC, 1);
+  // Left hand
+  gfx.fillRect(3, 30, 4, 6); // Hand extending from left sleeve
+  // Right hand
+  gfx.fillRect(38, 30, 4, 6); // Hand extending from right sleeve
+  
+  // Hand outlines
+  gfx.lineStyle(1, 0xD4A574, 1);
+  gfx.strokeRect(3, 30, 4, 6);
+  gfx.strokeRect(38, 30, 4, 6);
+  
+  // Belt (obi) - judo belt colors with detailed knot
+  gfx.fillStyle(playerConfig.beltColor, 1);
+  gfx.fillRect(10, 35, 25, 4); // Belt across waist
+  
+  // White judogi pants (DRAWN BEFORE belt endings so endings appear on top)
   gfx.fillStyle(playerConfig.kimonoColor, 1);
   gfx.fillRect(14, 39, 6, 10); // Left pant leg
   gfx.fillRect(25, 39, 6, 10); // Right pant leg
   
-  // Realistic naked legs below pants (skin tone with knees)
+  // Pants outline
+  gfx.lineStyle(1, 0xCCCCCC, 0.5);
+  gfx.strokeRect(14, 39, 6, 10);
+  gfx.strokeRect(25, 39, 6, 10);
+  
+  // Realistic naked legs below pants (DRAWN BEFORE belt endings - behind belt)
   gfx.fillStyle(0xFFDBAC, 1);
   gfx.fillRect(14, 49, 6, 3); // Left lower leg (shin)
   gfx.fillRect(25, 49, 6, 3); // Right lower leg (shin)
   
-  // Bigger feet with toes for visible rotation
+  // Legs outline
+  gfx.lineStyle(1, 0xD4A574, 1);
+  gfx.strokeRect(14, 49, 6, 3);
+  gfx.strokeRect(25, 49, 6, 3);
+  
+  // Belt outline (DRAWN AFTER legs so it appears on top)
+  gfx.lineStyle(1, 0x000000, 0.3);
+  gfx.strokeRect(10, 35, 25, 4);
+  
+  // Belt endings - DRAWN BEFORE knot so they appear BEHIND it (AFTER legs)
+  // Left ending - angled LEFT (parallelogram coming from inside knot)
+  gfx.fillStyle(playerConfig.beltColor, 1);
+  gfx.fillPoints([
+    {x: 21, y: 38},  // Top right (INSIDE knot)
+    {x: 18, y: 38},  // Top left (INSIDE knot)
+    {x: 15, y: 44},  // Bottom left (back to original)
+    {x: 18, y: 44}   // Bottom right (back to original)
+  ], true);
+  
+  // Right ending - angled RIGHT (parallelogram coming from inside knot)
+  gfx.fillPoints([
+    {x: 25, y: 38},  // Top left (INSIDE knot)
+    {x: 28, y: 38},  // Top right (INSIDE knot)
+    {x: 31, y: 44},  // Bottom right (back to original)
+    {x: 28, y: 44}   // Bottom left (back to original)
+  ], true);
+  
+  // Borders for endings
+  gfx.lineStyle(1, 0x000000, 0.3); // Same as belt outline (was 0.8, 0.4)
+  // Left ending border
+  gfx.strokePoints([
+    {x: 21, y: 38},
+    {x: 18, y: 38},
+    {x: 15, y: 44},
+    {x: 18, y: 44}
+  ], true);
+  // Right ending border
+  gfx.strokePoints([
+    {x: 25, y: 38},
+    {x: 28, y: 38},
+    {x: 31, y: 44},
+    {x: 28, y: 44}
+  ], true);
+  
+  // Belt knot in center - DRAWN AFTER endings so it appears ON TOP (SMALLER + RAISED)
+  gfx.fillStyle(playerConfig.beltColor, 1);
+  gfx.fillRect(21.5, 35, 3, 4); // Knot center - SMALLER and SHORTER (was 3x6, now 3x4)
+  
+  // Knot center outline
+  gfx.lineStyle(1, 0x000000, 0.4);
+  gfx.strokeRect(21.5, 35, 3, 4);
+  
+  // Bigger feet with toes for visible rotation (DRAWN AFTER legs)
   gfx.fillStyle(0xFFDBAC, 1); // Skin tone for feet
   // Left foot (bigger with toes)
   gfx.fillRect(13, 51, 7, 4); // Foot base (bigger)
@@ -773,6 +1045,13 @@ function create(){
   // Right foot (bigger with toes)
   gfx.fillRect(25, 51, 7, 4); // Foot base (bigger)
   gfx.fillRect(30, 51, 6, 3); // Toes sticking out to the right (longer)
+  
+  // Feet outline
+  gfx.lineStyle(1, 0xD4A574, 1);
+  gfx.strokeRect(13, 51, 7, 4);
+  gfx.strokeRect(18, 51, 6, 3);
+  gfx.strokeRect(25, 51, 7, 4);
+  gfx.strokeRect(30, 51, 6, 3);
   
   gfx.generateTexture('avdeev', 45, 54);
   gfx.destroy();
