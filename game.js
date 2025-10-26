@@ -554,7 +554,17 @@ function create(){
   
   // Create Avdeev with accessories (10% smaller - 45x54 for better proportions)
   // Spawn above the platform so he stands on top of it
-  player = this.physics.add.sprite(150, h-110, null);
+  // Special spawn position for level 7 (bottom right)
+  let spawnX = 150;
+  let spawnY = h - 110;
+  
+  if(levelIndex === 6) {
+    // Level 7: Start at bottom right
+    spawnX = w * 0.92;
+    spawnY = h - 110;
+  }
+  
+  player = this.physics.add.sprite(spawnX, spawnY, null);
   player.setDisplaySize(45, 54);
   player.setBounce(0.1);
   player.setCollideWorldBounds(true);
@@ -958,24 +968,62 @@ if(level === 0){
   }
   
   if(level === 6){
-    // Level 7: Precision jumps
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.25, h*0.7, 80, 20, 0x6B9BD1);
-    addPlatform(scene, w*0.4, h*0.58, 70, 20, 0xA9C7F7);
-    addPlatform(scene, w*0.53, h*0.46, 80, 20, 0x6B9BD1);
-    addPlatform(scene, w*0.68, h*0.34, 70, 20, 0xA9C7F7);
-    addPlatform(scene, w*0.82, h*0.22, 90, 20, 0xffffff);
-    addSpike(scene, w*0.33, h*0.76);
-    addSpike(scene, w*0.47, h*0.64);
-    addSpike(scene, w*0.61, h*0.52);
-    addSpike(scene, w*0.75, h*0.4);
-    addTrampoline(scene, w*0.15, h*0.8);
+    // Level 7: CHAOS - Only moving platforms! Start: bottom right → Finish: top left
+    // Starting platform at bottom right
+    addPlatform(scene, w*0.92, h-40, 140, 20, 0xffffff);
     
-    // Burgers
-    addBurger(scene, w*0.14, h*0.12); // Near moon
-    addBurger(scene, w*0.87, h*0.78); // Below finish door
+    // CHAOTIC MOVING PLATFORMS EVERYWHERE
+    // Bottom right area (near start)
+    addMovingPlatform(scene, w*0.78, h*0.85, w*0.72, w*0.88, 2.2);
+    addMovingPlatform(scene, w*0.65, h*0.80, w*0.58, w*0.75, 1.8);
+    addSpike(scene, w*0.85, h*0.91);
     
-    addFinish(scene, w*0.9, 85);
+    // Right side moving platforms
+    addMovingPlatform(scene, w*0.88, h*0.68, w*0.82, w*0.95, 2.5);
+    addMovingPlatform(scene, w*0.75, h*0.58, w*0.68, w*0.82, 2);
+    // REMOVED SPIKE: addSpike(scene, w*0.92, h*0.64);
+    addUpsideDownSpike(scene, w*0.88, h*0.48);
+    
+    // Upper right area - burger location
+    addMovingPlatform(scene, w*0.85, h*0.42, w*0.78, w*0.92, 1.9);
+    addMovingPlatform(scene, w*0.72, h*0.32, w*0.65, w*0.80, 2.3);
+    addBurger(scene, w*0.88, h*0.18); // First burger - top right corner
+    addMovingPlatform(scene, w*0.88, h*0.25, w*0.82, w*0.95, 2);
+    addSpike(scene, w*0.78, h*0.38);
+    
+    // Middle area - chaotic crossing platforms
+    addMovingPlatform(scene, w*0.55, h*0.72, w*0.45, w*0.65, 2.8);
+    addMovingPlatform(scene, w*0.48, h*0.55, w*0.38, w*0.58, 2.4);
+    addPlatform(scene, w*0.60, h*0.60, 90, 20, 0xA9C7F7); // SAFE PLATFORM 1 - middle area
+    addMovingPlatform(scene, w*0.60, h*0.45, w*0.50, w*0.70, 2.1);
+    addSpike(scene, w*0.52, h*0.62);
+    // REMOVED SPIKE: addUpsideDownSpike(scene, w*0.58, h*0.35);
+    addMovingPlatform(scene, w*0.42, h*0.38, w*0.32, w*0.52, 2.6);
+    
+    // Left side moving platforms
+    addMovingPlatform(scene, w*0.32, h*0.68, w*0.22, w*0.42, 2.2);
+    addMovingPlatform(scene, w*0.25, h*0.52, w*0.15, w*0.35, 2);
+    addSpike(scene, w*0.28, h*0.58);
+    addMovingPlatform(scene, w*0.18, h*0.42, w*0.08, w*0.28, 1.9);
+    
+    // Bottom left area - burger location
+    addMovingPlatform(scene, w*0.22, h*0.82, w*0.12, w*0.32, 2.3);
+    addPlatform(scene, w*0.12, h*0.82, 80, 20, 0x6B9BD1); // SAFE PLATFORM 2 - near burger
+    addBurger(scene, w*0.12, h*0.75); // Second burger - bottom left corner
+    addSpike(scene, w*0.15, h*0.88);
+    addUpsideDownSpike(scene, w*0.25, h*0.68);
+    
+    // Upper left area - toward finish
+    addMovingPlatform(scene, w*0.15, h*0.28, w*0.08, w*0.25, 1.8);
+    addMovingPlatform(scene, w*0.08, h*0.18, w*0.02, w*0.18, 1.5);
+    addSpike(scene, w*0.18, h*0.34);
+    
+    // Some additional chaos in the middle
+    addMovingPlatform(scene, w*0.35, h*0.25, w*0.25, w*0.45, 2.7);
+    addUpsideDownSpike(scene, w*0.42, h*0.15);
+    
+    // Finish door at top left (no platform needed)
+    addFinish(scene, w*0.08, h*0.08);
   }
   
   if(level === 7){
@@ -1312,7 +1360,20 @@ function createDeathAnimation(scene, x, y){
 }
 
 function respawnPlayer(scene){
-  player.setPosition(150, scene.scale.height - 110);
+  const w = scene.scale.width;
+  const h = scene.scale.height;
+  
+  // Spawn at correct position based on level
+  let spawnX = 150;
+  let spawnY = h - 110;
+  
+  if(levelIndex === 6) {
+    // Level 7: Respawn at bottom right
+    spawnX = w * 0.92;
+    spawnY = h - 110;
+  }
+  
+  player.setPosition(spawnX, spawnY);
   player.setVelocity(0, 0);
   // Reset burger score to previous level completion
   burgerScore -= levelBurgerScore;
