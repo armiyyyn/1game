@@ -653,8 +653,8 @@ function create(){
       player.setVelocityY(-700);
       hasDoubleJumped = false;
     } else if(platform.isDeadly){
-      // Die on spike contact
-      respawnPlayer(this);
+      // Die on spike contact with animation
+      createDeathAnimation(this, player.x, player.y);
     }
   });
   movingPlatforms.forEach(mp => this.physics.add.collider(player, mp));
@@ -1213,6 +1213,85 @@ function createBurgerCrumbs(scene, x, y){
       onComplete: () => crumb.destroy()
     });
   }
+}
+
+function createDeathAnimation(scene, x, y){
+  // Freeze player movement
+  player.setVelocity(0, 0);
+  player.body.setAllowGravity(false);
+  player.setVisible(false);
+  
+  // Create a copy of Avdeev sprite for death animation
+  const deadAvdeev = scene.add.sprite(x, y, 'avdeev');
+  deadAvdeev.setDisplaySize(45, 54); // Keep original size
+  
+  // Fall to the right side with rotation (no size change)
+  scene.tweens.add({
+    targets: deadAvdeev,
+    x: x + 30,
+    y: y + 20,
+    angle: 90, // Rotate 90 degrees to the right
+    alpha: 0.7,
+    duration: 500,
+    ease: 'Power2',
+    onComplete: () => {
+      // Make Avdeev disappear
+      deadAvdeev.setVisible(false);
+      
+      // Create colored flying pieces based on Avdeev's customization
+      const pieceColors = [
+        0xFFFFFF, // White (always included)
+        playerConfig.kimonoColor, // Kimono color
+        playerConfig.beltColor // Belt color
+      ];
+      
+      // Add hair color if not bald
+      if(playerConfig.hairColor !== 'bald') {
+        pieceColors.push(playerConfig.hairColor);
+      }
+      
+      const numPieces = Phaser.Math.Between(15, 20);
+      for(let i = 0; i < numPieces; i++){
+        const pieceSize = Phaser.Math.Between(4, 10);
+        const color = Phaser.Utils.Array.GetRandom(pieceColors); // Random color from Avdeev's palette
+        
+        const piece = scene.add.rectangle(
+          deadAvdeev.x + Phaser.Math.Between(-20, 20), 
+          deadAvdeev.y + Phaser.Math.Between(-20, 20), 
+          pieceSize, 
+          pieceSize, 
+          color
+        );
+        scene.physics.add.existing(piece);
+        
+        // Random UPWARD velocity (negative Y = upward)
+        const velocityX = Phaser.Math.Between(-150, 150);
+        const velocityY = Phaser.Math.Between(-400, -200); // Fly upward
+        piece.body.setVelocity(velocityX, velocityY);
+        piece.body.setGravityY(0); // No gravity - pieces fly straight up
+        
+        // Rotate while flying upward and fade out
+        scene.tweens.add({
+          targets: piece,
+          angle: Phaser.Math.Between(-360, 360),
+          alpha: 0,
+          duration: 1500,
+          ease: 'Power2',
+          onComplete: () => piece.destroy()
+        });
+      }
+      
+      // Destroy dead Avdeev sprite
+      deadAvdeev.destroy();
+      
+      // Respawn after animation completes
+      scene.time.delayedCall(800, () => {
+        respawnPlayer(scene);
+        player.setVisible(true);
+        player.body.setAllowGravity(true);
+      });
+    }
+  });
 }
 
 function respawnPlayer(scene){
