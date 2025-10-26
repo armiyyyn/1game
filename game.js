@@ -17,11 +17,12 @@ let particleEmitters = [];
 let backgroundMusic = null;
 let musicEnabled = true;
 let burgers; // Group for collectible burgers
+let isDying = false; // Prevent multiple death animations
 
 const playerConfig = { 
   hairColor: 0x5D4037, // brown, red, green, or 'bald'
-  kimonoColor: 0xFFFFFF, // white or blue
-  beltColor: 0xD32F2F // white, yellow, orange, green, blue, brown, black (judo belts)
+  kimonoColor: 0x2196F3, // Blue kimono (was white 0xFFFFFF)
+  beltColor: 0x1976D2 // Blue belt (was red 0xD32F2F)
 };
 
 // Phaser config
@@ -502,6 +503,7 @@ function create(){
   hasDoubleJumped = false;
   movingPlatforms = [];
   levelBurgerScore = 0; // Reset burgers for this level attempt
+  isDying = false; // Reset death flag
   
   // Create burgers group
   burgers = this.physics.add.staticGroup();
@@ -652,8 +654,8 @@ function create(){
     if(platform.isTrampoline){
       player.setVelocityY(-700);
       hasDoubleJumped = false;
-    } else if(platform.isDeadly){
-      // Die on spike contact with animation
+    } else if(platform.isDeadly && !isDying){
+      // Die on spike contact with animation (only if not already dying)
       createDeathAnimation(this, player.x, player.y);
     }
   });
@@ -1216,6 +1218,10 @@ function createBurgerCrumbs(scene, x, y){
 }
 
 function createDeathAnimation(scene, x, y){
+  // Prevent multiple death animations
+  if(isDying) return;
+  isDying = true;
+  
   // Freeze player movement
   player.setVelocity(0, 0);
   player.body.setAllowGravity(false);
@@ -1289,6 +1295,7 @@ function createDeathAnimation(scene, x, y){
         respawnPlayer(scene);
         player.setVisible(true);
         player.body.setAllowGravity(true);
+        isDying = false; // Reset death flag after respawn
       });
     }
   });
