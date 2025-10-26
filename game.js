@@ -566,10 +566,11 @@ function create(){
   
   player = this.physics.add.sprite(spawnX, spawnY, null);
   player.setDisplaySize(45, 54);
-  player.setBounce(0.1);
+  player.setBounce(0.02); // Minimal bounce for smooth landings
   player.setCollideWorldBounds(true);
-  player.setDrag(0, 0); // No drag - instant speed
-  player.setMaxVelocity(280, 1200); // Cap at movement speed
+  player.setDrag(0, 0); // No drag - instant stop
+  player.setMaxVelocity(280, 1200);
+  player.setFriction(0, 0);
   
   // Draw Avdeev as detailed pixel boy with judogi (canvas - 45x54)
   const gfx = this.add.graphics();
@@ -1399,8 +1400,8 @@ function update(){
     }
   });
   
-  // Constant speed movement (no acceleration) - slower speed
-  const speed = 240;
+  // Direct movement - instant response, instant stop
+  const speed = 260;
   
   if(wasd.left.isDown){
     player.setVelocityX(-speed);
@@ -1417,10 +1418,11 @@ function update(){
       player.lastDirection = 'right';
     }
   } else {
+    // Stop immediately when no key is pressed
     player.setVelocityX(0);
   }
   
-  // Jump with double jump
+  // Jump with double jump - smoother jumps
   const onGround = player.body.touching.down;
   
   // Track time since leaving ground (coyote time for better double jump)
