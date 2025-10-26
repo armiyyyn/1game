@@ -21,8 +21,8 @@ let isDying = false; // Prevent multiple death animations
 
 const playerConfig = { 
   hairColor: 0x5D4037, // brown, red, green, or 'bald'
-  kimonoColor: 0x2196F3, // Blue kimono (was white 0xFFFFFF)
-  beltColor: 0x1976D2 // Blue belt (was red 0xD32F2F)
+  kimonoColor: 0xFFFFFF, // White kimono (default - matches HTML active state)
+  beltColor: 0x2196F3 // Blue belt (default - matches HTML active state)
 };
 
 // Phaser config
@@ -89,21 +89,31 @@ document.addEventListener('DOMContentLoaded', () => {
     hairBoxes.forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     const hairValue = b.dataset.hair;
-    playerConfig.hairColor = hairValue === 'bald' ? 'bald' : parseInt(hairValue.replace('#','0x'));
+    if(hairValue === 'bald') {
+      playerConfig.hairColor = 'bald';
+    } else {
+      // Convert hex string to number (e.g., "#5D4037" -> 0x5D4037)
+      playerConfig.hairColor = parseInt(hairValue.replace('#', ''), 16);
+    }
+    console.log('Hair color set to:', playerConfig.hairColor);
   }));
   
   const kimonoBoxes = document.querySelectorAll('.kimono-box');
   kimonoBoxes.forEach(b => b.addEventListener('click', () => {
     kimonoBoxes.forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    playerConfig.kimonoColor = parseInt(b.dataset.kimono.replace('#','0x'));
+    // Convert hex string to number (e.g., "#2196F3" -> 0x2196F3)
+    playerConfig.kimonoColor = parseInt(b.dataset.kimono.replace('#', ''), 16);
+    console.log('Kimono color set to:', playerConfig.kimonoColor);
   }));
   
   const beltBoxes = document.querySelectorAll('.belt-box');
   beltBoxes.forEach(b => b.addEventListener('click', () => {
     beltBoxes.forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    playerConfig.beltColor = parseInt(b.dataset.belt.replace('#','0x'));
+    // Convert hex string to number (e.g., "#1976D2" -> 0x1976D2)
+    playerConfig.beltColor = parseInt(b.dataset.belt.replace('#', ''), 16);
+    console.log('Belt color set to:', playerConfig.beltColor);
   }));
   
   // Music toggle
@@ -1109,7 +1119,7 @@ function addBurger(scene, x, y){
     ctx.fillRect(27, 3, 1, 1);
     ctx.fillRect(37, 4, 1, 1);
     
-    // Lettuce (bright green - BIGGER than buns)
+    // Lettuce (bright green - BIGGER than buns) - NOW FIRST
     ctx.fillStyle = '#7FD17F';
     ctx.fillRect(6, 14, 48, 7); // Main lettuce layer
     ctx.fillRect(4, 16, 2, 2); // Left wavy edge
@@ -1117,20 +1127,20 @@ function addBurger(scene, x, y){
     ctx.fillRect(3, 18, 2, 2); // Extra left wave
     ctx.fillRect(55, 18, 2, 2); // Extra right wave
     
-    // Tomato (red - BIGGER than buns)
-    ctx.fillStyle = '#FF4444';
-    ctx.fillRect(6, 21, 48, 7); // Bigger tomato layer
-    
-    // Meat patty (dark brown - BIGGER than buns)
+    // Meat patty (dark brown - BIGGER than buns) - NOW SECOND
     ctx.fillStyle = '#8B4513';
-    ctx.fillRect(6, 28, 48, 9); // Bigger meat patty
+    ctx.fillRect(6, 21, 48, 9); // Bigger meat patty
     
     // Grill marks on meat (darker brown)
     ctx.fillStyle = '#654321';
-    ctx.fillRect(12, 28, 2, 9);
-    ctx.fillRect(22, 28, 2, 9);
-    ctx.fillRect(32, 28, 2, 9);
-    ctx.fillRect(42, 28, 2, 9);
+    ctx.fillRect(12, 21, 2, 9);
+    ctx.fillRect(22, 21, 2, 9);
+    ctx.fillRect(32, 21, 2, 9);
+    ctx.fillRect(42, 21, 2, 9);
+    
+    // Tomato (red - BIGGER than buns) - NOW THIRD
+    ctx.fillStyle = '#FF4444';
+    ctx.fillRect(6, 30, 48, 7); // Bigger tomato layer
     
     // Bottom bun (same darker brown as top)
     ctx.fillStyle = '#8B5A3C'; // Same darker brown
