@@ -622,21 +622,22 @@ function create(){
   gfx.fillRect(14, 49, 6, 3); // Left lower leg (shin)
   gfx.fillRect(25, 49, 6, 3); // Right lower leg (shin)
   
-  // Realistic feet (full foot shape)
+  // Bigger feet with toes for visible rotation
   gfx.fillStyle(0xFFDBAC, 1); // Skin tone for feet
-  // Left foot
-  gfx.fillRect(13, 51, 7, 3); // Foot base
-  gfx.fillCircle(13, 52, 1.5); // Heel roundness
-  gfx.fillRect(17, 51, 3, 2); // Toes
+  // Left foot (bigger with toes)
+  gfx.fillRect(13, 51, 7, 4); // Foot base (bigger)
+  gfx.fillRect(18, 51, 6, 3); // Toes sticking out to the right (longer)
   
-  // Right foot
-  gfx.fillRect(25, 51, 7, 3); // Foot base
-  gfx.fillCircle(25, 52, 1.5); // Heel roundness
-  gfx.fillRect(29, 51, 3, 2); // Toes
+  // Right foot (bigger with toes)
+  gfx.fillRect(25, 51, 7, 4); // Foot base (bigger)
+  gfx.fillRect(30, 51, 6, 3); // Toes sticking out to the right (longer)
   
   gfx.generateTexture('avdeev', 45, 54);
   gfx.destroy();
   player.setTexture('avdeev');
+  
+  // Store player's last direction
+  player.lastDirection = 'right'; // Default facing right
   
   // Fix collision box so Avdeev stands properly on platforms (not sinking)
   player.body.setSize(30, 50); // Smaller collision box
@@ -835,7 +836,8 @@ if(level === 0){
     addSpike(scene, w*0.6, h*0.46);
     addSpike(scene, w*0.6, h*0.43);
     addSpike(scene, w*0.6, h*0.40);
-    
+    addSpike(scene, w*0.6, h*0.52);
+    addSpike(scene, w*0.6, h*0.55);
     // Burgers
     addBurger(scene, w*0.15, h*0.14); // Near moon
     addTrampoline(scene, w*0.8598, h*0.9);
@@ -844,7 +846,7 @@ if(level === 0){
     addFinish(scene, w*0.88, 100);
   }
    if (level  === 4){
-    // Level 5: Final challenge
+   // Level 5: Final challenge
     addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addTrampoline(scene, w*0.2, h*0.75);
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.28, w*0.42, 2.5);
@@ -858,7 +860,6 @@ if(level === 0){
     addSpike(scene, w*0.75, h*0.74);
     addSpike(scene, w*0.8, h*0.74);
     addSpike(scene, w*0.9, h*0.74);
-    addPlatform(scene, w*0.88, h*0.2, 100, 20, 0xffffff);
     
     // Burgers
     addBurger(scene, w*0.14, h*0.13); // Near moon
@@ -868,7 +869,8 @@ if(level === 0){
     addTrampoline(scene, w*0.75, h*0.75);
     addBurger(scene, w*0.90, h*0.82); // Below finish door
     
-    addFinish(scene, w*0.92, 90);
+    // Finish door higher up (reachable by jumping from moving platform)
+    addFinish(scene, w*0.94, h*0.15);
   }
   
   // Additional levels 6-10
@@ -924,6 +926,9 @@ if(level === 0){
     addUpsideDownSpike(scene, w*0.378, h*0.12);
     addUpsideDownSpike(scene, w*0.393, h*0.12);
     addUpsideDownSpike(scene, w*0.408, h*0.12);
+    
+    // Platform for finish door (important!)
+    addPlatform(scene, w*0.12, h*0.15, 80, 20, 0xffffff);
     
     // Burger on left side before finish (stays at same place)
     addBurger(scene, w*0.18, h*0.125);
@@ -1051,6 +1056,14 @@ function addTrampoline(scene, x, y){
 
 function addSpike(scene, x, y){
   const spike = scene.add.triangle(x, y, 0, 12, 10, -12, 20, 12, 0xFF0000);
+  scene.physics.add.existing(spike, true);
+  spike.body.setSize(20, 24);
+  platforms.add(spike);
+  spike.isDeadly = true; // Mark as deadly obstacle
+}
+
+function addUpsideDownSpike(scene, x, y){
+  const spike = scene.add.triangle(x, y, 0, -12, 10, 12, 20, -12, 0xFF0000);
   scene.physics.add.existing(spike, true);
   spike.body.setSize(20, 24);
   platforms.add(spike);
@@ -1226,8 +1239,18 @@ function update(){
   
   if(wasd.left.isDown){
     player.setVelocityX(-speed);
+    // Flip sprite to face left when moving left
+    if(player.lastDirection !== 'left'){
+      player.setFlipX(true);
+      player.lastDirection = 'left';
+    }
   } else if(wasd.right.isDown){
     player.setVelocityX(speed);
+    // Keep sprite facing right when moving right
+    if(player.lastDirection !== 'right'){
+      player.setFlipX(false);
+      player.lastDirection = 'right';
+    }
   } else {
     player.setVelocityX(0);
   }
