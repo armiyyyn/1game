@@ -20,7 +20,7 @@ let burgers; // Group for collectible burgers
 let isDying = false; // Prevent multiple death animations
 
 const playerConfig = { 
-  hairColor: 0x5D4037, // brown, red, green, or 'bald'
+  hairColor: 0x3E2723, // Darker brown (was 0x5D4037)
   kimonoColor: 0xFFFFFF, // White kimono (default - matches HTML active state)
   beltColor: 0x2196F3 // Blue belt (default - matches HTML active state)
 };
@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       playerConfig.hairColor = parseInt(hairValue.replace('#', ''), 16);
     }
     console.log('Hair color set to:', playerConfig.hairColor);
+    updatePreviewAvatar(); // Update live preview
   }));
   
   const kimonoBoxes = document.querySelectorAll('.kimono-box');
@@ -105,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Convert hex string to number (e.g., "#2196F3" -> 0x2196F3)
     playerConfig.kimonoColor = parseInt(b.dataset.kimono.replace('#', ''), 16);
     console.log('Kimono color set to:', playerConfig.kimonoColor);
+    updatePreviewAvatar(); // Update live preview
   }));
   
   const beltBoxes = document.querySelectorAll('.belt-box');
@@ -114,7 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Convert hex string to number (e.g., "#1976D2" -> 0x1976D2)
     playerConfig.beltColor = parseInt(b.dataset.belt.replace('#', ''), 16);
     console.log('Belt color set to:', playerConfig.beltColor);
+    updatePreviewAvatar(); // Update live preview
   }));
+  
+  // Draw initial preview avatar
+  updatePreviewAvatar();
   
   // Music toggle
   const musicToggle = document.getElementById('music-toggle');
@@ -150,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = avatarCanvas.getContext('2d');
     const scale = 3; // 3x scale for full height menu avatar
     
-    // Brown hair
-    ctx.fillStyle = '#5D4037';
+    // Darker brown hair
+    ctx.fillStyle = '#3E2723'; // Darker brown
     ctx.fillRect(13*scale, 0, 20*scale, 9*scale);
     ctx.fillRect(10*scale, 2*scale, 5*scale, 7*scale);
     ctx.fillRect(30*scale, 2*scale, 5*scale, 7*scale);
@@ -522,6 +528,97 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.fillRect(26*scale, 49*scale, 12*scale, 10*scale);
   }
 });
+
+// Function to update the live preview avatar based on selected colors
+function updatePreviewAvatar() {
+  const previewCanvas = document.getElementById('customize-preview-avatar');
+  if(!previewCanvas) return;
+  
+  const ctx = previewCanvas.getContext('2d');
+  const scale = 6; // 6x scale for big preview (270x324 canvas)
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  
+  // Convert hex color number to CSS hex string
+  function numToHex(num) {
+    if(num === 'bald') return 'bald';
+    return '#' + num.toString(16).padStart(6, '0').toUpperCase();
+  }
+  
+  const hairColor = numToHex(playerConfig.hairColor);
+  const kimonoColor = numToHex(playerConfig.kimonoColor);
+  const beltColor = numToHex(playerConfig.beltColor);
+  
+  // Hair (if not bald)
+  if(hairColor !== 'bald') {
+    ctx.fillStyle = hairColor;
+    ctx.fillRect(13*scale, 0, 20*scale, 9*scale);
+    ctx.fillRect(10*scale, 2*scale, 5*scale, 7*scale);
+    ctx.fillRect(30*scale, 2*scale, 5*scale, 7*scale);
+  }
+  
+  // Head
+  ctx.fillStyle = '#FFDBAC';
+  ctx.fillRect(13*scale, 7*scale, 20*scale, 14*scale);
+  
+  // Eyes
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(28*scale, 13*scale, 3*scale, 0, Math.PI * 2);
+  ctx.fill();
+  
+  ctx.fillStyle = '#000000';
+  ctx.beginPath();
+  ctx.arc(18*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Eyebrows
+  ctx.fillStyle = '#3E2723';
+  ctx.fillRect(16*scale, 10*scale, 5*scale, 1.5*scale);
+  ctx.fillRect(26*scale, 10*scale, 5*scale, 1.5*scale);
+  
+  // Mouth (smile)
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(19*scale, 18*scale, 8*scale, 1.5*scale);
+  ctx.fillRect(18*scale, 16.5*scale, 1.5*scale, 1.5*scale);
+  ctx.fillRect(26.5*scale, 16.5*scale, 1.5*scale, 1.5*scale);
+  
+  // Kimono
+  ctx.fillStyle = kimonoColor;
+  ctx.fillRect(10*scale, 21*scale, 25*scale, 18*scale);
+  ctx.fillRect(5*scale, 23*scale, 7*scale, 13*scale);
+  ctx.fillRect(33*scale, 23*scale, 7*scale, 13*scale);
+  
+  // V-neck
+  ctx.fillStyle = '#FFDBAC';
+  ctx.beginPath();
+  ctx.moveTo(22*scale, 21*scale);
+  ctx.lineTo(18*scale, 28*scale);
+  ctx.lineTo(27*scale, 28*scale);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Belt
+  ctx.fillStyle = beltColor;
+  ctx.fillRect(10*scale, 35*scale, 25*scale, 4*scale);
+  
+  // Pants
+  ctx.fillStyle = kimonoColor;
+  ctx.fillRect(14*scale, 39*scale, 6*scale, 10*scale);
+  ctx.fillRect(25*scale, 39*scale, 6*scale, 10*scale);
+  
+  // Legs
+  ctx.fillStyle = '#FFDBAC';
+  ctx.fillRect(14*scale, 49*scale, 6*scale, 3*scale);
+  ctx.fillRect(25*scale, 49*scale, 6*scale, 3*scale);
+}
 
 function preload(){
   // No external assets needed - burger created with graphics
