@@ -1445,7 +1445,42 @@ function update(){
       // Double jump
       player.setVelocityY(-580); // More powerful double jump
       hasDoubleJumped = true;
+      
+      // Create wind/air burst effect under feet
+      createDoubleJumpEffect(this, player.x, player.y + 25);
     }
+  }
+}
+
+function createDoubleJumpEffect(scene, x, y) {
+  // Create multiple wind/air particles bursting downward and outward
+  const numParticles = 8;
+  
+  for(let i = 0; i < numParticles; i++) {
+    const angle = (i / numParticles) * Math.PI * 2; // Spread particles in circle
+    const speed = Phaser.Math.Between(150, 250);
+    
+    // Create wind particle (white/cyan streak)
+    const particle = scene.add.rectangle(x, y, 12, 3, 0xCCFFFF, 0.9);
+    particle.setRotation(angle);
+    scene.physics.add.existing(particle);
+    
+    // Burst outward and downward
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.abs(Math.sin(angle)) * speed + 100; // Force downward
+    particle.body.setVelocity(vx, vy);
+    particle.body.setGravityY(-400); // Negative gravity to slow down
+    
+    // Fade out and shrink
+    scene.tweens.add({
+      targets: particle,
+      alpha: 0,
+      scaleX: 0.2,
+      scaleY: 0.2,
+      duration: 400,
+      ease: 'Power2',
+      onComplete: () => particle.destroy()
+    });
   }
 }
 
