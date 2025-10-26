@@ -134,14 +134,20 @@ canvas {
 
 #menu-coke {
   position: absolute;
-  left: 60%;
-  top: 58%;
+  left: 68%;
+  top: 80%;
   border-radius: 10px;
   background: transparent;
   padding: 5px;
   box-shadow: none;
   border: none;
-  animation: float 2.5s ease-in-out infinite;
+  transform: rotate(16deg);
+  animation: float-rotated 2.5s ease-in-out infinite;
+}
+
+@keyframes float-rotated {
+  0%, 100% { transform: translateY(0px) rotate(16deg); }
+  50% { transform: translateY(-15px) rotate(16deg); }
 }
 
 #menu-pizza {

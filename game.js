@@ -324,21 +324,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if(pizzaCanvas) {
     const ctx4 = pizzaCanvas.getContext('2d');
     
-    // Pizza crust (golden brown triangle)
+    // Pizza crust (golden brown triangle with rounded bottom)
     ctx4.fillStyle = '#D4A574';
     ctx4.beginPath();
-    ctx4.moveTo(50, 10);
-    ctx4.lineTo(10, 90);
-    ctx4.lineTo(90, 90);
+    ctx4.moveTo(50, 10); // Top point
+    ctx4.lineTo(10, 90); // Bottom left
+    ctx4.quadraticCurveTo(50, 100, 90, 90); // Curved bottom (rounded crust)
     ctx4.closePath();
     ctx4.fill();
     
     // Pizza sauce/cheese (yellow-orange)
     ctx4.fillStyle = '#FDB813';
     ctx4.beginPath();
-    ctx4.moveTo(50, 20);
-    ctx4.lineTo(18, 82);
-    ctx4.lineTo(82, 82);
+    ctx4.moveTo(50, 20); // Top point
+    ctx4.lineTo(18, 82); // Bottom left
+    ctx4.quadraticCurveTo(50, 90, 82, 82); // Curved bottom
     ctx4.closePath();
     ctx4.fill();
     
@@ -379,49 +379,71 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx4.stroke();
   }
   
-  // Draw Phone on main menu (2x smaller)
+  // Draw Phone on main menu (1.5x bigger, rotated 15 degrees left)
   const phoneCanvas = document.getElementById('menu-phone');
   if(phoneCanvas) {
     const ctx5 = phoneCanvas.getContext('2d');
     
-    // Phone body (black/dark gray) - scaled to 50%
+    // Clear canvas first
+    ctx5.clearRect(0, 0, phoneCanvas.width, phoneCanvas.height);
+    
+    // Save context and rotate (center the phone in canvas)
+    ctx5.save();
+    ctx5.translate(50, 55); // Center of rotation
+    ctx5.rotate(-15 * Math.PI / 180); // Rotate 15 degrees left (negative = counterclockwise)
+    ctx5.translate(-50, -55); // Move back
+    
+    // Phone body (black/dark gray) - 1.5x bigger (37.5 x 67.5)
     ctx5.fillStyle = '#212121';
-    ctx5.fillRect(5, 2.5, 25, 45);
-    ctx5.fillRect(6, 1.5, 23, 47);
+    ctx5.fillRect(20, 20, 37.5, 67.5);
+    ctx5.fillRect(21.5, 18.5, 34.5, 70.5);
     
     // Phone screen (light blue/cyan)
     ctx5.fillStyle = '#4FC3F7';
-    ctx5.fillRect(7.5, 7.5, 20, 30);
+    ctx5.fillRect(25, 28, 30, 45);
     
     // Screen icons/notifications
     ctx5.fillStyle = '#FFFFFF';
-    ctx5.fillRect(10, 10, 4, 4);
-    ctx5.fillRect(16, 10, 4, 4);
-    ctx5.fillRect(22, 10, 4, 4);
-    ctx5.fillRect(10, 17.5, 6, 6);
-    ctx5.fillRect(18, 17.5, 6, 6);
+    ctx5.fillRect(28, 32, 6, 6);
+    ctx5.fillRect(38, 32, 6, 6);
+    ctx5.fillRect(48, 32, 6, 6);
+    ctx5.fillRect(28, 42, 9, 9);
+    ctx5.fillRect(41, 42, 9, 9);
     
     // App icons (colorful)
     ctx5.fillStyle = '#FF5252';
-    ctx5.fillRect(10, 26, 5, 5);
+    ctx5.fillRect(28, 56, 7.5, 7.5);
     ctx5.fillStyle = '#4CAF50';
-    ctx5.fillRect(17, 26, 5, 5);
+    ctx5.fillRect(39, 56, 7.5, 7.5);
     ctx5.fillStyle = '#FFC107';
-    ctx5.fillRect(10, 32.5, 5, 5);
+    ctx5.fillRect(28, 65, 7.5, 7.5);
     ctx5.fillStyle = '#2196F3';
-    ctx5.fillRect(17, 32.5, 5, 5);
+    ctx5.fillRect(39, 65, 7.5, 7.5);
     
     // Home button
     ctx5.fillStyle = '#424242';
     ctx5.beginPath();
-    ctx5.arc(17.5, 42.5, 4, 0, Math.PI * 2);
+    ctx5.arc(38.75, 80, 6, 0, Math.PI * 2);
     ctx5.fill();
     
     // Camera at top
     ctx5.fillStyle = '#1565C0';
     ctx5.beginPath();
-    ctx5.arc(17.5, 5, 1.5, 0, Math.PI * 2);
+    ctx5.arc(38.75, 24, 2.25, 0, Math.PI * 2);
     ctx5.fill();
+    
+    ctx5.restore(); // Restore context
+    
+    // Add sparkle in top left corner (OUTSIDE rotation, so it stays in corner)
+    ctx5.fillStyle = '#FFFFFF';
+    ctx5.beginPath();
+    ctx5.arc(10, 7, 3, 0, Math.PI * 2);
+    ctx5.fill();
+    
+    // Sparkle rays (cross shape)
+    ctx5.fillStyle = '#FFFFFF';
+    ctx5.fillRect(9.5, 3, 1, 8); // Vertical ray
+    ctx5.fillRect(6, 6.5, 8, 1); // Horizontal ray
   }
   
   // Draw Avdeev's Dad (fat, bald, angry)
