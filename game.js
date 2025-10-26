@@ -658,7 +658,15 @@ function create(){
     }
   });
   movingPlatforms.forEach(mp => this.physics.add.collider(player, mp));
-  this.physics.add.overlap(player, finishLine, ()=>nextLevel(this));
+  
+  // Finish door collision - prevent multiple triggers
+  let levelCompleting = false;
+  this.physics.add.overlap(player, finishLine, () => {
+    if(!levelCompleting) {
+      levelCompleting = true;
+      nextLevel(this);
+    }
+  });
   
   // Burger collection
   this.physics.add.overlap(player, burgers, (player, burger) => {
