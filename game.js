@@ -1524,7 +1524,8 @@ function addTrampoline(scene, x, y){
 function addSpike(scene, x, y){
   const spike = scene.add.triangle(x, y, 0, 12, 10, -12, 20, 12, 0xFF0000);
   scene.physics.add.existing(spike, true);
-  spike.body.setSize(20, 24);
+  spike.body.setSize(1, 5); // Smaller hitbox (was 20x24, now 14x18)
+  spike.body.setOffset(1, 1); // Center the smaller hitbox on the spike
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
 }
@@ -1532,7 +1533,8 @@ function addSpike(scene, x, y){
 function addUpsideDownSpike(scene, x, y){
   const spike = scene.add.triangle(x, y, 0, -12, 10, 12, 20, -12, 0xFF0000);
   scene.physics.add.existing(spike, true);
-  spike.body.setSize(20, 24);
+  spike.body.setSize(1, 5); // Smaller hitbox (was 20x24, now 14x18)
+  spike.body.setOffset(1, 1); // Center the smaller hitbox on the spike
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
 }
@@ -1679,82 +1681,60 @@ function createDeathAnimation(scene, x, y){
   if(isDying) return;
   isDying = true;
   
-  // Freeze player movement
+  // Freeze player movement and hide immediately
   player.setVelocity(0, 0);
   player.body.setAllowGravity(false);
   player.setVisible(false);
   
-  // Create a copy of Avdeev sprite for death animation
-  const deadAvdeev = scene.add.sprite(x, y, 'avdeev');
-  deadAvdeev.setDisplaySize(45, 54); // Keep original size
+  // INSTANT EXPLOSION - No falling, no rotation, just pieces!
+  const pieceColors = [
+    0xFFFFFF, // White (always included)
+    playerConfig.kimonoColor, // Kimono color
+    playerConfig.beltColor // Belt color
+  ];
   
-  // Fall to the right side with rotation (no size change)
-  scene.tweens.add({
-    targets: deadAvdeev,
-    x: x + 30,
-    y: y + 20,
-    angle: 90, // Rotate 90 degrees to the right
-    alpha: 0.7,
-    duration: 500,
-    ease: 'Power2',
-    onComplete: () => {
-      // Make Avdeev disappear
-      deadAvdeev.setVisible(false);
-      
-      // Create colored flying pieces based on Avdeev's customization
-      const pieceColors = [
-        0xFFFFFF, // White (always included)
-        playerConfig.kimonoColor, // Kimono color
-        playerConfig.beltColor // Belt color
-      ];
-      
-      // Add hair color if not bald
-      if(playerConfig.hairColor !== 'bald') {
-        pieceColors.push(playerConfig.hairColor);
-      }
-      
-      const numPieces = Phaser.Math.Between(15, 20);
-      for(let i = 0; i < numPieces; i++){
-        const pieceSize = Phaser.Math.Between(4, 10);
-        const color = Phaser.Utils.Array.GetRandom(pieceColors); // Random color from Avdeev's palette
-        
-        const piece = scene.add.rectangle(
-          deadAvdeev.x + Phaser.Math.Between(-20, 20), 
-          deadAvdeev.y + Phaser.Math.Between(-20, 20), 
-          pieceSize, 
-          pieceSize, 
-          color
-        );
-        scene.physics.add.existing(piece);
-        
-        // Random UPWARD velocity (negative Y = upward)
-        const velocityX = Phaser.Math.Between(-150, 150);
-        const velocityY = Phaser.Math.Between(-400, -200); // Fly upward
-        piece.body.setVelocity(velocityX, velocityY);
-        piece.body.setGravityY(0); // No gravity - pieces fly straight up
-        
-        // Rotate while flying upward and fade out
-        scene.tweens.add({
-          targets: piece,
-          angle: Phaser.Math.Between(-360, 360),
-          alpha: 0,
-          duration: 1500,
-          ease: 'Power2',
-          onComplete: () => piece.destroy()
-        });
-      }
-      
-      // Destroy dead Avdeev sprite
-      deadAvdeev.destroy();
-      
-      // Respawn after animation completes
-      scene.time.delayedCall(800, () => {
-        respawnPlayer(scene);
-        player.setVisible(true);
-        player.body.setAllowGravity(true);
-        isDying = false; // Reset death flag after respawn
-      });
-    }
+  // Add hair color if not bald
+  if(playerConfig.hairColor !== 'bald') {
+    pieceColors.push(playerConfig.hairColor);
+  }
+  
+  const numPieces = Phaser.Math.Between(15, 20);
+  for(let i = 0; i < numPieces; i++){
+    const pieceSize = Phaser.Math.Between(4, 10);
+    const color = Phaser.Utils.Array.GetRandom(pieceColors);
+    
+    const piece = scene.add.rectangle(
+      x + Phaser.Math.Between(-20, 20), 
+      y + Phaser.Math.Between(-20, 20), 
+      pieceSize, 
+      pieceSize, 
+      color
+    );
+    scene.physics.add.existing(piece);
+    
+    // Random UPWARD/OUTWARD velocity (explosion effect)
+    const velocityX = Phaser.Math.Between(-150, 150);
+    const velocityY = Phaser.Math.Between(-400, -200);
+    piece.body.setVelocity(velocityX, velocityY);
+    piece.body.setGravityY(0);
+    
+    // Rotate and fade out
+    scene.tweens.add({
+      targets: piece,
+      angle: Phaser.Math.Between(-360, 360),
+      alpha: 0,
+      duration: 1500,
+      ease: 'Power2',
+      onComplete: () => piece.destroy()
+    });
+  }
+  
+  // Respawn after pieces fly away
+  scene.time.delayedCall(800, () => {
+    respawnPlayer(scene);
+    player.setVisible(true);
+    player.body.setAllowGravity(true);
+    isDying = false;
   });
 }
 
