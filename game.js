@@ -22,7 +22,8 @@ let isDying = false; // Prevent multiple death animations
 const playerConfig = { 
   hairColor: 0x3E2723, // Darker brown (was 0x5D4037)
   kimonoColor: 0xFFFFFF, // White kimono (default - matches HTML active state)
-  beltColor: 0x1976D2 // Darker blue belt (was 0x2196F3)
+  beltColor: 0x1976D2, // Darker blue belt (was 0x2196F3)
+  selectedMusicTrack: 'assets/music/background.mp3' // Default track
 };
 
 // Phaser config
@@ -45,10 +46,13 @@ function startGame() {
   levelBurgerScore = 0; // Reset level burger score
   game = new Phaser.Game(config);
   
-  // Start HTML5 audio music
+  // Start HTML5 audio music with selected track
   const audioElement = document.getElementById('background-music');
   if(audioElement && musicEnabled){
+    // Update source to selected track
+    audioElement.src = playerConfig.selectedMusicTrack;
     audioElement.volume = 0.8; // 80% volume
+    audioElement.load(); // Reload with new source
     audioElement.play().catch(e => console.log('Music autoplay blocked:', e));
   }
 }
@@ -121,6 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Draw initial preview avatar
   updatePreviewAvatar();
+  
+  // Music track selection
+  const musicTracks = document.querySelectorAll('input[name="music-track"]');
+  musicTracks.forEach(track => {
+    track.addEventListener('change', (e) => {
+      playerConfig.selectedMusicTrack = e.target.value;
+      console.log('🎵 Music track selected:', e.target.value);
+    });
+  });
   
   // Music toggle
   const musicToggle = document.getElementById('music-toggle');
@@ -806,7 +819,17 @@ function updatePreviewAvatar() {
 }
 
 function preload(){
-  // No external assets needed - burger created with graphics
+  // Load rocket image from root directory
+  this.load.image('rocket', 'rocket.png');
+  
+  // Log loading progress
+  this.load.on('complete', () => {
+    console.log('✅ All assets loaded successfully!');
+  });
+  
+  this.load.on('loaderror', (file) => {
+    console.error('❌ Error loading:', file.key, 'from', file.url);
+  });
 }
 
 function create(){
@@ -849,54 +872,6 @@ function create(){
   this.add.circle(moonX, moonY, 50, 0xe8e8e8, 1);
   this.add.circle(moonX - 10, moonY - 8, 12, 0xd0d0d0, 0.6); // crater
   this.add.circle(moonX + 8, moonY + 6, 8, 0xd0d0d0, 0.5); // crater
-  
-  // Falling meteors (red sticks with yellow circle, occasional special effects)
-  for(let i=0; i<5; i++){
-    const mx = Phaser.Math.Between(0, w);
-    const my = Phaser.Math.Between(0, h * 0.6);
-    const gfx = this.add.graphics();
-    
-    // Red stick (trail)
-    gfx.lineStyle(2, 0xFF0000, 0.7);
-    gfx.lineBetween(mx, my, mx + 30, my + 30);
-    
-    // Yellow circle at the end (meteor head)
-    gfx.fillStyle(0xFFAA00, 0.9);
-    gfx.fillCircle(mx, my, 4);
-    
-    // Occasional special effect (1 in 10-15 chance)
-    const hasSpecialEffect = Phaser.Math.Between(1, 12) === 1;
-    if(hasSpecialEffect) {
-      // Add glowing trail particles behind meteor
-      for(let j = 0; j < 5; j++) {
-        const particleX = mx + (j * 6);
-        const particleY = my + (j * 6);
-        const particle = this.add.circle(particleX, particleY, 3, 0xFFFF00, 0.8);
-        
-        // Fade out particle
-        this.tweens.add({
-          targets: particle,
-          alpha: 0,
-          scale: 0.2,
-          duration: 800,
-          delay: j * 100,
-          ease: 'Power2',
-          onComplete: () => particle.destroy()
-        });
-      }
-      
-      // Add bright flash at meteor head
-      const flash = this.add.circle(mx, my, 8, 0xFFFFFF, 0.9);
-      this.tweens.add({
-        targets: flash,
-        alpha: 0,
-        scale: 2,
-        duration: 600,
-        ease: 'Power2',
-        onComplete: () => flash.destroy()
-      });
-    }
-  }
   
   // Create platforms group
   platforms = this.physics.add.staticGroup();
@@ -1178,6 +1153,70 @@ function create(){
   
   // HUD
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
+  
+  // Show and position rocket based on level
+  const gameRocket = document.getElementById('game-rocket');
+  if(gameRocket) {
+    gameRocket.classList.add('active');
+    
+    // Position rocket based on level (where there's free space)
+    switch(levelIndex) {
+      case 0: // Level 1: Top right
+        gameRocket.style.right = '15%';
+        gameRocket.style.top = '15%';
+        gameRocket.style.left = 'auto';
+        break;
+      case 1: // Level 2: Middle right
+        gameRocket.style.right = '10%';
+        gameRocket.style.top = '45%';
+        gameRocket.style.left = 'auto';
+        break;
+      case 2: // Level 3: Top right (lots of space)
+        gameRocket.style.right = '12%';
+        gameRocket.style.top = '12%';
+        gameRocket.style.left = 'auto';
+        break;
+      case 3: // Level 4: Left side
+        gameRocket.style.left = '12%';
+        gameRocket.style.top = '35%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 4: // Level 5: Top left
+        gameRocket.style.left = '15%';
+        gameRocket.style.top = '25%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 5: // Level 6: Middle center
+        gameRocket.style.left = '50%';
+        gameRocket.style.top = '50%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 6: // Level 7: Top center
+        gameRocket.style.left = '50%';
+        gameRocket.style.top = '15%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 7: // Level 8: Bottom left
+        gameRocket.style.left = '15%';
+        gameRocket.style.top = '70%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 8: // Level 9: Top left
+        gameRocket.style.left = '12%';
+        gameRocket.style.top = '20%';
+        gameRocket.style.right = 'auto';
+        break;
+      case 9: // Level 10: Middle left
+        gameRocket.style.left = '15%';
+        gameRocket.style.top = '45%';
+        gameRocket.style.right = 'auto';
+        break;
+      default:
+        gameRocket.style.right = '12%';
+        gameRocket.style.top = '50%';
+        gameRocket.style.left = 'auto';
+    }
+  }
   
   // Add help sign on level 1 only - positioned at left corner
   if(levelIndex === 0){
@@ -1586,8 +1625,8 @@ function addTrampoline(scene, x, y){
 function addSpike(scene, x, y){
   const spike = scene.add.triangle(x, y, 0, 12, 10, -12, 20, 12, 0xFF0000);
   scene.physics.add.existing(spike, true);
-  spike.body.setSize(1, 5); // Smaller hitbox (was 20x24, now 14x18)
-  spike.body.setOffset(1, 1); // Center the smaller hitbox on the spike
+  spike.body.setSize(20, 24); // Full hitbox - matches visual size
+  spike.body.setOffset(0, 0); // No offset - covers entire spike
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
 }
@@ -1595,8 +1634,8 @@ function addSpike(scene, x, y){
 function addUpsideDownSpike(scene, x, y){
   const spike = scene.add.triangle(x, y, 0, -12, 10, 12, 20, -12, 0xFF0000);
   scene.physics.add.existing(spike, true);
-  spike.body.setSize(1, 5); // Smaller hitbox (was 20x24, now 14x18)
-  spike.body.setOffset(1, 1); // Center the smaller hitbox on the spike
+  spike.body.setSize(20, 24); // Full hitbox - matches visual size
+  spike.body.setOffset(0, 0); // No offset - covers entire spike
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
 }
@@ -1953,6 +1992,10 @@ function showCongratsScreen() {
   const congratsScreen = document.getElementById('congrats-screen');
   const finalBurgerScoreEl = document.getElementById('final-burger-score');
   const hud = document.getElementById('game-hud');
+  const gameRocket = document.getElementById('game-rocket');
+  
+  // Hide rocket on congrats screen
+  if(gameRocket) gameRocket.classList.remove('active');
   
   if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
   if(hud) hud.classList.add('hidden');

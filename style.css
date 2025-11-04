@@ -31,6 +31,34 @@ canvas {
   display: block;
 }
 
+/* Rocket overlay on game levels - ALWAYS VISIBLE */
+.game-rocket-overlay {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  width: 120px;
+  opacity: 0.8;
+  transform: translateY(-50%) rotate(-15deg);
+  pointer-events: none;
+  z-index: 5;
+  display: none; /* Hidden by default, shown during gameplay */
+  animation: rocketBob 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.game-rocket-overlay.active {
+  display: block;
+}
+
+@keyframes rocketBob {
+  0%, 100% { 
+    transform: translateY(-50%) rotate(-15deg); 
+  }
+  50% { 
+    transform: translateY(calc(-50% - 20px)) rotate(-15deg); 
+  }
+}
+
 /* Animated Background Particles */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -359,14 +387,16 @@ canvas {
   align-items: flex-start;
   justify-content: center;
   width: min(1200px, 95vw);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   position: relative;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .customize-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   width: min(500px, 50vw);
 }
 
@@ -401,16 +431,16 @@ canvas {
 
 .customization-section {
   background: rgba(255, 255, 255, 0.08);
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #FFE66D;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -477,6 +507,60 @@ canvas {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.95rem;
+}
+
+/* Music Selection */
+.music-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.music-item {
+  position: relative;
+}
+
+.music-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.music-label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.music-label:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 230, 109, 0.3);
+}
+
+.music-item input[type="radio"]:checked + .music-label {
+  background: rgba(108, 92, 231, 0.2);
+  border-color: #FFE66D;
+  box-shadow: 0 0 20px rgba(255, 230, 109, 0.3);
+}
+
+.music-icon {
+  font-size: 1.3rem;
+}
+
+.music-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.music-item input[type="radio"]:checked + .music-label .music-name {
+  color: #FFE66D;
 }
 
 /* HUD */

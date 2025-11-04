@@ -14,6 +14,9 @@
   </audio>
   
   <div id="game-container">
+    <!-- ROCKET IMAGE OVERLAY - Always visible on game screen -->
+    <img src="rocket.png" id="game-rocket" alt="Rocket" class="game-rocket-overlay">
+    
     <!-- Main Menu -->
     <div id="main-menu" class="menu-screen active">
       <h1 class="game-title">Avdeev's Universe</h1>
@@ -29,6 +32,9 @@
         <canvas id="menu-pizza" width="100" height="100"></canvas>
         <canvas id="menu-phone" width="100" height="120"></canvas>
         <canvas id="avdeev-dad" width="150" height="180"></canvas>
+        
+        <!-- Rocket image - bigger, brighter, at top 10% -->
+        <img src="rocket.png" id="menu-rocket" alt="Rocket" style="position: absolute; left: 30%; top: 10%; width: 140px; opacity: 1; filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.5)); transform: rotate(-15deg); pointer-events: none; animation: float 3s ease-in-out infinite; z-index: 5;">
         
         <!-- Speech bubble for Dad -->
         <svg class="dad-speech-bubble" width="150" height="180" viewBox="0 0 150 180">
@@ -139,12 +145,32 @@
               <div class="belt-item">
                 <div class="belt-rank">Master</div>
                 <div class="color-box belt-box" data-belt="#D32F2F" style="background:#D32F2F" title="Red Belt"></div>
-              </div>
+              </div>          </div>
+        </div>
+        
+        <!-- Music Selection Section -->
+        <div class="customization-section">
+          <div class="section-title">🎵 Choose Background Music</div>
+          <div class="music-options">
+            <div class="music-item">
+              <input type="radio" id="music-track-1" name="music-track" value="assets/music/background.mp3" checked>
+              <label for="music-track-1" class="music-label">
+                <span class="music-icon">🎵</span>
+                <span class="music-name">Space Voyage</span>
+              </label>
+            </div>
+            <div class="music-item">
+              <input type="radio" id="music-track-2" name="music-track" value="assets/music/slave.mp3">
+              <label for="music-track-2" class="music-label">
+                <span class="music-icon">🎶</span>
+                <span class="music-name">Slave Theme</span>
+              </label>
             </div>
           </div>
         </div>
-        
-        <!-- Right side: Live Avdeev preview -->
+      </div>
+      
+      <!-- Right side: Live Avdeev preview -->
         <div class="customize-preview">
           <canvas id="customize-preview-avatar" width="270" height="324"></canvas>
         </div>
