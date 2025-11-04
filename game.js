@@ -1230,37 +1230,32 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
-   // Level 8: TRAMPOLINE CHAOS - Only 7 trampolines and fewer spikes
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // ONLY starting platform
+ // Level 1: Basic platforming
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
+    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
+    addTrampoline(scene, w*0.2, h*0.55); // Trampoline on left side
     
-    // ONLY 7 TRAMPOLINES - strategically placed
-    addTrampoline(scene, w*0.30, h*0.85); // Bottom left
-    addTrampoline(scene, w*0.50, h*0.70); // Middle-low center
-    addTrampoline(scene, w*0.70, h*0.85); // Bottom right
-    addTrampoline(scene, w*0.25, h*0.55); // Middle left
-    addTrampoline(scene, w*0.75, h*0.55); // Middle right
-    addTrampoline(scene, w*0.45, h*0.35); // Upper-middle left
-    addTrampoline(scene, w*0.85, h*0.25); // Top right (near finish)
+    // Middle platform to help reach finish
+    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x6B9BD1); // Blue platform between trampoline and finish
     
-    // FEWER SPIKES - only 8 total for strategic placement
-    addSpike(scene, w*0.40, h*0.90);
-    addSpike(scene, w*0.60, h*0.90);
+    addSpike(scene, w*0.37, h*0.75);
+    addSpike(scene, w*0.38, h*0.72);
+    addSpike(scene, w*0.39, h*0.69);
+    addSpike(scene, w*0.40, h*0.66);
+    addSpike(scene, w*0.41, h*0.63);
+    addSpike(scene, w*0.42, h*0.6);
+    addSpike(scene, w*0.43, h*0.57);
+    addSpike(scene, w*0.44, h*0.54);
+    addSpike(scene, w*0.45, h*0.51);
     
-    addSpike(scene, w*0.35, h*0.70);
-    addSpike(scene, w*0.65, h*0.70);
+    // Burgers (no additional platforms - you'll add them later)
+    addBurger(scene, w*0.15, h*0.16); // Near moon
+    addBurger(scene, w*0.88, h*0.88); // Below finish door
     
-    addSpike(scene, w*0.50, h*0.50);
+    // Trampolines under burgers
+    addTrampoline(scene, w*0.88, h*0.92); // Trampoline under burger 2
     
-    addUpsideDownSpike(scene, w*0.40, h*0.40);
-    addUpsideDownSpike(scene, w*0.60, h*0.40);
-    addUpsideDownSpike(scene, w*0.70, h*0.20);
-    
-    // Burgers
-    addBurger(scene, w*0.50, h*0.76); // Near moon
-    addBurger(scene, w*0.90, h*0.85); // Bottom right
-    
-    // Finish door at top right
-    addFinish(scene, w*0.92, h*0.08);
+    addFinish(scene, w*0.9, h*0.25); // Finish door at top righ
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1497,15 +1492,17 @@ if(level === 0){
     
     addSpike(scene, w*0.35, h*0.70);
     addSpike(scene, w*0.65, h*0.70);
-    
-    addSpike(scene, w*0.50, h*0.50);
+
+    addUpsideDownSpike(scene, w*0.485, h*0.64);
+    addUpsideDownSpike(scene, w*0.50, h*0.64);
+    addUpsideDownSpike(scene, w*0.515, h*0.64);
     
     addUpsideDownSpike(scene, w*0.40, h*0.40);
     addUpsideDownSpike(scene, w*0.60, h*0.40);
     addUpsideDownSpike(scene, w*0.70, h*0.20);
     
     // Burgers
-    addBurger(scene, w*0.15, h*0.12); // Near moon
+    addBurger(scene, w*0.50, h*0.76); // Near moon
     addBurger(scene, w*0.90, h*0.85); // Bottom right
     
     // Finish door at top right
