@@ -822,15 +822,26 @@ function create(){
   // Create burgers group
   burgers = this.physics.add.staticGroup();
   
-  // Enhanced background
+  // Enhanced background with levitating stars and falling meteors
   this.add.rectangle(w/2, h/2, w, h, 0x1b1336);
   
-  // Stars
+  // Levitating stars (white dots that float up and down)
   for(let i=0; i<200; i++){
     const x = Phaser.Math.Between(0, w);
     const y = Phaser.Math.Between(0, h);
     const size = Phaser.Math.Between(1, 3);
-    this.add.circle(x, y, size, 0xffffff, Phaser.Math.FloatBetween(0.3, 0.9));
+    const star = this.add.circle(x, y, size, 0xffffff, Phaser.Math.FloatBetween(0.3, 0.9));
+    
+    // Add levitating animation (slow floating up and down)
+    this.tweens.add({
+      targets: star,
+      y: y + Phaser.Math.Between(-15, 15), // Float up/down 15 pixels
+      duration: Phaser.Math.Between(2000, 4000), // 2-4 seconds
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+      delay: Phaser.Math.Between(0, 2000) // Random delay for variety
+    });
   }
   
   // Glowing moon in corner (top left, away from finish)
@@ -839,15 +850,52 @@ function create(){
   this.add.circle(moonX - 10, moonY - 8, 12, 0xd0d0d0, 0.6); // crater
   this.add.circle(moonX + 8, moonY + 6, 8, 0xd0d0d0, 0.5); // crater
   
-  // Falling meteorites
+  // Falling meteors (red sticks with yellow circle, occasional special effects)
   for(let i=0; i<5; i++){
     const mx = Phaser.Math.Between(0, w);
     const my = Phaser.Math.Between(0, h * 0.6);
     const gfx = this.add.graphics();
-    gfx.lineStyle(2, 0xff6b6b, 0.7);
+    
+    // Red stick (trail)
+    gfx.lineStyle(2, 0xFF0000, 0.7);
     gfx.lineBetween(mx, my, mx + 30, my + 30);
-    gfx.fillStyle(0xffaa00, 0.9);
+    
+    // Yellow circle at the end (meteor head)
+    gfx.fillStyle(0xFFAA00, 0.9);
     gfx.fillCircle(mx, my, 4);
+    
+    // Occasional special effect (1 in 10-15 chance)
+    const hasSpecialEffect = Phaser.Math.Between(1, 12) === 1;
+    if(hasSpecialEffect) {
+      // Add glowing trail particles behind meteor
+      for(let j = 0; j < 5; j++) {
+        const particleX = mx + (j * 6);
+        const particleY = my + (j * 6);
+        const particle = this.add.circle(particleX, particleY, 3, 0xFFFF00, 0.8);
+        
+        // Fade out particle
+        this.tweens.add({
+          targets: particle,
+          alpha: 0,
+          scale: 0.2,
+          duration: 800,
+          delay: j * 100,
+          ease: 'Power2',
+          onComplete: () => particle.destroy()
+        });
+      }
+      
+      // Add bright flash at meteor head
+      const flash = this.add.circle(mx, my, 8, 0xFFFFFF, 0.9);
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        scale: 2,
+        duration: 600,
+        ease: 'Power2',
+        onComplete: () => flash.destroy()
+      });
+    }
   }
   
   // Create platforms group
@@ -1182,32 +1230,37 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
- // Level 1: Basic platforming
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
-    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
-    addTrampoline(scene, w*0.2, h*0.55); // Trampoline on left side
+   // Level 8: TRAMPOLINE CHAOS - Only 7 trampolines and fewer spikes
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // ONLY starting platform
     
-    // Middle platform to help reach finish
-    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x6B9BD1); // Blue platform between trampoline and finish
+    // ONLY 7 TRAMPOLINES - strategically placed
+    addTrampoline(scene, w*0.30, h*0.85); // Bottom left
+    addTrampoline(scene, w*0.50, h*0.70); // Middle-low center
+    addTrampoline(scene, w*0.70, h*0.85); // Bottom right
+    addTrampoline(scene, w*0.25, h*0.55); // Middle left
+    addTrampoline(scene, w*0.75, h*0.55); // Middle right
+    addTrampoline(scene, w*0.45, h*0.35); // Upper-middle left
+    addTrampoline(scene, w*0.85, h*0.25); // Top right (near finish)
     
-    addSpike(scene, w*0.37, h*0.75);
-    addSpike(scene, w*0.38, h*0.72);
-    addSpike(scene, w*0.39, h*0.69);
-    addSpike(scene, w*0.40, h*0.66);
-    addSpike(scene, w*0.41, h*0.63);
-    addSpike(scene, w*0.42, h*0.6);
-    addSpike(scene, w*0.43, h*0.57);
-    addSpike(scene, w*0.44, h*0.54);
-    addSpike(scene, w*0.45, h*0.51);
+    // FEWER SPIKES - only 8 total for strategic placement
+    addSpike(scene, w*0.40, h*0.90);
+    addSpike(scene, w*0.60, h*0.90);
     
-    // Burgers (no additional platforms - you'll add them later)
-    addBurger(scene, w*0.15, h*0.16); // Near moon
-    addBurger(scene, w*0.88, h*0.88); // Below finish door
+    addSpike(scene, w*0.35, h*0.70);
+    addSpike(scene, w*0.65, h*0.70);
     
-    // Trampolines under burgers
-    addTrampoline(scene, w*0.88, h*0.92); // Trampoline under burger 2
+    addSpike(scene, w*0.50, h*0.50);
     
-    addFinish(scene, w*0.9, h*0.25); // Finish door at top righ
+    addUpsideDownSpike(scene, w*0.40, h*0.40);
+    addUpsideDownSpike(scene, w*0.60, h*0.40);
+    addUpsideDownSpike(scene, w*0.70, h*0.20);
+    
+    // Burgers
+    addBurger(scene, w*0.50, h*0.76); // Near moon
+    addBurger(scene, w*0.90, h*0.85); // Bottom right
+    
+    // Finish door at top right
+    addFinish(scene, w*0.92, h*0.08);
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1426,25 +1479,37 @@ if(level === 0){
   }
   
   if(level === 7){
-    // Level 8: Moving maze
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addMovingPlatform(scene, w*0.25, h*0.7, w*0.2, w*0.35, 2);
-    addPlatform(scene, w*0.42, h*0.58, 90, 20, 0xA9C7F7);
-    addMovingPlatform(scene, w*0.55, h*0.45, w*0.48, w*0.62, 2.5);
-    addPlatform(scene, w*0.7, h*0.32, 85, 20, 0x6B9BD1);
-    addMovingPlatform(scene, w*0.82, h*0.22, w*0.78, w*0.88, 2);
-    addSpike(scene, w*0.32, h*0.76);
-    addSpike(scene, w*0.38, h*0.76);
-    addSpike(scene, w*0.5, h*0.64);
-    addSpike(scene, w*0.63, h*0.51);
-    addSpike(scene, w*0.77, h*0.38);
-    addTrampoline(scene, w*0.35, h*0.68);
+    // Level 8: TRAMPOLINE CHAOS - Only 7 trampolines and fewer spikes
+    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // ONLY starting platform
+    
+    // ONLY 7 TRAMPOLINES - strategically placed
+    addTrampoline(scene, w*0.30, h*0.85); // Bottom left
+    addTrampoline(scene, w*0.50, h*0.70); // Middle-low center
+    addTrampoline(scene, w*0.70, h*0.85); // Bottom right
+    addTrampoline(scene, w*0.25, h*0.55); // Middle left
+    addTrampoline(scene, w*0.75, h*0.55); // Middle right
+    addTrampoline(scene, w*0.45, h*0.35); // Upper-middle left
+    addTrampoline(scene, w*0.85, h*0.25); // Top right (near finish)
+    
+    // FEWER SPIKES - only 8 total for strategic placement
+    addSpike(scene, w*0.40, h*0.90);
+    addSpike(scene, w*0.60, h*0.90);
+    
+    addSpike(scene, w*0.35, h*0.70);
+    addSpike(scene, w*0.65, h*0.70);
+    
+    addSpike(scene, w*0.50, h*0.50);
+    
+    addUpsideDownSpike(scene, w*0.40, h*0.40);
+    addUpsideDownSpike(scene, w*0.60, h*0.40);
+    addUpsideDownSpike(scene, w*0.70, h*0.20);
     
     // Burgers
-    addBurger(scene, w*0.15, h*0.14); // Near moon
-    addBurger(scene, w*0.88, h*0.76); // Below finish door
+    addBurger(scene, w*0.15, h*0.12); // Near moon
+    addBurger(scene, w*0.90, h*0.85); // Bottom right
     
-    addFinish(scene, w*0.92, 80);
+    // Finish door at top right
+    addFinish(scene, w*0.92, h*0.08);
   }
   
   if(level === 8){
