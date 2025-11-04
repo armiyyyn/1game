@@ -32,7 +32,7 @@ const config = {
   width: GAME.width(),
   height: GAME.height(),
   parent: 'game-container',
-  backgroundColor: '#0d0a1a',
+  transparent: true, // Make Phaser canvas transparent
   physics: { default: 'arcade', arcade: { gravity: { y: 1200 }, debug: false } },
   scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: { preload, create, update }
@@ -822,6 +822,9 @@ function preload(){
   // Load rocket image from root directory
   this.load.image('rocket', 'rocket.png');
   
+  // Load background image
+  this.load.image('background', 'space.png');
+  
   // Log loading progress
   this.load.on('complete', () => {
     console.log('✅ All assets loaded successfully!');
@@ -845,33 +848,8 @@ function create(){
   // Create burgers group
   burgers = this.physics.add.staticGroup();
   
-  // Enhanced background with levitating stars and falling meteors
-  this.add.rectangle(w/2, h/2, w, h, 0x1b1336);
-  
-  // Levitating stars (white dots that float up and down)
-  for(let i=0; i<200; i++){
-    const x = Phaser.Math.Between(0, w);
-    const y = Phaser.Math.Between(0, h);
-    const size = Phaser.Math.Between(1, 3);
-    const star = this.add.circle(x, y, size, 0xffffff, Phaser.Math.FloatBetween(0.3, 0.9));
-    
-    // Add levitating animation (slow floating up and down)
-    this.tweens.add({
-      targets: star,
-      y: y + Phaser.Math.Between(-15, 15), // Float up/down 15 pixels
-      duration: Phaser.Math.Between(2000, 4000), // 2-4 seconds
-      ease: 'Sine.easeInOut',
-      yoyo: true,
-      repeat: -1,
-      delay: Phaser.Math.Between(0, 2000) // Random delay for variety
-    });
-  }
-  
-  // Glowing moon in corner (top left, away from finish)
-  const moonX = w * 0.15, moonY = h * 0.12;
-  this.add.circle(moonX, moonY, 50, 0xe8e8e8, 1);
-  this.add.circle(moonX - 10, moonY - 8, 12, 0xd0d0d0, 0.6); // crater
-  this.add.circle(moonX + 8, moonY + 6, 8, 0xd0d0d0, 0.5); // crater
+  // No Phaser background - using HTML/CSS layer instead
+  console.log('🌌 Using HTML space.png background');
   
   // Create platforms group
   platforms = this.physics.add.staticGroup();
@@ -1156,6 +1134,14 @@ function create(){
   
   // Show and position rocket based on level
   const gameRocket = document.getElementById('game-rocket');
+  const spaceBackground = document.getElementById('space-background');
+  
+  // Show space background during gameplay
+  if(spaceBackground) {
+    spaceBackground.classList.add('active');
+    console.log('✅ Space background activated');
+  }
+  
   if(gameRocket) {
     gameRocket.classList.add('active');
     
@@ -1993,9 +1979,11 @@ function showCongratsScreen() {
   const finalBurgerScoreEl = document.getElementById('final-burger-score');
   const hud = document.getElementById('game-hud');
   const gameRocket = document.getElementById('game-rocket');
+  const spaceBackground = document.getElementById('space-background');
   
-  // Hide rocket on congrats screen
+  // Hide rocket and space background on congrats screen
   if(gameRocket) gameRocket.classList.remove('active');
+  if(spaceBackground) spaceBackground.classList.remove('active');
   
   if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
   if(hud) hud.classList.add('hidden');

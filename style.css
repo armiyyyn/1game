@@ -29,6 +29,22 @@ canvas {
   inset: 0;
   z-index: 1;
   display: block;
+  background: transparent !important;
+}
+
+/* Space background layer - Behind canvas during gameplay */
+.space-background-layer {
+  position: absolute;
+  inset: 0;
+  background: url('space.png') center/cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  display: none; /* Hidden by default, shown during gameplay */
+}
+
+.space-background-layer.active {
+  display: block;
 }
 
 /* Rocket overlay on game levels - ALWAYS VISIBLE */
