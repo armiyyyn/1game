@@ -1079,7 +1079,16 @@ function create(){
       createDeathAnimation(this, player.x, player.y);
     }
   });
-  movingPlatforms.forEach(mp => this.physics.add.collider(player, mp));
+  
+  // Moving platform collisions with proper blocking from all sides
+  movingPlatforms.forEach(mp => {
+    const collider = this.physics.add.collider(player, mp, null, null, this);
+    // Enable collision on all sides
+    mp.body.checkCollision.up = true;
+    mp.body.checkCollision.down = true;
+    mp.body.checkCollision.left = true;
+    mp.body.checkCollision.right = true;
+  });
   
   // Finish door collision - prevent multiple triggers
   let levelCompleting = false;
@@ -1580,10 +1589,16 @@ function addMovingPlatform(scene, x, y, minX, maxX, speed){
   mp.setDisplaySize(52, 20); // 52px width, 20px height
   mp.body.setAllowGravity(false);
   mp.body.setImmovable(true);
+  mp.body.pushable = false; // Cannot be pushed by player
+  mp.body.moves = true; // Allow platform to move
   mp.moveMin = minX;
   mp.moveMax = maxX;
   mp.moveSpeed = speed;
   mp.moveDir = 1;
+  
+  // Set collision box to match visual size exactly
+  mp.body.setSize(52, 20);
+  mp.body.setOffset(0, 0);
   
   // Draw dark grey rectangle (create texture if not exists)
   if (!scene.textures.exists('movingPlatformGrey')) {
@@ -1854,9 +1869,12 @@ function update(){
     return;
   }
   
-  // Move moving platforms
+  // Move moving platforms using velocity for proper physics collision
   movingPlatforms.forEach(mp => {
+    // Move platform by updating position directly
     mp.x += mp.moveSpeed * mp.moveDir;
+    
+    // Check boundaries and reverse direction
     if(mp.x >= mp.moveMax || mp.x <= mp.moveMin){
       mp.moveDir *= -1;
     }

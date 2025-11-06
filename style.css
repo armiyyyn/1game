@@ -90,8 +90,9 @@ canvas {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(15, 12, 41, 0.95), rgba(48, 43, 99, 0.95));
-  backdrop-filter: blur(10px);
+  background: url('space.png') center/cover no-repeat;
+  background-size: cover;
+  background-position: center;
   animation: fadeIn 0.3s ease;
 }
 
