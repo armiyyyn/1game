@@ -407,6 +407,7 @@ canvas {
   position: relative;
   max-height: 70vh;
   overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .customize-content {
@@ -419,7 +420,7 @@ canvas {
 .customize-preview {
   position: absolute;
   top: 15%;
-  left: 80%;
+  left: 73%; /* Moved 7% to the left (was 80%) */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -790,4 +791,61 @@ canvas {
   .congrats-message {
     font-size: 1.2rem;
   }
+}
+
+/* Game ice cream overlay */
+.game-icecream-overlay {
+  position: absolute;
+  width: 100px;
+  opacity: 0;
+  filter: brightness(1.1) drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  transform: rotate(10deg);
+  pointer-events: none;
+  animation: float 3.5s ease-in-out infinite;
+  z-index: 3;
+  transition: opacity 0.5s ease-in-out;
+  display: none;
+}
+
+.game-icecream-overlay.active {
+  opacity: 0.9;
+  display: block;
+}
+
+/* Game lemon overlay */
+.game-lemon-overlay {
+  position: absolute;
+  width: 90px;
+  opacity: 0;
+  filter: brightness(1.1) drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  transform: rotate(-8deg);
+  pointer-events: none;
+  animation: float 3.2s ease-in-out infinite;
+  z-index: 3;
+  transition: opacity 0.5s ease-in-out;
+  display: none;
+}
+
+.game-lemon-overlay.active {
+  opacity: 0.9;
+  display: block;
+}
+
+/* Game among us overlay */
+.game-amongus-overlay {
+  position: absolute;
+  width: 110px;
+  opacity: 0;
+  filter: brightness(1.1) drop-shadow(0 0 8px rgba(255,255,255,0.4));
+  transform: rotate(5deg);
+  pointer-events: none;
+  animation: float 3.8s ease-in-out infinite;
+  z-index: 3;
+  transition: opacity 0.5s ease-in-out;
+  display: none;
+}
+
+.game-amongus-overlay.active {
+  opacity: 0.9;
+  display: block;
 }

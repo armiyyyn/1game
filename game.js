@@ -1112,7 +1112,7 @@ function create(){
   for(let i = 0; i < numSpikes; i++){
     const sx = i * spikeWidth;
     const spikeGfx = this.add.graphics();
-    spikeGfx.fillStyle(0xFF0000, 1);
+    spikeGfx.fillStyle(0x8B0000, 1); // Dark red (same as other spikes)
     spikeGfx.fillTriangle(sx, h, sx + 15, h - 20, sx + 30, h);
     
     const floorSpike = this.add.rectangle(sx + 15, spikeFloorY, 30, 30, 0xFF0000, 0);
@@ -1134,6 +1134,7 @@ function create(){
   
   // Show and position rocket based on level
   const gameRocket = document.getElementById('game-rocket');
+  const gameAmongus = document.getElementById('game-amongus');
   const spaceBackground = document.getElementById('space-background');
   
   // Show space background during gameplay
@@ -1142,66 +1143,52 @@ function create(){
     console.log('✅ Space background activated');
   }
   
-  if(gameRocket) {
-    gameRocket.classList.add('active');
-    
-    // Position rocket based on level (where there's free space)
-    switch(levelIndex) {
-      case 0: // Level 1: Top right
-        gameRocket.style.right = '15%';
-        gameRocket.style.top = '15%';
-        gameRocket.style.left = 'auto';
-        break;
-      case 1: // Level 2: Middle right
-        gameRocket.style.right = '10%';
-        gameRocket.style.top = '45%';
-        gameRocket.style.left = 'auto';
-        break;
-      case 2: // Level 3: Top right (lots of space)
-        gameRocket.style.right = '12%';
-        gameRocket.style.top = '12%';
-        gameRocket.style.left = 'auto';
-        break;
-      case 3: // Level 4: Left side
-        gameRocket.style.left = '12%';
-        gameRocket.style.top = '35%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 4: // Level 5: Top left
-        gameRocket.style.left = '15%';
-        gameRocket.style.top = '25%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 5: // Level 6: Middle center
-        gameRocket.style.left = '50%';
-        gameRocket.style.top = '50%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 6: // Level 7: Top center
-        gameRocket.style.left = '50%';
-        gameRocket.style.top = '15%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 7: // Level 8: Bottom left
-        gameRocket.style.left = '15%';
-        gameRocket.style.top = '70%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 8: // Level 9: Top left
-        gameRocket.style.left = '12%';
-        gameRocket.style.top = '20%';
-        gameRocket.style.right = 'auto';
-        break;
-      case 9: // Level 10: Middle left
-        gameRocket.style.left = '15%';
-        gameRocket.style.top = '45%';
-        gameRocket.style.right = 'auto';
-        break;
-      default:
-        gameRocket.style.right = '12%';
-        gameRocket.style.top = '50%';
-        gameRocket.style.left = 'auto';
-    }
+  // Position decorative images based on level
+  if(gameRocket) gameRocket.classList.add('active');
+  if(gameAmongus) gameAmongus.classList.add('active');
+  
+  // Position all images for each level
+  switch(levelIndex) {
+    case 0: // Level 1
+      if(gameRocket) { gameRocket.style.left = '75%'; gameRocket.style.top = '20%'; }
+      if(gameAmongus) { gameAmongus.style.left = '60%'; gameAmongus.style.top = '70%'; }
+      break;
+    case 1: // Level 2
+      if(gameRocket) { gameRocket.style.left = '5%'; gameRocket.style.top = '25%'; }
+      if(gameAmongus) { gameAmongus.style.left = '55%'; gameAmongus.style.top = '65%'; }
+      break;
+    case 2: // Level 3
+      if(gameRocket) { gameRocket.style.left = '75%'; gameRocket.style.top = '15%'; }
+      if(gameAmongus) { gameAmongus.style.left = '15%'; gameAmongus.style.top = '60%'; }
+      break;
+    case 3: // Level 4
+      if(gameRocket) { gameRocket.style.left = '12%'; gameRocket.style.top = '15%'; }
+      if(gameAmongus) { gameAmongus.style.left = '50%'; gameAmongus.style.top = '65%'; }
+      break;
+    case 4: // Level 5
+      if(gameRocket) { gameRocket.style.left = '8%'; gameRocket.style.top = '30%'; }
+      if(gameAmongus) { gameAmongus.style.left = '30%'; gameAmongus.style.top = '70%'; }
+      break;
+    case 5: // Level 6
+      if(gameRocket) { gameRocket.style.left = '50%'; gameRocket.style.top = '40%'; }
+      if(gameAmongus) { gameAmongus.style.left = '35%'; gameAmongus.style.top = '60%'; }
+      break;
+    case 6: // Level 7
+      if(gameRocket) { gameRocket.style.left = '45%'; gameRocket.style.top = '10%'; }
+      if(gameAmongus) { gameAmongus.style.left = '35%'; gameAmongus.style.top = '50%'; }
+      break;
+    case 7: // Level 8
+      if(gameRocket) { gameRocket.style.left = '15%'; gameRocket.style.top = '20%'; }
+      if(gameAmongus) { gameAmongus.style.left = '35%'; gameAmongus.style.top = '50%'; }
+      break;
+    case 8: // Level 9
+      if(gameRocket) { gameRocket.style.left = '10%'; gameRocket.style.top = '35%'; }
+      if(gameAmongus) { gameAmongus.style.left = '25%'; gameAmongus.style.top = '60%'; }
+      break;
+    case 9: // Level 10
+      if(gameRocket) { gameRocket.style.left = '8%'; gameRocket.style.top = '25%'; }
+      if(gameAmongus) { gameAmongus.style.left = '50%'; gameAmongus.style.top = '60%'; }
+      break;
   }
   
   // Add help sign on level 1 only - positioned at left corner
@@ -1256,12 +1243,12 @@ function buildLevelLayout(scene, level){
   
 if(level === 0){
  // Level 1: Basic platforming
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
     addTrampoline(scene, w*0.2, h*0.55); // Trampoline on left side
     
     // Middle platform to help reach finish
-    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x6B9BD1); // Blue platform between trampoline and finish
+    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x5B3A8F); // Dark purple platform
     
     addSpike(scene, w*0.37, h*0.75);
     addSpike(scene, w*0.38, h*0.72);
@@ -1284,10 +1271,10 @@ if(level === 0){
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x6B9BD1);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
+    addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x5B3A8F); // Dark purple
     addTrampoline(scene, w*0.68, h*0.5);
-    addPlatform(scene, w*0.82, h*0.25, 120, 20, 0xffffff);
+    addPlatform(scene, w*0.82, h*0.25, 120, 20, 0x5B3A8F); // Finish platform (dark purple)
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.3, w*0.45, 2);
     addSpike(scene, w*0.32, h*0.76);
     addSpike(scene, w*0.6, h*0.46);
@@ -1303,13 +1290,13 @@ if(level === 0){
   } 
   if(level === 2){
    // Level 3: Moving platforms
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.01, h*0.76, 110, 20, 0xA9C7F7);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
+    addPlatform(scene, w*0.01, h*0.76, 110, 20, 0x5B3A8F); // Dark purple
     addMovingPlatform(scene, w*0.25, h*0.6, w*0.2, w*0.35, 1.8);
-    addPlatform(scene, w*0.01, h*0.5, 80, 20, 0x6B9BD1); // Additional platform to reach first burger
+    addPlatform(scene, w*0.01, h*0.5, 80, 20, 0x5B3A8F); // Dark purple
     addMovingPlatform(scene, w*0.5, h*0.5, w*0.45, w*0.6, 2.2);
-    addPlatform(scene, w*0.8, h*0.60, 100, 20, 0xA9C7F7);
-    addPlatform(scene, w*0.98, h*0.40, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.8, h*0.60, 100, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.98, h*0.40, 100, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.3, h*0.72);
     addSpike(scene, w*0.4, h*0.7);
     addSpike(scene, w*0.58, h*0.58);
@@ -1323,10 +1310,10 @@ if(level === 0){
   } 
    if(level === 3){
   // Level 4: Obstacle course
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x6B9BD1);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
+    addPlatform(scene, w*0.25, h*0.7, 100, 20, 0x5B3A8F); // Dark purple
     addTrampoline(scene, w*0.68, h*0.5);
-    addPlatform(scene, w*0.82, h*0.25, 120, 20, 0xffffff);
+    addPlatform(scene, w*0.82, h*0.25, 120, 20, 0x5B3A8F); // Finish platform (dark purple)
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.3, w*0.45, 2);
     addSpike(scene, w*0.32, h*0.76);
     addSpike(scene, w*0.6, h*0.08);
@@ -1349,12 +1336,12 @@ if(level === 0){
   }
    if (level  === 4){
    // Level 5: Final challenge
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     addTrampoline(scene, w*0.2, h*0.75);
     addMovingPlatform(scene, w*0.35, h*0.55, w*0.28, w*0.42, 2.5);
     addSpike(scene, w*0.25, h*0.81);
     addSpike(scene, w*0.38, h*0.65);
-    addPlatform(scene, w*0.52, h*0.42, 90, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.52, h*0.42, 90, 20, 0x5B3A8F); // Dark purple
     addTrampoline(scene, w*0.62, h*0.5);
     addMovingPlatform(scene, w*0.72, h*0.3, w*0.68, w*0.78, 2);
     addSpike(scene, w*0.58, h*0.48);
@@ -1378,21 +1365,21 @@ if(level === 0){
   // Additional levels 6-10
   if(level === 5){
     // Level 6: Path goes RIGHT → UP → LEFT to finish (upper left corner)
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // Starting platform (bottom left)
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     
     // Path going RIGHT first
-    addPlatform(scene, w*0.3, h*0.75, 100, 20, 0x6B9BD1);
+    addPlatform(scene, w*0.3, h*0.75, 100, 20, 0x5B3A8F); // Dark purple
     addMovingPlatform(scene, w*0.45, h*0.75, w*0.40, w*0.52, 2.5);
-    addPlatform(scene, w*0.62, h*0.75, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.62, h*0.75, 100, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.38, h*0.81);
     addSpike(scene, w*0.54, h*0.71);
     
     // Burger on the right side
     addBurger(scene, w*0.88, h*0.70);
-    addPlatform(scene, w*0.88, h*0.78, 90, 20, 0x6B9BD1); // Platform for right burger
+    addPlatform(scene, w*0.88, h*0.78, 90, 20, 0x5B3A8F); // Dark purple
     
     // Path going UP from right
-    addPlatform(scene, w*0.8, h*0.5, 100, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.8, h*0.5, 100, 20, 0x5B3A8F); // Dark purple
     addPlatform(scene, w*0.8, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
     addPlatform(scene, w*0.75, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
     addPlatform(scene, w*0.70, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
@@ -1406,8 +1393,8 @@ if(level === 0){
     addSpike(scene, w*0.71, h*0.5);
     
     // Path going LEFT to finish
-    addPlatform(scene, w*0.58, h*0.35, 90, 20, 0x6B9BD1);
-    addPlatform(scene, w*0.49, h*0.25, 90, 20, 0x6B9BD1);
+    addPlatform(scene, w*0.58, h*0.35, 90, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.49, h*0.25, 90, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.65, h*0.41);
     addSpike(scene, w*0.48, h*0.51);
     
@@ -1430,7 +1417,7 @@ if(level === 0){
     addUpsideDownSpike(scene, w*0.408, h*0.12);
     
     // Platform for finish door (important!)
-    addPlatform(scene, w*0.12, h*0.15, 80, 20, 0xffffff);
+    addPlatform(scene, w*0.12, h*0.15, 80, 20, 0x5B3A8F); // Finish platform (dark purple)
     
     // Burger on left side before finish (stays at same place)
     addBurger(scene, w*0.18, h*0.125);
@@ -1442,7 +1429,7 @@ if(level === 0){
   if(level === 6){
     // Level 7: CHAOS - Only moving platforms! Start: bottom right → Finish: top left
     // Starting platform at bottom right
-    addPlatform(scene, w*0.92, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, w*0.92, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     
     // CHAOTIC MOVING PLATFORMS EVERYWHERE
     // Bottom right area (near start)
@@ -1466,7 +1453,7 @@ if(level === 0){
     // Middle area - chaotic crossing platforms
     addMovingPlatform(scene, w*0.55, h*0.72, w*0.45, w*0.65, 2.8);
     addMovingPlatform(scene, w*0.48, h*0.55, w*0.38, w*0.58, 2.4);
-    addPlatform(scene, w*0.60, h*0.60, 90, 20, 0xA9C7F7); // SAFE PLATFORM 1 - middle area
+    addPlatform(scene, w*0.60, h*0.60, 90, 20, 0x5B3A8F); // Dark purple - SAFE PLATFORM 1
     addMovingPlatform(scene, w*0.60, h*0.45, w*0.50, w*0.70, 2.1);
     addSpike(scene, w*0.52, h*0.62);
     // REMOVED SPIKE: addUpsideDownSpike(scene, w*0.58, h*0.35);
@@ -1480,7 +1467,7 @@ if(level === 0){
     
     // Bottom left area - burger location
     addMovingPlatform(scene, w*0.22, h*0.82, w*0.12, w*0.32, 2.3);
-    addPlatform(scene, w*0.12, h*0.82, 80, 20, 0x6B9BD1); // SAFE PLATFORM 2 - near burger
+    addPlatform(scene, w*0.12, h*0.82, 80, 20, 0x5B3A8F); // Dark purple - SAFE PLATFORM 2
     addBurger(scene, w*0.12, h*0.75); // Second burger - bottom left corner
     addSpike(scene, w*0.15, h*0.88);
     addUpsideDownSpike(scene, w*0.25, h*0.68);
@@ -1500,7 +1487,7 @@ if(level === 0){
   
   if(level === 7){
     // Level 8: TRAMPOLINE CHAOS - Only 7 trampolines and fewer spikes
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff); // ONLY starting platform
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     
     // ONLY 7 TRAMPOLINES - strategically placed
     addTrampoline(scene, w*0.30, h*0.85); // Bottom left
@@ -1536,19 +1523,19 @@ if(level === 0){
   
   if(level === 8){
     // Level 9: Extreme challenge
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     addTrampoline(scene, w*0.2, h*0.75);
     addMovingPlatform(scene, w*0.32, h*0.6, w*0.25, w*0.40, 3);
     addSpike(scene, w*0.28, h*0.81);
     addSpike(scene, w*0.35, h*0.66);
-    addPlatform(scene, w*0.48, h*0.48, 75, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.48, h*0.48, 75, 20, 0x5B3A8F); // Dark purple
     addMovingPlatform(scene, w*0.6, h*0.35, w*0.54, w*0.68, 2.8);
     addSpike(scene, w*0.52, h*0.54);
     addSpike(scene, w*0.62, h*0.41);
     addTrampoline(scene, w*0.73, h*0.45);
     addMovingPlatform(scene, w*0.82, h*0.25, w*0.78, w*0.88, 2.2);
     addSpike(scene, w*0.85, h*0.31);
-    addPlatform(scene, w*0.92, h*0.18, 80, 20, 0xffffff);
+    addPlatform(scene, w*0.92, h*0.18, 80, 20, 0x5B3A8F); // Finish platform (dark purple)
     
     // Burgers
     addBurger(scene, w*0.14, h*0.11); // Near moon
@@ -1559,18 +1546,18 @@ if(level === 0){
   
   if(level === 9){
     // Level 10: Master finale
-    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     addMovingPlatform(scene, w*0.22, h*0.72, w*0.15, w*0.30, 3.5);
     addTrampoline(scene, w*0.32, h*0.78);
     addSpike(scene, w*0.26, h*0.82);
     addMovingPlatform(scene, w*0.42, h*0.58, w*0.35, w*0.50, 3);
     addSpike(scene, w*0.46, h*0.64);
-    addPlatform(scene, w*0.58, h*0.44, 70, 20, 0xA9C7F7);
+    addPlatform(scene, w*0.58, h*0.44, 70, 20, 0x5B3A8F); // Dark purple
     addTrampoline(scene, w*0.66, h*0.52);
     addMovingPlatform(scene, w*0.75, h*0.35, w*0.70, w*0.82, 2.8);
     addSpike(scene, w*0.72, h*0.41);
     addSpike(scene, w*0.78, h*0.41);
-    addPlatform(scene, w*0.88, h*0.22, 75, 20, 0xffffff);
+    addPlatform(scene, w*0.88, h*0.22, 75, 20, 0x5B3A8F); // Finish platform (dark purple)
     addSpike(scene, w*0.85, h*0.28);
     addSpike(scene, w*0.91, h*0.28);
     
@@ -1590,14 +1577,24 @@ function addPlatform(scene, x, y, w, h, color){
 
 function addMovingPlatform(scene, x, y, minX, maxX, speed){
   const mp = scene.physics.add.sprite(x, y, null);
-  mp.setDisplaySize(100, 18);
-  mp.setTint(0x000000); // Black moving platforms
+  mp.setDisplaySize(52, 20); // 52px width, 20px height
   mp.body.setAllowGravity(false);
   mp.body.setImmovable(true);
   mp.moveMin = minX;
   mp.moveMax = maxX;
   mp.moveSpeed = speed;
   mp.moveDir = 1;
+  
+  // Draw dark grey rectangle (create texture if not exists)
+  if (!scene.textures.exists('movingPlatformGrey')) {
+    const gfx = scene.add.graphics();
+    gfx.fillStyle(0x4A4A4A, 1);
+    gfx.fillRect(0, 0, 52, 20); // 52px wide, 20px tall
+    gfx.generateTexture('movingPlatformGrey', 52, 20);
+    gfx.destroy();
+  }
+  
+  mp.setTexture('movingPlatformGrey');
   movingPlatforms.push(mp);
 }
 
@@ -1609,7 +1606,7 @@ function addTrampoline(scene, x, y){
 }
 
 function addSpike(scene, x, y){
-  const spike = scene.add.triangle(x, y, 0, 12, 10, -12, 20, 12, 0xFF0000);
+  const spike = scene.add.triangle(x, y, 0, 12, 10, -12, 20, 12, 0x8B0000); // Dark red spikes
   scene.physics.add.existing(spike, true);
   spike.body.setSize(20, 24); // Full hitbox - matches visual size
   spike.body.setOffset(0, 0); // No offset - covers entire spike
@@ -1618,7 +1615,7 @@ function addSpike(scene, x, y){
 }
 
 function addUpsideDownSpike(scene, x, y){
-  const spike = scene.add.triangle(x, y, 0, -12, 10, 12, 20, -12, 0xFF0000);
+  const spike = scene.add.triangle(x, y, 0, -12, 10, 12, 20, -12, 0x8B0000); // Dark red spikes
   scene.physics.add.existing(spike, true);
   spike.body.setSize(20, 24); // Full hitbox - matches visual size
   spike.body.setOffset(0, 0); // No offset - covers entire spike
@@ -1979,10 +1976,12 @@ function showCongratsScreen() {
   const finalBurgerScoreEl = document.getElementById('final-burger-score');
   const hud = document.getElementById('game-hud');
   const gameRocket = document.getElementById('game-rocket');
+  const gameAmongus = document.getElementById('game-amongus');
   const spaceBackground = document.getElementById('space-background');
   
-  // Hide rocket and space background on congrats screen
+  // Hide all decorative images and space background on congrats screen
   if(gameRocket) gameRocket.classList.remove('active');
+  if(gameAmongus) gameAmongus.classList.remove('active');
   if(spaceBackground) spaceBackground.classList.remove('active');
   
   if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
