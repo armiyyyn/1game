@@ -871,11 +871,13 @@ function create(){
   
   player = this.physics.add.sprite(spawnX, spawnY, null);
   player.setDisplaySize(45, 54);
-  player.setBounce(0.02); // Minimal bounce for smooth landings
+  player.setBounce(0); // No bounce at all
   player.setCollideWorldBounds(true);
-  player.setDrag(0, 0); // No drag - instant stop
-  player.setMaxVelocity(280, 1200);
-  player.setFriction(0, 0);
+  player.setDrag(0); // No drag
+  player.setDamping(false); // Disable damping (this causes acceleration!)
+  player.setMaxVelocity(260, 1200); // Max velocity matches movement speed exactly
+  player.setFriction(0, 0); // No friction
+  player.body.useDamping = false; // Explicitly disable damping
   
   // Draw Avdeev as detailed pixel boy with judogi (canvas - 45x54)
   const gfx = this.add.graphics();
@@ -1160,7 +1162,7 @@ function create(){
   switch(levelIndex) {
     case 0: // Level 1
       if(gameRocket) { gameRocket.style.left = '75%'; gameRocket.style.top = '20%'; }
-      if(gameAmongus) { gameAmongus.style.left = '60%'; gameAmongus.style.top = '70%'; }
+      if(gameAmongus) { gameAmongus.style.left = '35%'; gameAmongus.style.top = '15%'; }
       break;
     case 1: // Level 2
       if(gameRocket) { gameRocket.style.left = '5%'; gameRocket.style.top = '25%'; }
@@ -1251,32 +1253,80 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
- // Level 1: Basic platforming
+    // Level 8 (Testing): Spike column challenge - climb between two spike walls
     addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
-    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
-    addTrampoline(scene, w*0.2, h*0.55); // Trampoline on left side
     
-    // Middle platform to help reach finish
-    addPlatform(scene, w*0.7, h*0.6, 100, 20, 0x5B3A8F); // Dark purple platform
+    // LEFT SPIKE COLUMN - pointing RIGHT (toward the right side) - FULL HEIGHT
+    // Positioned at 2% of screen width
+    const leftColumnX = w*0.02; // Left spike column at 2%
+    const spikeSpacing = 0.03; // Vertical spacing between spikes (3% of height)
     
-    addSpike(scene, w*0.37, h*0.75);
-    addSpike(scene, w*0.38, h*0.72);
-    addSpike(scene, w*0.39, h*0.69);
-    addSpike(scene, w*0.40, h*0.66);
-    addSpike(scene, w*0.41, h*0.63);
-    addSpike(scene, w*0.42, h*0.6);
-    addSpike(scene, w*0.43, h*0.57);
-    addSpike(scene, w*0.44, h*0.54);
-    addSpike(scene, w*0.45, h*0.51);
+    // Create left column spikes (pointing right) from bottom to ceiling
+    for(let i = 0.95; i >= 0.05; i -= spikeSpacing) {
+      addRightPointingSpike(scene, leftColumnX, h*i);
+    }
     
-    // Burgers (no additional platforms - you'll add them later)
-    addBurger(scene, w*0.15, h*0.16); // Near moon
-    addBurger(scene, w*0.88, h*0.88); // Below finish door
+    // RIGHT SPIKE COLUMN - pointing LEFT (toward the left side) - WITH GAP AT TOP
+    // Goes from bottom to 15% from top (leaves exit gap at top)
+    const rightColumnX = w*0.20; // Right spike column at 20%
     
-    // Trampolines under burgers
-    addTrampoline(scene, w*0.88, h*0.92); // Trampoline under burger 2
+    // Create right column spikes (pointing left) from bottom to near top (leaves gap)
+    for(let i = 0.95; i >= 0.15; i -= spikeSpacing) {
+      addLeftPointingSpike(scene, rightColumnX, h*i);
+    }
     
-    addFinish(scene, w*0.9, h*0.25); // Finish door at top righ
+    // PURPLE CLIMBING PLATFORMS between the spike columns
+    // Platforms alternate between left (near 2%) and right (near 20%) columns
+    addPlatform(scene, w*0.051, h*0.85, 90, 15, 0x5B3A8F); // Bottom - close to left column
+    addPlatform(scene, w*0.155, h*0.60, 90, 15, 0x5B3A8F); // Upper - close to right column
+    addPlatform(scene, w*0.051, h*0.4, 90, 15, 0x5B3A8F); // Upper - close to left column
+    addPlatform(scene, w*0.17, h*0.15, 90, 15, 0x5B3A8F); // Near top - close to right column
+    
+    // Bottom right section - moving platform with spike obstacles
+    addPlatform(scene, w*0.28, h*0.9, 100, 20, 0x5B3A8F); // Starting platform
+    
+    // Moving platform at same level - travels toward burger (LONGER - 70px)
+    addMovingPlatform(scene, w*0.40, h*0.9, w*0.38, w*0.78, 1.8); // Moves from 38% to 78%
+    
+    // Three red spike columns (4 spikes each) above the moving platform path - MORE SPACING
+    // First column at ~43%
+    addSpike(scene, w*0.43, h*0.90);
+    addSpike(scene, w*0.43, h*0.87);
+    addSpike(scene, w*0.43, h*0.84);
+    addSpike(scene, w*0.43, h*0.81);
+    
+    // Second column at ~58% (15% spacing instead of 12%)
+    addSpike(scene, w*0.58, h*0.90);
+    addSpike(scene, w*0.58, h*0.87);
+    addSpike(scene, w*0.58, h*0.84);
+    addSpike(scene, w*0.58, h*0.81);
+    
+    // Third column at ~73% (15% spacing instead of 12%)
+    addSpike(scene, w*0.73, h*0.90);
+    addSpike(scene, w*0.73, h*0.87);
+    addSpike(scene, w*0.73, h*0.84);
+    addSpike(scene, w*0.73, h*0.81);
+    
+    // Trampoline under burger in bottom right corner
+    addTrampoline(scene, w*0.90, h*0.88);
+
+    addPlatform(scene, w*0.43, h*0.53, 310, 15, 0x5B3A8F); 
+    addPlatform(scene, w*0.80, h*0.53, 200, 15, 0x5B3A8F);
+    
+    // Spike wall column blocking path from top purple platform to middle platform
+    // Creates a wall at left edge of 310px platform (right-pointing spikes) from ceiling to platform level
+    // Platform at w*0.43 with width 310, so left edge is at w*0.43 - 155 (half width)
+    const platformLeftEdge = w*0.43 - 155;
+    for(let i = 0.05; i <= 0.53; i += 0.03) {
+      addRightPointingSpike(scene, platformLeftEdge, h*i);
+    }
+    
+    // Burgers
+    addBurger(scene, w*0.14, h*0.11); // Near moon (left side)
+    addBurger(scene, w*0.90, h*0.85); // Bottom right corner
+    
+    // Finish door at top right (above the gap in right spike column)
+    addFinish(scene, w*0.92, h*0.08);
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1586,7 +1636,7 @@ function addPlatform(scene, x, y, w, h, color){
 
 function addMovingPlatform(scene, x, y, minX, maxX, speed){
   const mp = scene.physics.add.sprite(x, y, null);
-  mp.setDisplaySize(52, 20); // 52px width, 20px height
+  mp.setDisplaySize(70, 20); // 70px width (was 52px), 20px height
   mp.body.setAllowGravity(false);
   mp.body.setImmovable(true);
   mp.body.pushable = false; // Cannot be pushed by player
@@ -1597,15 +1647,15 @@ function addMovingPlatform(scene, x, y, minX, maxX, speed){
   mp.moveDir = 1;
   
   // Set collision box to match visual size exactly
-  mp.body.setSize(52, 20);
+  mp.body.setSize(70, 20);
   mp.body.setOffset(0, 0);
   
   // Draw dark grey rectangle (create texture if not exists)
   if (!scene.textures.exists('movingPlatformGrey')) {
     const gfx = scene.add.graphics();
     gfx.fillStyle(0x4A4A4A, 1);
-    gfx.fillRect(0, 0, 52, 20); // 52px wide, 20px tall
-    gfx.generateTexture('movingPlatformGrey', 52, 20);
+    gfx.fillRect(0, 0, 70, 20); // 70px wide, 20px tall
+    gfx.generateTexture('movingPlatformGrey', 70, 20);
     gfx.destroy();
   }
   
@@ -1636,6 +1686,26 @@ function addUpsideDownSpike(scene, x, y){
   spike.body.setOffset(0, 0); // No offset - covers entire spike
   platforms.add(spike);
   spike.isDeadly = true; // Mark as deadly obstacle
+}
+
+function addRightPointingSpike(scene, x, y){
+  // Spike pointing to the RIGHT (90 degrees clockwise from upward)
+  const spike = scene.add.triangle(x, y, -12, 0, 12, 10, -12, 20, 0x8B0000); // Dark red spikes
+  scene.physics.add.existing(spike, true);
+  spike.body.setSize(24, 20); // Rotated hitbox
+  spike.body.setOffset(0, 0);
+  platforms.add(spike);
+  spike.isDeadly = true;
+}
+
+function addLeftPointingSpike(scene, x, y){
+  // Spike pointing to the LEFT (90 degrees counterclockwise from upward)
+  const spike = scene.add.triangle(x, y, 12, 0, -12, 10, 12, 20, 0x8B0000); // Dark red spikes
+  scene.physics.add.existing(spike, true);
+  spike.body.setSize(24, 20); // Rotated hitbox
+  spike.body.setOffset(0, 0);
+  platforms.add(spike);
+  spike.isDeadly = true;
 }
 
 function addBurger(scene, x, y){
@@ -1880,18 +1950,18 @@ function update(){
     }
   });
   
-  // Direct movement - instant response, instant stop
+  // Direct movement - instant response, instant stop (NO ACCELERATION)
   const speed = 260;
   
   if(wasd.left.isDown){
-    player.setVelocityX(-speed);
+    player.setVelocityX(-speed); // Instant full speed
     // Flip sprite to face left when moving left
     if(player.lastDirection !== 'left'){
       player.setFlipX(true);
       player.lastDirection = 'left';
     }
   } else if(wasd.right.isDown){
-    player.setVelocityX(speed);
+    player.setVelocityX(speed); // Instant full speed
     // Keep sprite facing right when moving right
     if(player.lastDirection !== 'right'){
       player.setFlipX(false);
