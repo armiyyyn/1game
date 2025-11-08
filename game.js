@@ -18,6 +18,21 @@ let backgroundMusic = null;
 let musicEnabled = true;
 let burgers; // Group for collectible burgers
 let isDying = false; // Prevent multiple death animations
+let levelVisited = []; // Track which levels have been visited
+
+// Level names for preview screen
+const levelNames = [
+  "Level 1: The Beginning",
+  "Level 2: Jump Challenge", 
+  "Level 3: Moving Platforms",
+  "Level 4: Obstacle Course",
+  "Level 5: Final Challenge",
+  "Level 6: The Path",
+  "Level 7: Chaos",
+  "Level 8: Trampoline Madness",
+  "Level 9: Extreme",
+  "Level 10: Master Finale"
+];
 
 const playerConfig = { 
   hairColor: 0x3E2723, // Darker brown (was 0x5D4037)
@@ -44,6 +59,7 @@ function startGame() {
   levelIndex = 0;
   burgerScore = 0; // Reset burger score
   levelBurgerScore = 0; // Reset level burger score
+  levelVisited = []; // Reset level visited tracking
   game = new Phaser.Game(config);
   
   // Start HTML5 audio music with selected track
@@ -835,6 +851,78 @@ function preload(){
   });
 }
 
+function showLevelPreview(scene, levelName) {
+  const w = scene.scale.width;
+  const h = scene.scale.height;
+  
+  // Create semi-transparent black blurred overlay (lets level show through)
+  const overlay = scene.add.rectangle(w/2, h/2, w, h, 0x000000, 0.4); // Black with 40% opacity
+  overlay.setDepth(2000);
+  
+  // Add blur effect by creating additional semi-transparent black layers
+  const blurLayer1 = scene.add.rectangle(w/2, h/2, w, h, 0x000000, 0.2);
+  blurLayer1.setDepth(1999);
+  const blurLayer2 = scene.add.rectangle(w/2, h/2, w, h, 0x000000, 0.15);
+  blurLayer2.setDepth(1998);
+  
+  // Create level name text with white color and black borders
+  const levelText = scene.add.text(w/2, h/2, levelName, {
+    fontSize: '72px',
+    fontFamily: 'Arial Black',
+    color: '#FFFFFF', // White text
+    stroke: '#000000', // Black stroke/border
+    strokeThickness: 8,
+    align: 'center',
+    shadow: {
+      offsetX: 0,
+      offsetY: 0,
+      color: '#FFFFFF', // White shadow
+      blur: 35,
+      fill: true
+    }
+  });
+  levelText.setOrigin(0.5);
+  levelText.setDepth(2001);
+  levelText.setAlpha(0);
+  levelText.setScale(0.5);
+  
+  // Animate text entrance (zoom in + fade in) - VERY FAST
+  scene.tweens.add({
+    targets: levelText,
+    alpha: 1,
+    scale: 1,
+    duration: 720, // Very fast entrance (was 800)
+    ease: 'Back.easeOut',
+    onComplete: () => {
+      // Hold for just 300ms, then fade out immediately
+      scene.time.delayedCall(300, () => { // Reduced from 1500 to 300
+        scene.tweens.add({
+          targets: [overlay, levelText, blurLayer1, blurLayer2],
+          alpha: 0,
+          duration: 300, // Fast fade out (was 500)
+          ease: 'Power2',
+          onComplete: () => {
+            overlay.destroy();
+            levelText.destroy();
+            blurLayer1.destroy();
+            blurLayer2.destroy();
+          }
+        });
+      });
+    }
+  });
+  
+  // Pulsing glow effect - FASTER
+  scene.tweens.add({
+    targets: levelText,
+    scale: 1.08,
+    duration: 400, // Faster pulse (was 900)
+    ease: 'Sine.easeInOut',
+    yoyo: true,
+    repeat: -1
+  });
+}
+
 function create(){
   const w = this.scale.width;
   const h = this.scale.height;
@@ -854,8 +942,15 @@ function create(){
   // Create platforms group
   platforms = this.physics.add.staticGroup();
   
-  // Build level based on levelIndex
+  // Build level based on levelIndex first (so it shows in background)
   buildLevelLayout(this, levelIndex);
+  
+  // Show level preview AFTER building level (on top of level)
+  if(!levelVisited[levelIndex]) {
+    levelVisited[levelIndex] = true;
+    showLevelPreview(this, levelNames[levelIndex]);
+    // Don't return - let level be created and visible underneath
+  }
   
   // Create Avdeev with accessories (10% smaller - 45x54 for better proportions)
   // Spawn above the platform so he stands on top of it
@@ -1253,80 +1348,23 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
-    // Level 8 (Testing): Spike column challenge - climb between two spike walls
-    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
-    
-    // LEFT SPIKE COLUMN - pointing RIGHT (toward the right side) - FULL HEIGHT
-    // Positioned at 2% of screen width
-    const leftColumnX = w*0.02; // Left spike column at 2%
-    const spikeSpacing = 0.03; // Vertical spacing between spikes (3% of height)
-    
-    // Create left column spikes (pointing right) from bottom to ceiling
-    for(let i = 0.95; i >= 0.05; i -= spikeSpacing) {
-      addRightPointingSpike(scene, leftColumnX, h*i);
-    }
-    
-    // RIGHT SPIKE COLUMN - pointing LEFT (toward the left side) - WITH GAP AT TOP
-    // Goes from bottom to 15% from top (leaves exit gap at top)
-    const rightColumnX = w*0.20; // Right spike column at 20%
-    
-    // Create right column spikes (pointing left) from bottom to near top (leaves gap)
-    for(let i = 0.95; i >= 0.15; i -= spikeSpacing) {
-      addLeftPointingSpike(scene, rightColumnX, h*i);
-    }
-    
-    // PURPLE CLIMBING PLATFORMS between the spike columns
-    // Platforms alternate between left (near 2%) and right (near 20%) columns
-    addPlatform(scene, w*0.051, h*0.85, 90, 15, 0x5B3A8F); // Bottom - close to left column
-    addPlatform(scene, w*0.155, h*0.60, 90, 15, 0x5B3A8F); // Upper - close to right column
-    addPlatform(scene, w*0.051, h*0.4, 90, 15, 0x5B3A8F); // Upper - close to left column
-    addPlatform(scene, w*0.17, h*0.15, 90, 15, 0x5B3A8F); // Near top - close to right column
-    
-    // Bottom right section - moving platform with spike obstacles
-    addPlatform(scene, w*0.28, h*0.9, 100, 20, 0x5B3A8F); // Starting platform
-    
-    // Moving platform at same level - travels toward burger (LONGER - 70px)
-    addMovingPlatform(scene, w*0.40, h*0.9, w*0.38, w*0.78, 1.8); // Moves from 38% to 78%
-    
-    // Three red spike columns (4 spikes each) above the moving platform path - MORE SPACING
-    // First column at ~43%
-    addSpike(scene, w*0.43, h*0.90);
-    addSpike(scene, w*0.43, h*0.87);
-    addSpike(scene, w*0.43, h*0.84);
-    addSpike(scene, w*0.43, h*0.81);
-    
-    // Second column at ~58% (15% spacing instead of 12%)
-    addSpike(scene, w*0.58, h*0.90);
-    addSpike(scene, w*0.58, h*0.87);
-    addSpike(scene, w*0.58, h*0.84);
-    addSpike(scene, w*0.58, h*0.81);
-    
-    // Third column at ~73% (15% spacing instead of 12%)
-    addSpike(scene, w*0.73, h*0.90);
-    addSpike(scene, w*0.73, h*0.87);
-    addSpike(scene, w*0.73, h*0.84);
-    addSpike(scene, w*0.73, h*0.81);
-    
-    // Trampoline under burger in bottom right corner
-    addTrampoline(scene, w*0.90, h*0.88);
-
-    addPlatform(scene, w*0.43, h*0.53, 310, 15, 0x5B3A8F); 
-    addPlatform(scene, w*0.80, h*0.53, 200, 15, 0x5B3A8F);
-    
-    // Spike wall column blocking path from top purple platform to middle platform
-    // Creates a wall at left edge of 310px platform (right-pointing spikes) from ceiling to platform level
-    // Platform at w*0.43 with width 310, so left edge is at w*0.43 - 155 (half width)
-    const platformLeftEdge = w*0.43 - 155;
-    for(let i = 0.05; i <= 0.53; i += 0.03) {
-      addRightPointingSpike(scene, platformLeftEdge, h*i);
-    }
-    
-    // Burgers
-    addBurger(scene, w*0.14, h*0.11); // Near moon (left side)
-    addBurger(scene, w*0.90, h*0.85); // Bottom right corner
-    
-    // Finish door at top right (above the gap in right spike column)
-    addFinish(scene, w*0.92, h*0.08);
+     // Level 1: Basic platforming
+   addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
+    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
+    addTrampoline(scene, w*0.18, h*0.54);
+    addBurger(scene, w*0.16, h*0.14);
+    addBurger(scene, w*0.48, h*0.12);
+    addSpike(scene, w*0.37, h*0.75);
+    addSpike(scene, w*0.38, h*0.72);
+    addSpike(scene, w*0.39, h*0.69);
+    addSpike(scene, w*0.40, h*0.66);
+    addSpike(scene, w*0.41, h*0.63);
+    addSpike(scene, w*0.42, h*0.6);
+    addSpike(scene, w*0.43, h*0.57);
+    addSpike(scene, w*0.44, h*0.54);
+    addSpike(scene, w*0.45, h*0.51);
+    addFinish(scene, w*0.9, 120);
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1387,7 +1425,7 @@ if(level === 0){
     addSpike(scene, w*0.6, h*0.52);
     addSpike(scene, w*0.6, h*0.55);
     // Burgers
-    addBurger(scene, w*0.15, h*0.14); // Near moon
+    addBurger(scene, w*0.21, h*0.24); // Near moon
     addTrampoline(scene, w*0.8598, h*0.9);
     addBurger(scene, w*0.86, h*0.85); // Below finish door
     
@@ -1583,24 +1621,118 @@ if(level === 0){
   if(level === 8){
     // Level 9: Extreme challenge
     addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
-    addTrampoline(scene, w*0.2, h*0.75);
-    addMovingPlatform(scene, w*0.32, h*0.6, w*0.25, w*0.40, 3);
-    addSpike(scene, w*0.28, h*0.81);
-    addSpike(scene, w*0.35, h*0.66);
-    addPlatform(scene, w*0.48, h*0.48, 75, 20, 0x5B3A8F); // Dark purple
-    addMovingPlatform(scene, w*0.6, h*0.35, w*0.54, w*0.68, 2.8);
-    addSpike(scene, w*0.52, h*0.54);
-    addSpike(scene, w*0.62, h*0.41);
-    addTrampoline(scene, w*0.73, h*0.45);
-    addMovingPlatform(scene, w*0.82, h*0.25, w*0.78, w*0.88, 2.2);
-    addSpike(scene, w*0.85, h*0.31);
-    addPlatform(scene, w*0.92, h*0.18, 80, 20, 0x5B3A8F); // Finish platform (dark purple)
+    
+    // LEFT SPIKE COLUMN - pointing RIGHT (toward the right side) - FULL HEIGHT
+    // Positioned at 2% of screen width
+    const leftColumnX = w*0.02; // Left spike column at 2%
+    const spikeSpacing = 0.03; // Vertical spacing between spikes (3% of height)
+    
+    // Create left column spikes (pointing right) from bottom to ceiling
+    for(let i = 0.95; i >= 0.05; i -= spikeSpacing) {
+      addRightPointingSpike(scene, leftColumnX, h*i);
+    }
+    
+    // RIGHT SPIKE COLUMN - pointing LEFT (toward the left side) - WITH GAP AT TOP
+    // Goes from bottom to 15% from top (leaves exit gap at top)
+    const rightColumnX = w*0.20; // Right spike column at 20%
+    
+    // Create right column spikes (pointing left) from bottom to near top (leaves gap)
+    for(let i = 0.95; i >= 0.15; i -= spikeSpacing) {
+      addLeftPointingSpike(scene, rightColumnX, h*i);
+    }
+    
+    // PURPLE CLIMBING PLATFORMS between the spike columns
+    // Platforms alternate between left (near 2%) and right (near 20%) columns
+    addPlatform(scene, w*0.051, h*0.85, 90, 15, 0x5B3A8F); // Bottom - close to left column
+    addPlatform(scene, w*0.155, h*0.60, 90, 15, 0x5B3A8F); // Upper - close to right column
+    addPlatform(scene, w*0.051, h*0.4, 90, 15, 0x5B3A8F); // Upper - close to left column
+    addPlatform(scene, w*0.17, h*0.15, 90, 15, 0x5B3A8F); // Near top - close to right column
+    
+    // Bottom right section - moving platform with spike obstacles
+    addPlatform(scene, w*0.28, h*0.9, 100, 20, 0x5B3A8F); // Starting platform
+    
+    // Moving platform at same level - travels toward burger (LONGER - 70px)
+    addMovingPlatform(scene, w*0.40, h*0.9, w*0.38, w*0.78, 2.5); // Moves from 38% to 78%
+    
+    // Three red spike columns (4 spikes each) above the moving platform path - MORE SPACING
+    // First column at ~43%
+    addSpike(scene, w*0.43, h*0.90);
+    addSpike(scene, w*0.43, h*0.87);
+    addSpike(scene, w*0.43, h*0.84);
+    addSpike(scene, w*0.43, h*0.81);
+    
+    // Second column at ~58% (15% spacing instead of 12%)
+    addSpike(scene, w*0.58, h*0.90);
+    addSpike(scene, w*0.58, h*0.87);
+    addSpike(scene, w*0.58, h*0.84);
+    addSpike(scene, w*0.58, h*0.81);
+
+    addSpike(scene, w*0.58, h*0.62);
+    addSpike(scene, w*0.595, h*0.62);
+    addSpike(scene, w*0.610, h*0.62);
+    addSpike(scene, w*0.625, h*0.62);
+    addSpike(scene, w*0.640, h*0.62);
+    addSpike(scene, w*0.655, h*0.62);
+    addSpike(scene, w*0.670, h*0.62);
+    addSpike(scene, w*0.685, h*0.62);
+    addSpike(scene, w*0.565, h*0.59);
+    addSpike(scene, w*0.7, h*0.59);
+    addSpike(scene, w*0.550, h*0.56);
+    addSpike(scene, w*0.715, h*0.56);
+
+    addUpsideDownSpike(scene, w*0.781,h*0.329)
+    addUpsideDownSpike(scene, w*0.796,h*0.329)
+    addUpsideDownSpike(scene, w*0.811,h*0.329)
+    addUpsideDownSpike(scene, w*0.826,h*0.329)
+    addUpsideDownSpike(scene, w*0.841,h*0.329)
+    addUpsideDownSpike(scene, w*0.856,h*0.329)
+    addUpsideDownSpike(scene, w*0.871,h*0.329)
+    addUpsideDownSpike(scene, w*0.886,h*0.329)
+    addUpsideDownSpike(scene, w*0.901,h*0.329)
+    addUpsideDownSpike(scene, w*0.916,h*0.329)
+    addUpsideDownSpike(scene, w*0.931,h*0.329)
+    addUpsideDownSpike(scene, w*0.946,h*0.329)
+    addUpsideDownSpike(scene, w*0.961,h*0.329)
+    addUpsideDownSpike(scene, w*0.976,h*0.329)
+    addUpsideDownSpike(scene, w*0.991,h*0.329)
+    
+    // Third column at ~73% (15% spacing instead of 12%)
+    addSpike(scene, w*0.73, h*0.90);
+    addSpike(scene, w*0.73, h*0.87);
+    addSpike(scene, w*0.73, h*0.84);
+    addSpike(scene, w*0.73, h*0.81);
+    
+    // Trampoline under burger in bottom right corner
+    addTrampoline(scene, w*0.90, h*0.88);
+
+    addPlatform(scene, w*0.43, h*0.53, 310, 15, 0x5B3A8F); 
+    addPlatform(scene, w*0.80, h*0.53, 200, 15, 0x5B3A8F);
+    addPlatform(scene, w*0.59, h*0.31, 540, 15, 0x5B3A8F); // Moved down by 0.03 (was 0.28)
+    
+    // Two trampolines on top of the long platform
+    addTrampoline(scene, w*0.50, h*0.303); // Moved down by 0.03 (was 0.273)
+    addTrampoline(scene, w*0.68, h*0.303); // Moved down by 0.03 (was 0.273)
+    
+    // Ceiling spikes above trampolines - sticking to ceiling with one side
+    // Positioned lower at ~30 pixels down from ceiling (h*0.03 = 3% of height)
+    for(let i = 0.45; i <= 0.73; i += 0.015) {
+      addUpsideDownSpike(scene, w*i, h*0.03); // At 3% height (~30 pixels from ceiling)
+    }
+    
+    // Spike wall column blocking path from top purple platform to middle platform
+    // Creates a wall at left edge of 310px platform (right-pointing spikes) from ceiling to platform level
+    // Platform at w*0.43 with width 310, so left edge is at w*0.43 - 155 (half width)
+    const platformLeftEdge = w*0.43 - 155;
+    for(let i = 0.05; i <= 0.53; i += 0.03) {
+      addRightPointingSpike(scene, platformLeftEdge, h*i);
+    }
     
     // Burgers
-    addBurger(scene, w*0.14, h*0.11); // Near moon
-    addBurger(scene, w*0.90, h*0.75); // Below finish door
+    addBurger(scene, w*0.254, h*0.4); // Near moon (left side)
+    addBurger(scene, w*0.90, h*0.85); // Bottom right corner
     
-    addFinish(scene, w*0.94, 75);
+    // Finish door at top right (above the gap in right spike column)
+    addFinish(scene, w*0.92, h*0.08);
   }
   
   if(level === 9){
@@ -1636,7 +1768,7 @@ function addPlatform(scene, x, y, w, h, color){
 
 function addMovingPlatform(scene, x, y, minX, maxX, speed){
   const mp = scene.physics.add.sprite(x, y, null);
-  mp.setDisplaySize(70, 20); // 70px width (was 52px), 20px height
+  mp.setDisplaySize(62, 22); // 49px width (30% smaller than 70px), 20px height
   mp.body.setAllowGravity(false);
   mp.body.setImmovable(true);
   mp.body.pushable = false; // Cannot be pushed by player
@@ -1647,15 +1779,15 @@ function addMovingPlatform(scene, x, y, minX, maxX, speed){
   mp.moveDir = 1;
   
   // Set collision box to match visual size exactly
-  mp.body.setSize(70, 20);
+  mp.body.setSize(49, 20);
   mp.body.setOffset(0, 0);
   
-  // Draw dark grey rectangle (create texture if not exists)
+  // Draw darker grey rectangle (create texture if not exists)
   if (!scene.textures.exists('movingPlatformGrey')) {
     const gfx = scene.add.graphics();
-    gfx.fillStyle(0x4A4A4A, 1);
-    gfx.fillRect(0, 0, 70, 20); // 70px wide, 20px tall
-    gfx.generateTexture('movingPlatformGrey', 70, 20);
+    gfx.fillStyle(0xFF9800, 1); // Orange color (was 0x2196F3 blue)
+    gfx.fillRect(0, 0, 49, 20); // 49px wide, 20px tall
+    gfx.generateTexture('movingPlatformGrey', 49, 20);
     gfx.destroy();
   }
   
