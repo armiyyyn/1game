@@ -1491,7 +1491,7 @@ if(level === 0){
     
     // Path going LEFT to finish
     addPlatform(scene, w*0.58, h*0.35, 90, 20, 0x5B3A8F); // Dark purple
-    addPlatform(scene, w*0.49, h*0.25, 90, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.505, h*0.25, 90, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.65, h*0.41);
     addSpike(scene, w*0.48, h*0.51);
     
@@ -1513,9 +1513,6 @@ if(level === 0){
     addUpsideDownSpike(scene, w*0.393, h*0.12);
     addUpsideDownSpike(scene, w*0.408, h*0.12);
     
-    // Platform for finish door (important!)
-    addPlatform(scene, w*0.12, h*0.15, 80, 20, 0x5B3A8F); // Finish platform (dark purple)
-    
     // Burger on left side before finish (stays at same place)
     addBurger(scene, w*0.18, h*0.125);
     
@@ -1524,59 +1521,42 @@ if(level === 0){
   }
   
   if(level === 6){
-    // Level 7: CHAOS - Only moving platforms! Start: bottom right → Finish: top left
+    // Level 7: CHAOS - Only moving platforms! Start: bottom right → Finish: top left (30% fewer platforms)
     // Starting platform at bottom right
     addPlatform(scene, w*0.92, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     
-    // CHAOTIC MOVING PLATFORMS EVERYWHERE
     // Bottom right area (near start)
     addMovingPlatform(scene, w*0.78, h*0.85, w*0.72, w*0.88, 2.2);
-    addMovingPlatform(scene, w*0.65, h*0.80, w*0.58, w*0.75, 1.8);
     addSpike(scene, w*0.85, h*0.91);
     
     // Right side moving platforms
     addMovingPlatform(scene, w*0.88, h*0.68, w*0.82, w*0.95, 2.5);
     addMovingPlatform(scene, w*0.75, h*0.58, w*0.68, w*0.82, 2);
-    // REMOVED SPIKE: addSpike(scene, w*0.92, h*0.64);
-    addUpsideDownSpike(scene, w*0.88, h*0.48);
     
     // Upper right area - burger location
     addMovingPlatform(scene, w*0.85, h*0.42, w*0.78, w*0.92, 1.9);
-    addMovingPlatform(scene, w*0.72, h*0.32, w*0.65, w*0.80, 2.3);
     addBurger(scene, w*0.88, h*0.18); // First burger - top right corner
     addMovingPlatform(scene, w*0.88, h*0.25, w*0.82, w*0.95, 2);
     addSpike(scene, w*0.78, h*0.38);
     
-    // Middle area - chaotic crossing platforms
+    // Middle area - crossing platforms
     addMovingPlatform(scene, w*0.55, h*0.72, w*0.45, w*0.65, 2.8);
-    addMovingPlatform(scene, w*0.48, h*0.55, w*0.38, w*0.58, 2.4);
     addPlatform(scene, w*0.60, h*0.60, 90, 20, 0x5B3A8F); // Dark purple - SAFE PLATFORM 1
     addMovingPlatform(scene, w*0.60, h*0.45, w*0.50, w*0.70, 2.1);
-    addSpike(scene, w*0.52, h*0.62);
-    // REMOVED SPIKE: addUpsideDownSpike(scene, w*0.58, h*0.35);
     addMovingPlatform(scene, w*0.42, h*0.38, w*0.32, w*0.52, 2.6);
     
     // Left side moving platforms
     addMovingPlatform(scene, w*0.32, h*0.68, w*0.22, w*0.42, 2.2);
     addMovingPlatform(scene, w*0.25, h*0.52, w*0.15, w*0.35, 2);
-    addSpike(scene, w*0.28, h*0.58);
-    addMovingPlatform(scene, w*0.18, h*0.42, w*0.08, w*0.28, 1.9);
     
     // Bottom left area - burger location
-    addMovingPlatform(scene, w*0.22, h*0.82, w*0.12, w*0.32, 2.3);
     addPlatform(scene, w*0.12, h*0.82, 80, 20, 0x5B3A8F); // Dark purple - SAFE PLATFORM 2
     addBurger(scene, w*0.12, h*0.75); // Second burger - bottom left corner
     addSpike(scene, w*0.15, h*0.88);
-    addUpsideDownSpike(scene, w*0.25, h*0.68);
     
     // Upper left area - toward finish
     addMovingPlatform(scene, w*0.15, h*0.28, w*0.08, w*0.25, 1.8);
     addMovingPlatform(scene, w*0.08, h*0.18, w*0.02, w*0.18, 1.5);
-    addSpike(scene, w*0.18, h*0.34);
-    
-    // Some additional chaos in the middle
-    addMovingPlatform(scene, w*0.35, h*0.25, w*0.25, w*0.45, 2.7);
-    addUpsideDownSpike(scene, w*0.42, h*0.15);
     
     // Finish door at top left (no platform needed)
     addFinish(scene, w*0.08, h*0.08);
@@ -2230,34 +2210,34 @@ function showCongratsScreen() {
     
     // Draw eyes and mouth based on burger count
     if(burgerScore >= 18) {
-      // 18-20: Very happy with stars
-      // Happy eyes
+      // 18-20: Very happy with big smile
+      // Happy eyes (bigger and brighter)
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(18*scale, 12*scale, 4*scale, 0, Math.PI * 2);
+      ctx.arc(18*scale, 13*scale, 3.5*scale, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(28*scale, 12*scale, 4*scale, 0, Math.PI * 2);
+      ctx.arc(28*scale, 13*scale, 3.5*scale, 0, Math.PI * 2);
       ctx.fill();
       
       ctx.fillStyle = '#000000';
       ctx.beginPath();
-      ctx.arc(18*scale, 12*scale, 2*scale, 0, Math.PI * 2);
+      ctx.arc(18*scale, 13*scale, 1.8*scale, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(28*scale, 12*scale, 2*scale, 0, Math.PI * 2);
+      ctx.arc(28*scale, 13*scale, 1.8*scale, 0, Math.PI * 2);
       ctx.fill();
       
-      // Happy eyebrows
+      // Happy raised eyebrows
       ctx.fillStyle = '#3E2723';
-      ctx.fillRect(15*scale, 8*scale, 6*scale, 2*scale);
-      ctx.fillRect(25*scale, 8*scale, 6*scale, 2*scale);
+      ctx.fillRect(15*scale, 9*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(25*scale, 9*scale, 6*scale, 1.5*scale);
       
-      // Big smile
+      // Big happy smile (curved up)
       ctx.fillStyle = '#000000';
-      ctx.fillRect(18*scale, 17*scale, 10*scale, 2*scale);
-      ctx.fillRect(17*scale, 19*scale, 2*scale, 2*scale);
-      ctx.fillRect(27*scale, 19*scale, 2*scale, 2*scale);
+      ctx.fillRect(18*scale, 18*scale, 10*scale, 2*scale); // Main smile
+      ctx.fillRect(17*scale, 16.5*scale, 2*scale, 1.5*scale); // Left corner up
+      ctx.fillRect(27*scale, 16.5*scale, 2*scale, 1.5*scale); // Right corner up
       
       // Draw stars below head
       ctx.fillStyle = '#FFD700';
@@ -2280,7 +2260,7 @@ function showCongratsScreen() {
       });
       
     } else if(burgerScore >= 14) {
-      // 14-17: Happy but not ecstatic
+      // 14-17: Happy and satisfied
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
@@ -2297,16 +2277,16 @@ function showCongratsScreen() {
       ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
       ctx.fill();
       
-      // Normal eyebrows
+      // Normal happy eyebrows
       ctx.fillStyle = '#3E2723';
       ctx.fillRect(16*scale, 10*scale, 5*scale, 1.5*scale);
       ctx.fillRect(26*scale, 10*scale, 5*scale, 1.5*scale);
       
-      // Smile
+      // Nice smile (curved up)
       ctx.fillStyle = '#000000';
-      ctx.fillRect(20*scale, 17*scale, 6*scale, 1.5*scale);
-      ctx.fillRect(19*scale, 18.5*scale, 1.5*scale, 1.5*scale);
-      ctx.fillRect(25.5*scale, 18.5*scale, 1.5*scale, 1.5*scale);
+      ctx.fillRect(19*scale, 18*scale, 8*scale, 1.5*scale);
+      ctx.fillRect(18*scale, 16.5*scale, 1.5*scale, 1.5*scale); // Left corner up
+      ctx.fillRect(26.5*scale, 16.5*scale, 1.5*scale, 1.5*scale); // Right corner up
       
     } else if(burgerScore >= 8) {
       // 8-13: Neutral/OK
@@ -2336,7 +2316,7 @@ function showCongratsScreen() {
       ctx.fillRect(19*scale, 17*scale, 8*scale, 1.5*scale);
       
     } else if(burgerScore >= 4) {
-      // 4-7: Angry/Bothered
+      // 4-7: Disappointed/Unhappy
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(18*scale, 13*scale, 3*scale, 0, Math.PI * 2);
@@ -2353,37 +2333,37 @@ function showCongratsScreen() {
       ctx.arc(28*scale, 13*scale, 1.5*scale, 0, Math.PI * 2);
       ctx.fill();
       
-      // Angry eyebrows (angled down)
+      // Sad lowered eyebrows
       ctx.fillStyle = '#3E2723';
-      ctx.fillRect(15*scale, 11*scale, 6*scale, 2*scale);
-      ctx.fillRect(25*scale, 9*scale, 6*scale, 2*scale);
-      ctx.fillRect(14*scale, 9*scale, 2*scale, 2*scale);
-      ctx.fillRect(30*scale, 11*scale, 2*scale, 2*scale);
+      ctx.fillRect(15*scale, 11*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(25*scale, 11*scale, 6*scale, 1.5*scale);
       
-      // Frown
+      // Frown (curved down)
       ctx.fillStyle = '#000000';
-      ctx.fillRect(20*scale, 19*scale, 6*scale, 1.5*scale);
-      ctx.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale);
-      ctx.fillRect(25.5*scale, 17.5*scale, 1.5*scale, 1.5*scale);
+      ctx.fillRect(19*scale, 19*scale, 8*scale, 1.5*scale);
+      ctx.fillRect(18*scale, 20.5*scale, 1.5*scale, 1.5*scale); // Left corner down
+      ctx.fillRect(26.5*scale, 20.5*scale, 1.5*scale, 1.5*scale); // Right corner down
       
     } else {
-      // 0-3: Dead (crosses for eyes)
-      // X eyes (crosses)
+      // 0-3: Very sad/starving (X eyes)
+      // X eyes (dead/starving)
       ctx.fillStyle = '#000000';
-      ctx.fillRect(16*scale, 12*scale, 5*scale, 1.5*scale);
-      ctx.fillRect(18*scale, 10*scale, 1.5*scale, 5*scale);
-      ctx.fillRect(26*scale, 12*scale, 5*scale, 1.5*scale);
-      ctx.fillRect(28*scale, 10*scale, 1.5*scale, 5*scale);
+      // Left X
+      ctx.fillRect(15.5*scale, 12*scale, 5*scale, 2*scale);
+      ctx.fillRect(17*scale, 10.5*scale, 2*scale, 5*scale);
+      // Right X
+      ctx.fillRect(25.5*scale, 12*scale, 5*scale, 2*scale);
+      ctx.fillRect(27*scale, 10.5*scale, 2*scale, 5*scale);
       
-      // Sad/dead eyebrows
+      // Very sad eyebrows (angled down heavily)
       ctx.fillStyle = '#3E2723';
-      ctx.fillRect(15*scale, 9*scale, 6*scale, 1.5*scale);
-      ctx.fillRect(25*scale, 9*scale, 6*scale, 1.5*scale);
+      ctx.fillRect(14*scale, 9*scale, 6*scale, 2*scale);
+      ctx.fillRect(26*scale, 9*scale, 6*scale, 2*scale);
       
-      // Dead mouth (O shape)
+      // Open mouth (shocked/starving - O shape)
       ctx.fillStyle = '#000000';
       ctx.beginPath();
-      ctx.arc(23*scale, 18*scale, 3*scale, 0, Math.PI * 2);
+      ctx.arc(23*scale, 19*scale, 3*scale, 0, Math.PI * 2);
       ctx.fill();
     }
     
