@@ -574,11 +574,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.fillRect(14*scale, 9*scale, 2*scale, 2*scale);
     ctx6.fillRect(34*scale, 9*scale, 2*scale, 2*scale);
     
-    // Angry frown
+    // Angry frown (curved DOWN - corners pointing down)
     ctx6.fillStyle = '#000000';
-    ctx6.fillRect(20*scale, 19*scale, 10*scale, 1.5*scale);
-    ctx6.fillRect(19*scale, 17.5*scale, 1.5*scale, 1.5*scale);
-    ctx6.fillRect(29.5*scale, 17.5*scale, 1.5*scale, 1.5*scale);
+    ctx6.fillRect(20*scale, 19*scale, 10*scale, 1.5*scale); // Main frown line
+    ctx6.fillRect(19*scale, 20.5*scale, 1.5*scale, 1.5*scale); // Left corner DOWN
+    ctx6.fillRect(29.5*scale, 20.5*scale, 1.5*scale, 1.5*scale); // Right corner DOWN
     
     // Fat neck (double chin)
     ctx6.fillStyle = '#FFDBAC';
@@ -613,6 +613,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx6.fillStyle = '#424242';
     ctx6.fillRect(12*scale, 49*scale, 12*scale, 10*scale);
     ctx6.fillRect(26*scale, 49*scale, 12*scale, 10*scale);
+    
+    // Black shoes
+    ctx6.fillStyle = '#000000';
+    ctx6.fillRect(12*scale, 59*scale, 12*scale, 4*scale); // Left shoe
+    ctx6.fillRect(26*scale, 59*scale, 12*scale, 4*scale); // Right shoe
   }
 });
 
@@ -1168,7 +1173,10 @@ function create(){
   
   // Collisions
   this.physics.add.collider(player, platforms, (p, platform) => {
-    if(platform.isTrampoline){
+    if(platform.isSuperTrampoline){
+      player.setVelocityY(-1400); // 2x regular trampoline (-700 * 2)
+      hasDoubleJumped = false;
+    } else if(platform.isTrampoline){
       player.setVelocityY(-700);
       hasDoubleJumped = false;
     } else if(platform.isDeadly && !isDying){
@@ -1329,6 +1337,35 @@ function create(){
     // Sign stays until level 2 (will be destroyed when scene restarts)
   }
   
+  // Add motivational sign on level 10 only - positioned at left corner
+  if(levelIndex === 9){
+    const signX = 90; // At the left corner of starting platform
+    const signY = h - 120; // Higher position
+    
+    // Wooden sign
+    const signGfx = this.add.graphics();
+    signGfx.fillStyle(0x6D4C41, 1); // Darker brown post
+    signGfx.fillRect(signX-2.5, signY, 5, 80); // Post
+    
+    // Sign board
+    signGfx.fillStyle(0xF4A460, 1); // Sandy brown
+    signGfx.fillRect(signX-60, signY-30, 120, 35);
+    
+    // Border
+    signGfx.lineStyle(3, 0x4E342E, 1);
+    signGfx.strokeRect(signX-60, signY-30, 120, 35);
+    
+    // Text
+    const helpText = this.add.text(signX, signY-12, 'Ok, last push!', {
+      fontSize: '16px',
+      fontFamily: 'Arial',
+      color: '#2C1810',
+      align: 'center',
+      fontStyle: 'bold'
+    });
+    helpText.setOrigin(0.5, 0.5);
+  }
+  
   // Add fade-in transition at level start
   const fadeOverlay = this.add.rectangle(w/2, h/2, w, h, 0x000000, 1);
   fadeOverlay.setDepth(1000); // On top of everything
@@ -1348,23 +1385,105 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
-     // Level 1: Basic platforming
-   addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
-    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
-    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
-    addTrampoline(scene, w*0.18, h*0.54);
-    addBurger(scene, w*0.16, h*0.14);
-    addBurger(scene, w*0.48, h*0.12);
-    addSpike(scene, w*0.37, h*0.75);
-    addSpike(scene, w*0.38, h*0.72);
-    addSpike(scene, w*0.39, h*0.69);
-    addSpike(scene, w*0.40, h*0.66);
-    addSpike(scene, w*0.41, h*0.63);
-    addSpike(scene, w*0.42, h*0.6);
-    addSpike(scene, w*0.43, h*0.57);
-    addSpike(scene, w*0.44, h*0.54);
-    addSpike(scene, w*0.45, h*0.51);
-    addFinish(scene, w*0.9, 120);
+    // Level 10: EXTREME FINALE - Avoid Dad, reach Judo Club! (Wiggly paths, tons of obstacles)
+    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
+    
+    // BOTTOM SECTION - Wiggly path with Dad obstacles
+    addPlatform(scene, w*0.18, h*0.85, 80, 15, 0x5B3A8F);
+    
+    // Synchronized moving platforms that meet in the middle
+    // First platform: moves from 0.24 to 0.34 (range of 0.10)
+    // Second platform: moves from 0.34 to 0.44 (range of 0.10) - shares meeting point at 0.34
+    addMovingPlatform(scene, w*0.24, h*0.88, w*0.24, w*0.34, 2.0); // Start at left, move right
+    addPlatform(scene, w*0.38, h*0.70, 70, 15, 0x5B3A8F);
+    addDad(scene, w*0.355, h*0.6); // Dad on the first static platform
+    
+    addMovingPlatform(scene, w*0.44, h*0.88, w*0.24, w*0.54, 2.0); // Start at right, move left (meets first platform)
+    
+    // MIDDLE SECTION - Tight platforms with Dad and spikes
+    addPlatform(scene, w*0.60, h*0.74, 75, 15, 0x5B3A8F);
+    addDad(scene, w*0.575, h*0.75); // Dad on platform
+
+    
+
+    addPlatform(scene, w*0.82, h*0.60, 75, 15, 0x5B3A8F);
+    
+    addTrampoline(scene, w*0.70, h*0.60);
+    addTrampoline(scene, w*0.715, h*0.60);
+    addTrampoline(scene, w*0.73, h*0.60);
+    addTrampoline(scene, w*0.745, h*0.60);
+    addTrampoline(scene, w*0.76, h*0.60);
+    addTrampoline(scene, w*0.775, h*0.60);
+
+
+    addSpike(scene, w*0.78, h*0.9);
+    addSpike(scene, w*0.765, h*0.9);
+    addSpike(scene, w*0.75, h*0.9);
+    addSpike(scene, w*0.735, h*0.9);
+    addSpike(scene, w*0.72, h*0.9);
+    addSpike(scene, w*0.705, h*0.9);
+    addSpike(scene, w*0.69, h*0.9);
+    addSpike(scene, w*0.675, h*0.9);
+
+
+
+    // Right bottom corner SUPER trampoline (2x jump height)
+    addPlatform(scene, w*0.84, h*0.9, 160, 15, 0x5B3A8F);
+    addSuperTrampoline(scene, w*0.92, h*0.9);
+    addBurger(scene, w*0.92, h*0.2); // Bottom right (dangerous)
+    
+    // SPIKE TUNNEL around supertrampoline - two vertical columns
+    // Left column at w*0.88 (pointing RIGHT into tunnel) - WITH ENTRANCE GAP
+    const spikeSpacing = 0.03; // 3% vertical spacing
+    // Create entrance gap from h*0.8 to h*0.9 (bottom section) - no spikes here
+   
+    for(let i = 0.74; i >= 0.24; i -= spikeSpacing) {
+      addRightPointingSpike(scene, w*0.88, h*i); // Top spikes above entrance
+    }
+    
+    // Right column at w*0.97 (pointing LEFT into tunnel)
+    for(let i = 0.95; i >= 0.04; i -= spikeSpacing) {
+      addLeftPointingSpike(scene, w*0.97, h*i);
+    }
+
+    // Horizontal line of spikes at h*0.5 (splitting level into two parts)
+    addHorizontalSpikeLine(scene, 0.02, 0.80, h*0.5, 0.015);
+    
+    
+    addPlatform(scene, w*0.82, h*0.48, 70, 15, 0x5B3A8F);
+
+    
+    // UPPER WIGGLY SECTION - Narrow path with multiple Dads
+    addPlatform(scene, w*0.75, h*0.38, 65, 15, 0x5B3A8F);
+    
+    addMovingPlatform(scene, w*0.65, h*0.28, w*0.60, w*0.72, 3.0); // Fast
+    
+    addPlatform(scene, w*0.55, h*0.20, 70, 15, 0x5B3A8F);
+    addSpike(scene, w*0.58, h*0.26);
+    
+    // TRICKY TRAMPOLINE SECTION
+    addTrampoline(scene, w*0.45, h*0.28);
+    addUpsideDownSpike(scene, w*0.45, h*0.15); // Spike above trampoline
+    
+    // PATH TO FINISH - Very narrow with multiple Dads
+    addPlatform(scene, w*0.35, h*0.22, 65, 15, 0x5B3A8F);
+    addDad(scene, w*0.38, h*0.29);
+    
+    addMovingPlatform(scene, w*0.25, h*0.15, w*0.20, w*0.32, 2.5);
+    
+    addPlatform(scene, w*0.15, h*0.28, 70, 15, 0x5B3A8F);
+    addSpike(scene, w*0.12, h*0.31);
+    
+    
+    // Additional obstacles scattered around
+    addSpike(scene, w*0.22, h*0.88);
+    
+    // Burgers (2 total - hard to get!)
+    addBurger(scene, w*0.18, h*0.12); // Near moon (top left)
+    
+    
+    // Judo Club door at top left corner (finish)
+    addJudoClubDoor(scene, w*0.08, h*0.2);
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1716,27 +1835,85 @@ if(level === 0){
   }
   
   if(level === 9){
-    // Level 10: Master finale
+    // Level 10: EXTREME FINALE - Avoid Dad, reach Judo Club! (Wiggly paths, tons of obstacles)
     addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
-    addMovingPlatform(scene, w*0.22, h*0.72, w*0.15, w*0.30, 3.5);
-    addTrampoline(scene, w*0.32, h*0.78);
-    addSpike(scene, w*0.26, h*0.82);
-    addMovingPlatform(scene, w*0.42, h*0.58, w*0.35, w*0.50, 3);
-    addSpike(scene, w*0.46, h*0.64);
-    addPlatform(scene, w*0.58, h*0.44, 70, 20, 0x5B3A8F); // Dark purple
-    addTrampoline(scene, w*0.66, h*0.52);
-    addMovingPlatform(scene, w*0.75, h*0.35, w*0.70, w*0.82, 2.8);
-    addSpike(scene, w*0.72, h*0.41);
-    addSpike(scene, w*0.78, h*0.41);
-    addPlatform(scene, w*0.88, h*0.22, 75, 20, 0x5B3A8F); // Finish platform (dark purple)
-    addSpike(scene, w*0.85, h*0.28);
-    addSpike(scene, w*0.91, h*0.28);
     
-    // Burgers
-    addBurger(scene, w*0.15, h*0.10); // Near moon
-    addBurger(scene, w*0.92, h*0.73); // Below finish door
+    // BOTTOM SECTION - Wiggly path with Dad obstacles
+    addPlatform(scene, w*0.18, h*0.85, 80, 15, 0x5B3A8F);
+    addDad(scene, w*0.25, h*0.92); // Dad blocking path
     
-    addFinish(scene, w*0.94, 80);
+    addMovingPlatform(scene, w*0.28, h*0.78, w*0.24, w*0.34, 2.8); // Fast moving
+    addPlatform(scene, w*0.38, h*0.70, 70, 15, 0x5B3A8F);
+    addDad(scene, w*0.32, h*0.84); // Dad below moving platform
+    
+    addMovingPlatform(scene, w*0.48, h*0.82, w*0.42, w*0.56, 3.2); // Very fast
+    addDad(scene, w*0.50, h*0.89); // Dad blocking path
+    addSpike(scene, w*0.44, h*0.78);
+    addSpike(scene, w*0.54, h*0.78);
+    
+    // MIDDLE SECTION - Tight platforms with Dad and spikes
+    addPlatform(scene, w*0.60, h*0.68, 75, 15, 0x5B3A8F);
+    addDad(scene, w*0.64, h*0.75); // Dad on platform
+    addUpsideDownSpike(scene, w*0.58, h*0.62);
+    addUpsideDownSpike(scene, w*0.63, h*0.62);
+    
+    addMovingPlatform(scene, w*0.70, h*0.55, w*0.65, w*0.78, 2.5);
+    addSpike(scene, w*0.68, h*0.64);
+    addSpike(scene, w*0.74, h*0.64);
+    
+    addPlatform(scene, w*0.82, h*0.48, 70, 15, 0x5B3A8F);
+    addDad(scene, w*0.85, h*0.55); // Dad guarding platform
+    
+    // UPPER WIGGLY SECTION - Narrow path with multiple Dads
+    addPlatform(scene, w*0.75, h*0.38, 65, 15, 0x5B3A8F);
+    addDad(scene, w*0.78, h*0.45);
+    addUpsideDownSpike(scene, w*0.72, h*0.32);
+    addUpsideDownSpike(scene, w*0.80, h*0.32);
+    
+    addMovingPlatform(scene, w*0.65, h*0.28, w*0.60, w*0.72, 3.0); // Fast
+    addDad(scene, w*0.68, h*0.35); // Dad on moving platform path
+    
+    addPlatform(scene, w*0.55, h*0.20, 70, 15, 0x5B3A8F);
+    addSpike(scene, w*0.58, h*0.26);
+    
+    // TRICKY TRAMPOLINE SECTION
+    addTrampoline(scene, w*0.45, h*0.28);
+    addUpsideDownSpike(scene, w*0.45, h*0.15); // Spike above trampoline
+    addUpsideDownSpike(scene, w*0.43, h*0.15);
+    addUpsideDownSpike(scene, w*0.47, h*0.15);
+    
+    // PATH TO FINISH - Very narrow with multiple Dads
+    addPlatform(scene, w*0.35, h*0.22, 65, 15, 0x5B3A8F);
+    addDad(scene, w*0.38, h*0.29);
+    
+    addMovingPlatform(scene, w*0.25, h*0.15, w*0.20, w*0.32, 2.5);
+    addDad(scene, w*0.28, h*0.22); // Dad near moving platform
+    
+    addPlatform(scene, w*0.15, h*0.25, 70, 15, 0x5B3A8F);
+    addSpike(scene, w*0.12, h*0.31);
+    addSpike(scene, w*0.19, h*0.31);
+    
+    // FINAL PLATFORM before Judo Club
+    addPlatform(scene, w*0.08, h*0.15, 80, 15, 0x5B3A8F);
+    addDad(scene, w*0.10, h*0.22); // Final Dad obstacle!
+    
+    // Additional obstacles scattered around
+    addSpike(scene, w*0.22, h*0.88);
+    addSpike(scene, w*0.35, h*0.76);
+    addSpike(scene, w*0.88, h*0.54);
+    addUpsideDownSpike(scene, w*0.52, h*0.48);
+    addUpsideDownSpike(scene, w*0.42, h*0.35);
+    
+    // Burgers (2 total - hard to get!)
+    addBurger(scene, w*0.18, h*0.12); // Near moon (top left)
+    addBurger(scene, w*0.88, h*0.82); // Bottom right (dangerous)
+    
+    // Trampoline to reach bottom right burger
+    addTrampoline(scene, w*0.88, h*0.88);
+    addDad(scene, w*0.90, h*0.95); // Dad guarding burger!
+    
+    // Judo Club door at top left corner (finish)
+    addJudoClubDoor(scene, w*0.08, h*0.08);
   }
 }
 
@@ -1780,6 +1957,13 @@ function addTrampoline(scene, x, y){
   scene.physics.add.existing(tramp, true);
   tramp.isTrampoline = true;
   platforms.add(tramp);
+}
+
+function addSuperTrampoline(scene, x, y){
+  const supertramp = scene.add.rectangle(x, y, 60, 12, 0x00BFFF); // Electric blue color
+  scene.physics.add.existing(supertramp, true);
+  supertramp.isSuperTrampoline = true; // Mark as super trampoline
+  platforms.add(supertramp);
 }
 
 function addSpike(scene, x, y){
@@ -1924,6 +2108,134 @@ function addFinish(scene, x, y){
   const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
   scene.physics.add.existing(finish, true);
   finishLine.add(finish);
+}
+
+function addJudoClubDoor(scene, x, y){
+  // White door with black borders and "JUDO CLUB" text
+  const doorGfx = scene.add.graphics();
+  
+  // Door frame (black border)
+  doorGfx.fillStyle(0x000000, 1);
+  doorGfx.fillRect(x-47, y-67, 94, 134);
+  
+  // Door body (white)
+  doorGfx.fillStyle(0xFFFFFF, 1);
+  doorGfx.fillRect(x-40, y-60, 80, 120);
+  
+  // White border inside (double border effect)
+  doorGfx.lineStyle(3, 0xFFFFFF, 1);
+  doorGfx.strokeRect(x-43, y-63, 86, 126);
+  
+  // Door panels (light gray inset for depth)
+  doorGfx.fillStyle(0xEEEEEE, 1);
+  doorGfx.fillRect(x-35, y-55, 30, 50); // Top left panel
+  doorGfx.fillRect(x+5, y-55, 30, 50); // Top right panel
+  doorGfx.fillRect(x-35, y, 30, 50); // Bottom left panel
+  doorGfx.fillRect(x+5, y, 30, 50); // Bottom right panel
+  
+  // Black door handle
+  doorGfx.fillStyle(0x000000, 1);
+  doorGfx.fillCircle(x+25, y, 8); // Round handle
+  doorGfx.fillRect(x+20, y-3, 15, 6); // Handle extension
+  
+  // "JUDO CLUB" text above door
+  const judoText = scene.add.text(x, y-85, 'JUDO CLUB', {
+    fontSize: '18px',
+    fontFamily: 'Arial Black',
+    color: '#FFFFFF',
+    stroke: '#000000',
+    strokeThickness: 4,
+    align: 'center',
+    fontStyle: 'bold'
+  });
+  judoText.setOrigin(0.5);
+  
+  const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
+  scene.physics.add.existing(finish, true);
+  finishLine.add(finish);
+}
+
+function addHorizontalSpikeLine(scene, startPercent, endPercent, yPos, spacing) {
+  // Add a horizontal line of upside-down spikes
+  // startPercent: starting position (0.02 = 2% from left)
+  // endPercent: ending position (0.68 = 68% from left)
+  // yPos: vertical position (e.g., h*0.5)
+  // spacing: spacing between spikes (0.015 = 1.5% increments)
+  const w = scene.scale.width;
+  
+  for(let i = startPercent; i <= endPercent; i += spacing) {
+    addUpsideDownSpike(scene, w*i, yPos);
+  }
+}
+
+function addDad(scene, x, y){
+  // Create Avdeev's Dad obstacle (bald, fat, angry - BIGGER!)
+  const scale = 1.4; // 40% bigger than before (was 1)
+  
+  // Create a graphics object for Dad
+  const dadGfx = scene.add.graphics();
+  
+  // Bald head (larger, rounder)
+  dadGfx.fillStyle(0xFFDBAC, 1);
+  dadGfx.fillRect(x+13*scale, y+5*scale, 24*scale, 18*scale); // Wider head
+  dadGfx.fillRect(x+10*scale, y+8*scale, 30*scale, 15*scale); // Extra wide
+  
+  // Angry eyes (smaller, mean-looking)
+  dadGfx.fillStyle(0xFFFFFF, 1);
+  dadGfx.fillCircle(x+18*scale, y+14*scale, 2.5*scale);
+  dadGfx.fillCircle(x+32*scale, y+14*scale, 2.5*scale);
+  
+  dadGfx.fillStyle(0x000000, 1);
+  dadGfx.fillCircle(x+18*scale, y+14*scale, 1.2*scale);
+  dadGfx.fillCircle(x+32*scale, y+14*scale, 1.2*scale);
+  
+  // Angry eyebrows (angled down toward center)
+  dadGfx.fillStyle(0x3E2723, 1);
+  dadGfx.fillRect(x+15*scale, y+11*scale, 6*scale, 2*scale);
+  dadGfx.fillRect(x+29*scale, y+11*scale, 6*scale, 2*scale);
+  dadGfx.fillRect(x+14*scale, y+9*scale, 2*scale, 2*scale);
+  dadGfx.fillRect(x+34*scale, y+9*scale, 2*scale, 2*scale);
+  
+  // Angry frown (curved DOWN - corners pointing down) - POSITIONED LOWER
+  dadGfx.fillStyle(0x000000, 1);
+  dadGfx.fillRect(x+20*scale, y+19*scale, 10*scale, 1.5*scale); // Main frown line
+  dadGfx.fillRect(x+19*scale, y+20.5*scale, 1.5*scale, 1.5*scale); // Left corner DOWN
+  dadGfx.fillRect(x+29.5*scale, y+20.5*scale, 1.5*scale, 1.5*scale); // Right corner DOWN
+  
+  // Fat neck (double chin)
+  dadGfx.fillStyle(0xFFDBAC, 1);
+  dadGfx.fillCircle(x+25*scale, y+23*scale, 10*scale, Math.PI, 0);
+  dadGfx.fillRect(x+15*scale, y+23*scale, 20*scale, 6*scale);
+  
+  // Fat body (white t-shirt)
+  dadGfx.fillStyle(0xFFFFFF, 1);
+  dadGfx.fillRect(x+8*scale, y+29*scale, 34*scale, 20*scale);
+  dadGfx.fillRect(x+3*scale, y+32*scale, 8*scale, 15*scale);
+  dadGfx.fillRect(x+39*scale, y+32*scale, 8*scale, 15*scale);
+  
+  // Belt
+  dadGfx.fillStyle(0x5D4037, 1);
+  dadGfx.fillRect(x+8*scale, y+45*scale, 34*scale, 4*scale);
+  
+  // Belt buckle
+  dadGfx.fillStyle(0xFFD700, 1);
+  dadGfx.fillRect(x+23*scale, y+44*scale, 4*scale, 6*scale);
+  
+  // Dark pants
+  dadGfx.fillStyle(0x424242, 1);
+  dadGfx.fillRect(x+12*scale, y+49*scale, 12*scale, 10*scale);
+  dadGfx.fillRect(x+26*scale, y+49*scale, 12*scale, 10*scale);
+  
+  // Black shoes
+  dadGfx.fillStyle(0x000000, 1);
+  dadGfx.fillRect(x+12*scale, y+59*scale, 12*scale, 4*scale); // Left shoe
+  dadGfx.fillRect(x+26*scale, y+59*scale, 12*scale, 4*scale); // Right shoe
+  
+  // Create invisible hitbox for collision detection (bigger to match scale)
+  const dadHitbox = scene.add.rectangle(x+25*scale, y+34*scale, 42*scale, 62*scale, 0xFF0000, 0);
+  scene.physics.add.existing(dadHitbox, true);
+  dadHitbox.isDeadly = true; // Mark as deadly obstacle
+  platforms.add(dadHitbox);
 }
 
 function createBurgerCrumbs(scene, x, y){
