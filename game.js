@@ -62,7 +62,14 @@ function startGame() {
   levelVisited = []; // Reset level visited tracking
   game = new Phaser.Game(config);
   
-  // Start HTML5 audio music with selected track
+  // Stop any preview audio that might be playing from character menu
+  const previewAudio = document.getElementById('preview-audio');
+  if(previewAudio) {
+    previewAudio.pause();
+    previewAudio.currentTime = 0;
+  }
+  
+  // Start HTML5 audio music with selected track (only if music is enabled)
   const audioElement = document.getElementById('background-music');
   if(audioElement && musicEnabled){
     // Update source to selected track
@@ -144,13 +151,24 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Music track selection
   const musicTracks = document.querySelectorAll('input[name="music-track"]');
-  const previewAudio = new Audio(); // Audio element for previewing tracks
-  previewAudio.volume = 0.5; // Lower volume for preview
+  
+  // Create a dedicated preview audio element (separate from game music)
+  let previewAudio = document.getElementById('preview-audio');
+  if(!previewAudio) {
+    previewAudio = new Audio();
+    previewAudio.id = 'preview-audio';
+    previewAudio.volume = 0.5; // Lower volume for preview
+    document.body.appendChild(previewAudio); // Add to DOM so we can reference it later
+  }
   
   musicTracks.forEach(track => {
     track.addEventListener('change', (e) => {
       playerConfig.selectedMusicTrack = e.target.value;
       console.log('🎵 Music track selected:', e.target.value);
+      
+      // Stop any currently playing preview
+      previewAudio.pause();
+      previewAudio.currentTime = 0;
       
       // Play preview of selected track (8 seconds)
       previewAudio.src = e.target.value;
@@ -194,14 +212,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Menus
   if (playBtn) playBtn.addEventListener('click', () => { hideAllMenus(); if(characterMenu) characterMenu.classList.add('active'); });
-  if (startGameBtn) startGameBtn.addEventListener('click', () => { hideAllMenus(); if(gameHud) gameHud.classList.remove('hidden'); startGame(); });
+  if (startGameBtn) startGameBtn.addEventListener('click', () => { 
+    hideAllMenus(); 
+    if(gameHud) gameHud.classList.remove('hidden'); 
+    // Stop any preview music before starting game
+    const previewAudio = document.getElementById('preview-audio');
+    if(previewAudio) {
+      previewAudio.pause();
+      previewAudio.currentTime = 0;
+    }
+    startGame(); 
+  });
   if (settingsBtn) settingsBtn.addEventListener('click', () => { hideAllMenus(); if(settingsMenu) settingsMenu.classList.add('active'); });
-  if (backBtn) backBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); });
+  if (backBtn) backBtn.addEventListener('click', () => { 
+    hideAllMenus(); 
+    if(mainMenu) mainMenu.classList.add('active'); 
+    // Stop preview music when going back to main menu
+    const previewAudio = document.getElementById('preview-audio');
+    if(previewAudio) {
+      previewAudio.pause();
+      previewAudio.currentTime = 0;
+    }
+  });
   if (restartBtn) restartBtn.addEventListener('click', () => { if(game && game.scene.scenes[0]) game.scene.scenes[0].scene.restart(); });
-  if (menuBtn) menuBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); if(gameHud) gameHud.classList.add('hidden'); if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); });
-  if (exitBtn) exitBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); if(gameHud) gameHud.classList.add('hidden'); if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); });
+  if (menuBtn) menuBtn.addEventListener('click', () => { 
+    hideAllMenus(); 
+    if(mainMenu) mainMenu.classList.add('active'); 
+    if(gameHud) gameHud.classList.add('hidden'); 
+    if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); 
+    // Stop game music when returning to main menu
+    const audioElement = document.getElementById('background-music');
+    if(audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    }
+  });
+  if (exitBtn) exitBtn.addEventListener('click', () => { 
+    hideAllMenus(); 
+    if(mainMenu) mainMenu.classList.add('active'); 
+    if(gameHud) gameHud.classList.add('hidden'); 
+    if(game&&game.scene.scenes[0]) game.scene.scenes[0].scene.pause(); 
+    // Stop game music when exiting to main menu
+    const audioElement = document.getElementById('background-music');
+    if(audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    }
+  });
   if (playAgainBtn) playAgainBtn.addEventListener('click', () => { hideAllMenus(); if(gameHud) gameHud.classList.remove('hidden'); startGame(); });
-  if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => { hideAllMenus(); if(mainMenu) mainMenu.classList.add('active'); });
+  if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => { 
+    hideAllMenus(); 
+    if(mainMenu) mainMenu.classList.add('active'); 
+    // Stop game music when returning to main menu from congrats screen
+    const audioElement = document.getElementById('background-music');
+    if(audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    }
+  });
 
   if (brightnessSlider) brightnessSlider.addEventListener('input', e => { const v = e.target.value; if(brightnessValue) brightnessValue.textContent = v+'%'; document.body.style.filter = `brightness(${v}%)`; });
   
@@ -2187,7 +2255,7 @@ function addAmongUs(scene, x, y) {
 }
 
 function createFinishSparks(scene, x, y) {
-  // Create colorful sparks flying around the finish door - MORE UPWARD
+  // Create colorful sparks flying upward in chaotic/scattered directions
   const colors = [0xFFD700, 0xFF4444, 0x4CAF50, 0x2196F3, 0xFF9800, 0x9C27B0];
   const numSparks = 30;
   
@@ -2195,32 +2263,32 @@ function createFinishSparks(scene, x, y) {
     const color = Phaser.Utils.Array.GetRandom(colors);
     const size = Phaser.Math.Between(6, 12);
     
-    // Create spark particle
+    // Create spark particle starting from door position
     const spark = scene.add.rectangle(
-      x + Phaser.Math.Between(-40, 40),
-      y + Phaser.Math.Between(-60, 60),
+      x + Phaser.Math.Between(-30, 30), // Spread slightly horizontally
+      y,
       size,
       size,
       color
     );
     scene.physics.add.existing(spark);
     
-    // Random UPWARD velocity - mostly flying up like fireworks
-    const angle = Phaser.Math.Between(-160, -20); // Angle range for upward motion (-90 is straight up)
+    // Fly UPWARD but in CHAOTIC directions (random angles upward)
+    const angle = Phaser.Math.Between(-140, -40); // Wide upward range (-90 is straight up)
     const angleRad = angle * (Math.PI / 180);
-    const speed = Phaser.Math.Between(200, 450); // Faster upward speed
+    const speed = Phaser.Math.Between(250, 450); // Fast chaotic speeds
     const vx = Math.cos(angleRad) * speed;
     const vy = Math.sin(angleRad) * speed; // Negative = upward
     spark.body.setVelocity(vx, vy);
-    spark.body.setGravityY(400); // Gravity pulls them down (like fireworks)
+    spark.body.setGravityY(0); // No gravity - just fly up and fade
     
-    // Rotate, fade out and destroy
+    // Fade out and rotate as they rise
     scene.tweens.add({
       targets: spark,
-      angle: Phaser.Math.Between(-360, 360),
       alpha: 0,
-      scale: 0.3,
-      duration: 1200, // Longer duration to see them fly up
+      angle: Phaser.Math.Between(-180, 180), // Random rotation
+      scale: 0.2,
+      duration: 1000,
       ease: 'Power2',
       onComplete: () => spark.destroy()
     });
