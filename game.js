@@ -1197,10 +1197,15 @@ function create(){
   
   // Finish door collision - prevent multiple triggers
   let levelCompleting = false;
-  this.physics.add.overlap(player, finishLine, () => {
+  this.physics.add.overlap(player, finishLine, (p, door) => {
     if(!levelCompleting) {
       levelCompleting = true;
-      nextLevel(this);
+      // Create colorful sparks around the door
+      createFinishSparks(this, door.x, door.y);
+      // Transition to next level after sparks animation
+      this.time.delayedCall(400, () => {
+        nextLevel(this);
+      });
     }
   });
   
@@ -1385,105 +1390,23 @@ function buildLevelLayout(scene, level){
   finishLine = scene.physics.add.staticGroup();
   
 if(level === 0){
-    // Level 10: EXTREME FINALE - Avoid Dad, reach Judo Club! (Wiggly paths, tons of obstacles)
-    addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
-    
-    // BOTTOM SECTION - Wiggly path with Dad obstacles
-    addPlatform(scene, w*0.18, h*0.85, 80, 15, 0x5B3A8F);
-    
-    // Synchronized moving platforms that meet in the middle
-    // First platform: moves from 0.24 to 0.34 (range of 0.10)
-    // Second platform: moves from 0.34 to 0.44 (range of 0.10) - shares meeting point at 0.34
-    addMovingPlatform(scene, w*0.24, h*0.88, w*0.24, w*0.34, 2.0); // Start at left, move right
-    addPlatform(scene, w*0.38, h*0.70, 70, 15, 0x5B3A8F);
-    addDad(scene, w*0.355, h*0.6); // Dad on the first static platform
-    
-    addMovingPlatform(scene, w*0.44, h*0.88, w*0.24, w*0.54, 2.0); // Start at right, move left (meets first platform)
-    
-    // MIDDLE SECTION - Tight platforms with Dad and spikes
-    addPlatform(scene, w*0.60, h*0.74, 75, 15, 0x5B3A8F);
-    addDad(scene, w*0.575, h*0.75); // Dad on platform
-
-    
-
-    addPlatform(scene, w*0.82, h*0.60, 75, 15, 0x5B3A8F);
-    
-    addTrampoline(scene, w*0.70, h*0.60);
-    addTrampoline(scene, w*0.715, h*0.60);
-    addTrampoline(scene, w*0.73, h*0.60);
-    addTrampoline(scene, w*0.745, h*0.60);
-    addTrampoline(scene, w*0.76, h*0.60);
-    addTrampoline(scene, w*0.775, h*0.60);
-
-
-    addSpike(scene, w*0.78, h*0.9);
-    addSpike(scene, w*0.765, h*0.9);
-    addSpike(scene, w*0.75, h*0.9);
-    addSpike(scene, w*0.735, h*0.9);
-    addSpike(scene, w*0.72, h*0.9);
-    addSpike(scene, w*0.705, h*0.9);
-    addSpike(scene, w*0.69, h*0.9);
-    addSpike(scene, w*0.675, h*0.9);
-
-
-
-    // Right bottom corner SUPER trampoline (2x jump height)
-    addPlatform(scene, w*0.84, h*0.9, 160, 15, 0x5B3A8F);
-    addSuperTrampoline(scene, w*0.92, h*0.9);
-    addBurger(scene, w*0.92, h*0.2); // Bottom right (dangerous)
-    
-    // SPIKE TUNNEL around supertrampoline - two vertical columns
-    // Left column at w*0.88 (pointing RIGHT into tunnel) - WITH ENTRANCE GAP
-    const spikeSpacing = 0.03; // 3% vertical spacing
-    // Create entrance gap from h*0.8 to h*0.9 (bottom section) - no spikes here
-   
-    for(let i = 0.74; i >= 0.24; i -= spikeSpacing) {
-      addRightPointingSpike(scene, w*0.88, h*i); // Top spikes above entrance
-    }
-    
-    // Right column at w*0.97 (pointing LEFT into tunnel)
-    for(let i = 0.95; i >= 0.04; i -= spikeSpacing) {
-      addLeftPointingSpike(scene, w*0.97, h*i);
-    }
-
-    // Horizontal line of spikes at h*0.5 (splitting level into two parts)
-    addHorizontalSpikeLine(scene, 0.02, 0.80, h*0.5, 0.015);
-    
-    
-    addPlatform(scene, w*0.82, h*0.48, 70, 15, 0x5B3A8F);
-
-    
-    // UPPER WIGGLY SECTION - Narrow path with multiple Dads
-    addPlatform(scene, w*0.75, h*0.38, 65, 15, 0x5B3A8F);
-    
-    addMovingPlatform(scene, w*0.65, h*0.28, w*0.60, w*0.72, 3.0); // Fast
-    
-    addPlatform(scene, w*0.55, h*0.20, 70, 15, 0x5B3A8F);
-    addSpike(scene, w*0.58, h*0.26);
-    
-    // TRICKY TRAMPOLINE SECTION
-    addTrampoline(scene, w*0.45, h*0.28);
-    addUpsideDownSpike(scene, w*0.45, h*0.15); // Spike above trampoline
-    
-    // PATH TO FINISH - Very narrow with multiple Dads
-    addPlatform(scene, w*0.35, h*0.22, 65, 15, 0x5B3A8F);
-    addDad(scene, w*0.38, h*0.29);
-    
-    addMovingPlatform(scene, w*0.25, h*0.15, w*0.20, w*0.32, 2.5);
-    
-    addPlatform(scene, w*0.15, h*0.28, 70, 15, 0x5B3A8F);
-    addSpike(scene, w*0.12, h*0.31);
-    
-    
-    // Additional obstacles scattered around
-    addSpike(scene, w*0.22, h*0.88);
-    
-    // Burgers (2 total - hard to get!)
-    addBurger(scene, w*0.18, h*0.12); // Near moon (top left)
-    
-    
-    // Judo Club door at top left corner (finish)
-    addJudoClubDoor(scene, w*0.08, h*0.2);
+    // Level 1: Basic platforming
+   addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
+    addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
+    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
+    addTrampoline(scene, w*0.18, h*0.54);
+    addBurger(scene, w*0.16, h*0.14);
+    addBurger(scene, w*0.48, h*0.12);
+    addSpike(scene, w*0.37, h*0.75);
+    addSpike(scene, w*0.38, h*0.72);
+    addSpike(scene, w*0.39, h*0.69);
+    addSpike(scene, w*0.40, h*0.66);
+    addSpike(scene, w*0.41, h*0.63);
+    addSpike(scene, w*0.42, h*0.6);
+    addSpike(scene, w*0.43, h*0.57);
+    addSpike(scene, w*0.44, h*0.54);
+    addSpike(scene, w*0.45, h*0.51);
+    addFinish(scene, w*0.9, 120);
   } 
   if (level === 1){
     // Level 2: Trampoline challenge
@@ -1835,43 +1758,76 @@ if(level === 0){
   }
   
   if(level === 9){
-    // Level 10: EXTREME FINALE - Avoid Dad, reach Judo Club! (Wiggly paths, tons of obstacles)
+     // Level 10: EXTREME FINALE - Avoid Dad, reach Judo Club! (Wiggly paths, tons of obstacles)
     addPlatform(scene, 150, h-40, 140, 20, 0x5B3A8F); // Starting platform (dark purple)
     
     // BOTTOM SECTION - Wiggly path with Dad obstacles
     addPlatform(scene, w*0.18, h*0.85, 80, 15, 0x5B3A8F);
-    addDad(scene, w*0.25, h*0.92); // Dad blocking path
     
-    addMovingPlatform(scene, w*0.28, h*0.78, w*0.24, w*0.34, 2.8); // Fast moving
+    // Synchronized moving platforms that meet in the middle
+    // First platform: moves from 0.24 to 0.34 (range of 0.10)
+    // Second platform: moves from 0.34 to 0.44 (range of 0.10) - shares meeting point at 0.34
+    addMovingPlatform(scene, w*0.26, h*0.88, w*0.26, w*0.56, 3.0); // Start at left, move right
     addPlatform(scene, w*0.38, h*0.70, 70, 15, 0x5B3A8F);
-    addDad(scene, w*0.32, h*0.84); // Dad below moving platform
+    addDad(scene, w*0.355, h*0.6); // Dad on the first static platform
     
-    addMovingPlatform(scene, w*0.48, h*0.82, w*0.42, w*0.56, 3.2); // Very fast
-    addDad(scene, w*0.50, h*0.89); // Dad blocking path
-    addSpike(scene, w*0.44, h*0.78);
-    addSpike(scene, w*0.54, h*0.78);
     
     // MIDDLE SECTION - Tight platforms with Dad and spikes
-    addPlatform(scene, w*0.60, h*0.68, 75, 15, 0x5B3A8F);
-    addDad(scene, w*0.64, h*0.75); // Dad on platform
-    addUpsideDownSpike(scene, w*0.58, h*0.62);
-    addUpsideDownSpike(scene, w*0.63, h*0.62);
+    addPlatform(scene, w*0.60, h*0.74, 75, 15, 0x5B3A8F);
+    addDad(scene, w*0.575, h*0.75); // Dad on platform
+
     
-    addMovingPlatform(scene, w*0.70, h*0.55, w*0.65, w*0.78, 2.5);
-    addSpike(scene, w*0.68, h*0.64);
-    addSpike(scene, w*0.74, h*0.64);
+
+    addPlatform(scene, w*0.82, h*0.60, 75, 15, 0x5B3A8F);
+    
+    addTrampoline(scene, w*0.70, h*0.60);
+    addTrampoline(scene, w*0.715, h*0.60);
+    addTrampoline(scene, w*0.73, h*0.60);
+    addTrampoline(scene, w*0.745, h*0.60);
+    addTrampoline(scene, w*0.76, h*0.60);
+    addTrampoline(scene, w*0.775, h*0.60);
+
+
+    addSpike(scene, w*0.78, h*0.9);
+    addSpike(scene, w*0.765, h*0.9);
+    addSpike(scene, w*0.75, h*0.9);
+    addSpike(scene, w*0.735, h*0.9);
+    addSpike(scene, w*0.72, h*0.9);
+    addSpike(scene, w*0.705, h*0.9);
+    addSpike(scene, w*0.69, h*0.9);
+    addSpike(scene, w*0.675, h*0.9);
+
+
+
+    // Right bottom corner SUPER trampoline (2x jump height)
+    addPlatform(scene, w*0.84, h*0.9, 160, 15, 0x5B3A8F);
+    addSuperTrampoline(scene, w*0.92, h*0.9);
+    addBurger(scene, w*0.92, h*0.2); // Bottom right (dangerous)
+    
+    // SPIKE TUNNEL around supertrampoline - two vertical columns
+    // Left column at w*0.88 (pointing RIGHT into tunnel) - WITH ENTRANCE GAP
+    const spikeSpacing = 0.03; // 3% vertical spacing
+    // Create entrance gap from h*0.8 to h*0.9 (bottom section) - no spikes here
+   
+    for(let i = 0.74; i >= 0.24; i -= spikeSpacing) {
+      addRightPointingSpike(scene, w*0.88, h*i); // Top spikes above entrance
+    }
+    
+    // Right column at w*0.97 (pointing LEFT into tunnel)
+    for(let i = 0.95; i >= 0.04; i -= spikeSpacing) {
+      addLeftPointingSpike(scene, w*0.97, h*i);
+    }
+
+    // Horizontal line of spikes at h*0.5 (splitting level into two parts)
+    addHorizontalSpikeLine(scene, 0.02, 0.80, h*0.5, 0.015);
+    
     
     addPlatform(scene, w*0.82, h*0.48, 70, 15, 0x5B3A8F);
-    addDad(scene, w*0.85, h*0.55); // Dad guarding platform
+
     
     // UPPER WIGGLY SECTION - Narrow path with multiple Dads
     addPlatform(scene, w*0.75, h*0.38, 65, 15, 0x5B3A8F);
-    addDad(scene, w*0.78, h*0.45);
-    addUpsideDownSpike(scene, w*0.72, h*0.32);
-    addUpsideDownSpike(scene, w*0.80, h*0.32);
     
-    addMovingPlatform(scene, w*0.65, h*0.28, w*0.60, w*0.72, 3.0); // Fast
-    addDad(scene, w*0.68, h*0.35); // Dad on moving platform path
     
     addPlatform(scene, w*0.55, h*0.20, 70, 15, 0x5B3A8F);
     addSpike(scene, w*0.58, h*0.26);
@@ -1879,41 +1835,26 @@ if(level === 0){
     // TRICKY TRAMPOLINE SECTION
     addTrampoline(scene, w*0.45, h*0.28);
     addUpsideDownSpike(scene, w*0.45, h*0.15); // Spike above trampoline
-    addUpsideDownSpike(scene, w*0.43, h*0.15);
-    addUpsideDownSpike(scene, w*0.47, h*0.15);
     
     // PATH TO FINISH - Very narrow with multiple Dads
-    addPlatform(scene, w*0.35, h*0.22, 65, 15, 0x5B3A8F);
-    addDad(scene, w*0.38, h*0.29);
     
-    addMovingPlatform(scene, w*0.25, h*0.15, w*0.20, w*0.32, 2.5);
-    addDad(scene, w*0.28, h*0.22); // Dad near moving platform
-    
-    addPlatform(scene, w*0.15, h*0.25, 70, 15, 0x5B3A8F);
+    addMovingPlatform(scene, w*0.25, h*0.25, w*0.22, w*0.32, 2.5);
+    addDad(scene, w*0.30, h*0.33);
+    addPlatform(scene, w*0.15, h*0.28, 70, 15, 0x5B3A8F);
     addSpike(scene, w*0.12, h*0.31);
-    addSpike(scene, w*0.19, h*0.31);
     
-    // FINAL PLATFORM before Judo Club
-    addPlatform(scene, w*0.08, h*0.15, 80, 15, 0x5B3A8F);
-    addDad(scene, w*0.10, h*0.22); // Final Dad obstacle!
     
     // Additional obstacles scattered around
     addSpike(scene, w*0.22, h*0.88);
-    addSpike(scene, w*0.35, h*0.76);
-    addSpike(scene, w*0.88, h*0.54);
-    addUpsideDownSpike(scene, w*0.52, h*0.48);
-    addUpsideDownSpike(scene, w*0.42, h*0.35);
     
     // Burgers (2 total - hard to get!)
     addBurger(scene, w*0.18, h*0.12); // Near moon (top left)
-    addBurger(scene, w*0.88, h*0.82); // Bottom right (dangerous)
     
-    // Trampoline to reach bottom right burger
-    addTrampoline(scene, w*0.88, h*0.88);
-    addDad(scene, w*0.90, h*0.95); // Dad guarding burger!
+    // Levitating Among Us character in free space (right side)
+    addAmongUs(scene, w*0.90, h*0.35);
     
     // Judo Club door at top left corner (finish)
-    addJudoClubDoor(scene, w*0.08, h*0.08);
+    addJudoClubDoor(scene, w*0.08, h*0.2);
   }
 }
 
@@ -2105,6 +2046,11 @@ function addFinish(scene, x, y){
   doorGfx.fillCircle(x+25, y, 8); // Round handle
   doorGfx.fillRect(x+20, y-3, 15, 6); // Handle extension
   
+  // Invisible platform behind door so Avdeev doesn't fall
+  const invisiblePlatform = scene.add.rectangle(x, y+65, 100, 20, 0xffffff, 0);
+  scene.physics.add.existing(invisiblePlatform, true);
+  platforms.add(invisiblePlatform);
+  
   const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
   scene.physics.add.existing(finish, true);
   finishLine.add(finish);
@@ -2150,6 +2096,11 @@ function addJudoClubDoor(scene, x, y){
   });
   judoText.setOrigin(0.5);
   
+  // Invisible platform behind door so Avdeev doesn't fall
+  const invisiblePlatform = scene.add.rectangle(x, y+65, 100, 20, 0xffffff, 0);
+  scene.physics.add.existing(invisiblePlatform, true);
+  platforms.add(invisiblePlatform);
+  
   const finish = scene.add.rectangle(x, y, 90, 130, 0xffffff, 0);
   scene.physics.add.existing(finish, true);
   finishLine.add(finish);
@@ -2165,6 +2116,87 @@ function addHorizontalSpikeLine(scene, startPercent, endPercent, yPos, spacing) 
   
   for(let i = startPercent; i <= endPercent; i += spacing) {
     addUpsideDownSpike(scene, w*i, yPos);
+  }
+}
+
+function addAmongUs(scene, x, y) {
+  // Create Among Us character using graphics
+  const amongGfx = scene.add.graphics();
+  
+  // Body (red)
+  amongGfx.fillStyle(0xFF0000, 1);
+  amongGfx.fillRoundedRect(x-20, y-15, 40, 50, 8);
+  
+  // Visor (light blue/cyan glass)
+  amongGfx.fillStyle(0x4FC3F7, 1);
+  amongGfx.fillRoundedRect(x-12, y-8, 24, 18, 4);
+  
+  // Visor reflection (white)
+  amongGfx.fillStyle(0xFFFFFF, 0.6);
+  amongGfx.fillRect(x-10, y-5, 8, 6);
+  
+  // Backpack
+  amongGfx.fillStyle(0xCC0000, 1);
+  amongGfx.fillRoundedRect(x+12, y-10, 12, 30, 4);
+  
+  // Legs
+  amongGfx.fillStyle(0xFF0000, 1);
+  amongGfx.fillRoundedRect(x-15, y+30, 12, 8, 4); // Left leg
+  amongGfx.fillRoundedRect(x+3, y+30, 12, 8, 4); // Right leg
+  
+  amongGfx.generateTexture('amongUsChar', 60, 60);
+  amongGfx.destroy();
+  
+  const amongSprite = scene.add.sprite(x, y, 'amongUsChar');
+  
+  // Add floating/levitating animation
+  scene.tweens.add({
+    targets: amongSprite,
+    y: y - 15, // Float up 15 pixels
+    duration: 1500, // 1.5 seconds
+    ease: 'Sine.easeInOut',
+    yoyo: true,
+    repeat: -1
+  });
+}
+
+function createFinishSparks(scene, x, y) {
+  // Create colorful sparks flying around the finish door
+  const colors = [0xFFD700, 0xFF4444, 0x4CAF50, 0x2196F3, 0xFF9800, 0x9C27B0];
+  const numSparks = 30;
+  
+  for(let i = 0; i < numSparks; i++) {
+    const color = Phaser.Utils.Array.GetRandom(colors);
+    const size = Phaser.Math.Between(6, 12);
+    
+    // Create spark particle
+    const spark = scene.add.rectangle(
+      x + Phaser.Math.Between(-40, 40),
+      y + Phaser.Math.Between(-60, 60),
+      size,
+      size,
+      color
+    );
+    scene.physics.add.existing(spark);
+    
+    // Random outward velocity
+    const angle = Phaser.Math.Between(0, 360) * (Math.PI / 180);
+    const speed = Phaser.Math.Between(150, 350);
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+    spark.body.setVelocity(vx, vy);
+    spark.body.setGravityY(-200); // Float upward slightly
+    
+    // Rotate, fade out and destroy - slightly slower
+    scene.tweens.add({
+      targets: spark,
+      angle: Phaser.Math.Between(-360, 360),
+      alpha: 0,
+      scale: 0.3,
+      duration: 900, // Slower than before (was 600)
+      ease: 'Power2',
+      onComplete: () => spark.destroy()
+    });
   }
 }
 
@@ -2459,7 +2491,7 @@ function createDoubleJumpEffect(scene, x, y) {
 }
 
 function nextLevel(scene){
-  // Fade out transition before changing level
+  // Fast fade out transition before changing level
   const w = scene.scale.width;
   const h = scene.scale.height;
   const fadeOverlay = scene.add.rectangle(w/2, h/2, w, h, 0x000000, 0);
@@ -2468,7 +2500,7 @@ function nextLevel(scene){
   scene.tweens.add({
     targets: fadeOverlay,
     alpha: 1,
-    duration: 300,
+    duration: 150, // Much faster fade (was 300)
     ease: 'Power2',
     onComplete: () => {
       levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
