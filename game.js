@@ -144,10 +144,36 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Music track selection
   const musicTracks = document.querySelectorAll('input[name="music-track"]');
+  const previewAudio = new Audio(); // Audio element for previewing tracks
+  previewAudio.volume = 0.5; // Lower volume for preview
+  
   musicTracks.forEach(track => {
     track.addEventListener('change', (e) => {
       playerConfig.selectedMusicTrack = e.target.value;
       console.log('🎵 Music track selected:', e.target.value);
+      
+      // Play preview of selected track (8 seconds)
+      previewAudio.src = e.target.value;
+      previewAudio.currentTime = 10; // Start at 10 seconds into the track
+      previewAudio.play().catch(err => console.log('Preview play blocked:', err));
+      
+      // Update track name display in character menu
+      const trackNameDisplay = document.getElementById('current-track-name');
+      const trackLabel = e.target.parentElement.textContent.trim();
+      if(trackNameDisplay) {
+        trackNameDisplay.textContent = '♪ ' + trackLabel;
+        trackNameDisplay.style.opacity = '1';
+      }
+      
+      // Stop preview after 8 seconds
+      setTimeout(() => {
+        previewAudio.pause();
+        previewAudio.currentTime = 0;
+        // Fade out track name
+        if(trackNameDisplay) {
+          trackNameDisplay.style.opacity = '0';
+        }
+      }, 8000);
     });
   });
   
@@ -1668,7 +1694,7 @@ if(level === 0){
     addPlatform(scene, w*0.051, h*0.85, 90, 15, 0x5B3A8F); // Bottom - close to left column
     addPlatform(scene, w*0.155, h*0.60, 90, 15, 0x5B3A8F); // Upper - close to right column
     addPlatform(scene, w*0.051, h*0.4, 90, 15, 0x5B3A8F); // Upper - close to left column
-    addPlatform(scene, w*0.17, h*0.15, 90, 15, 0x5B3A8F); // Near top - close to right column
+    addPlatform(scene, w*0.18, h*0.15, 90, 15, 0x5B3A8F); // Near top - close to right column
     
     // Bottom right section - moving platform with spike obstacles
     addPlatform(scene, w*0.28, h*0.9, 100, 20, 0x5B3A8F); // Starting platform
@@ -2161,7 +2187,7 @@ function addAmongUs(scene, x, y) {
 }
 
 function createFinishSparks(scene, x, y) {
-  // Create colorful sparks flying around the finish door
+  // Create colorful sparks flying around the finish door - MORE UPWARD
   const colors = [0xFFD700, 0xFF4444, 0x4CAF50, 0x2196F3, 0xFF9800, 0x9C27B0];
   const numSparks = 30;
   
@@ -2179,21 +2205,22 @@ function createFinishSparks(scene, x, y) {
     );
     scene.physics.add.existing(spark);
     
-    // Random outward velocity
-    const angle = Phaser.Math.Between(0, 360) * (Math.PI / 180);
-    const speed = Phaser.Math.Between(150, 350);
-    const vx = Math.cos(angle) * speed;
-    const vy = Math.sin(angle) * speed;
+    // Random UPWARD velocity - mostly flying up like fireworks
+    const angle = Phaser.Math.Between(-160, -20); // Angle range for upward motion (-90 is straight up)
+    const angleRad = angle * (Math.PI / 180);
+    const speed = Phaser.Math.Between(200, 450); // Faster upward speed
+    const vx = Math.cos(angleRad) * speed;
+    const vy = Math.sin(angleRad) * speed; // Negative = upward
     spark.body.setVelocity(vx, vy);
-    spark.body.setGravityY(-200); // Float upward slightly
+    spark.body.setGravityY(400); // Gravity pulls them down (like fireworks)
     
-    // Rotate, fade out and destroy - slightly slower
+    // Rotate, fade out and destroy
     scene.tweens.add({
       targets: spark,
       angle: Phaser.Math.Between(-360, 360),
       alpha: 0,
       scale: 0.3,
-      duration: 900, // Slower than before (was 600)
+      duration: 1200, // Longer duration to see them fly up
       ease: 'Power2',
       onComplete: () => spark.destroy()
     });
