@@ -198,6 +198,17 @@
       <!-- Right side: Live Avdeev preview -->
         <div class="customize-preview">
           <canvas id="customize-preview-avatar" width="270" height="324"></canvas>
+          <div id="current-track-name" style="
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+            color: #FFD700;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s;
+          ">
+            ♪ No track playing
+          </div>
         </div>
       </div>
       <button class="menu-btn" id="start-game-btn">Start Game</button>
@@ -207,26 +218,46 @@
     <div id="game-hud" class="hidden">
       <div id="level" class="hud-btn">Level: 1</div>
       <div id="burger-score" class="hud-btn">🍔 0</div>
+      <div id="death-count" class="hud-btn">💀 0</div>
+      <div id="timer" class="hud-btn" style="min-width: 140px;">⏱️ 0:00.00</div>
       <button id="restart-btn" class="hud-btn">↻ Restart</button>
       <button id="menu-btn" class="hud-btn">☰ Menu</button>
     </div>
 
     <!-- Congratulations Screen -->
     <div id="congrats-screen" class="menu-screen">
-      <h1 class="congrats-title">🎉 Congratulations! 🎉</h1>
-      <p class="congrats-message" id="congrats-message">You've completed all 10 levels!</p>
+      <h1 class="congrats-title" style="margin-top: 40px; margin-bottom: 40px; font-size: 48px;">🎉 Congratulations! 🎉</h1>
       
-      <!-- Avdeev's final expression based on burgers -->
-      <canvas id="final-avdeev-avatar" width="180" height="216"></canvas>
-      
-      <div class="congrats-stats">
-        <div class="stat-item">
-          <span class="stat-label">🍔 Burgers Collected:</span>
-          <span class="stat-value" id="final-burger-score">0</span>
-          <span class="stat-label">/ 20</span>
+      <!-- Container with Avdeev on right, content on left -->
+      <div style="display: flex; justify-content: center; align-items: flex-start; gap: 120px; max-width: 1200px; margin: 0 auto; padding-left: 320px;">
+        <!-- Center: Message and Stats -->
+        <div style="flex: 0 0 auto; text-align: center;">
+          <p class="congrats-message" id="congrats-message" style="font-size: 24px; margin-bottom: 50px;">You've completed all 10 levels!</p>
+          
+          <div class="congrats-stats" style="display: flex; flex-direction: column; gap: 25px; text-align: center;">
+            <div class="stat-item" style="font-size: 22px;">
+              <span class="stat-label">🍔 Burgers Collected:</span>
+              <span class="stat-value" id="final-burger-score" style="font-size: 28px; color: #FFD700;">0</span>
+              <span class="stat-label">/ 20</span>
+            </div>
+            <div class="stat-item" style="font-size: 22px;">
+              <span class="stat-label">💀 Deaths:</span>
+              <span class="stat-value" id="final-death-count" style="font-size: 28px; color: #FF6B6B;">0</span>
+            </div>
+            <div class="stat-item" style="font-size: 22px;">
+              <span class="stat-label">⏱️ Time:</span>
+              <span class="stat-value" id="final-timer" style="font-size: 28px; color: #4FC3F7;">0:00.00</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right side: Avdeev's final expression -->
+        <div style="flex: 0 0 auto;">
+          <canvas id="final-avdeev-avatar" width="180" height="216" style="position: relative !important; display: block !important; left: auto !important; top: auto !important;"></canvas>
         </div>
       </div>
-      <div class="menu-buttons">
+      
+      <div class="menu-buttons" style="margin-top: 60px;">
         <button class="menu-btn" id="play-again-btn">Play Again</button>
         <button class="menu-btn secondary" id="back-to-menu-btn">Main Menu</button>
       </div>

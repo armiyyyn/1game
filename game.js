@@ -10,7 +10,10 @@ let cursors, wasd;
 let levelIndex = 0, totalLevels = 10;
 let burgerScore = 0; // Track collected burgers
 let levelBurgerScore = 0; // Burgers collected in current level attempt
-let levelEl, burgerEl;
+let deathCount = 0; // Track total deaths across all levels
+let gameStartTime = 0; // Track when game started (timestamp)
+let gameEndTime = 0; // Track when game ended (timestamp)
+let levelEl, burgerEl, deathEl, timerEl;
 let hasDoubleJumped = false;
 let timeLeftGround = 0; // Track time since leaving ground for better double jump
 let particleEmitters = [];
@@ -26,7 +29,7 @@ const levelNames = [
   "Level 2: Jump Challenge", 
   "Level 3: Moving Platforms",
   "Level 4: Obstacle Course",
-  "Level 5: Final Challenge",
+  "Level 5: Half way there!",
   "Level 6: The Path",
   "Level 7: Chaos",
   "Level 8: Trampoline Madness",
@@ -59,6 +62,9 @@ function startGame() {
   levelIndex = 0;
   burgerScore = 0; // Reset burger score
   levelBurgerScore = 0; // Reset level burger score
+  deathCount = 0; // Reset death counter
+  gameStartTime = Date.now(); // Start timer
+  gameEndTime = 0; // Reset end time
   levelVisited = []; // Reset level visited tracking
   game = new Phaser.Game(config);
   
@@ -102,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   levelEl = document.getElementById('level');
   burgerEl = document.getElementById('burger-score');
+  deathEl = document.getElementById('death-count');
+  timerEl = document.getElementById('timer');
 
   function hideAllMenus(){
     if(mainMenu) mainMenu.classList.remove('active');
@@ -246,6 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
       audioElement.pause();
       audioElement.currentTime = 0;
     }
+    // Reset all counters when returning to main menu
+    burgerScore = 0;
+    levelBurgerScore = 0;
+    deathCount = 0;
+    gameStartTime = 0;
+    gameEndTime = 0;
   });
   if (exitBtn) exitBtn.addEventListener('click', () => { 
     hideAllMenus(); 
@@ -258,6 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
       audioElement.pause();
       audioElement.currentTime = 0;
     }
+    // Reset all counters when exiting to main menu
+    burgerScore = 0;
+    levelBurgerScore = 0;
+    deathCount = 0;
+    gameStartTime = 0;
+    gameEndTime = 0;
   });
   if (playAgainBtn) playAgainBtn.addEventListener('click', () => { hideAllMenus(); if(gameHud) gameHud.classList.remove('hidden'); startGame(); });
   if (backToMenuBtn) backToMenuBtn.addEventListener('click', () => { 
@@ -1344,6 +1364,18 @@ function create(){
   
   // HUD
   if(levelEl) levelEl.textContent = 'Level: '+(levelIndex+1);
+  if(deathEl) deathEl.textContent = '💀 ' + deathCount;
+  
+  // Update timer display every 100ms
+  const timerInterval = setInterval(() => {
+    if(gameStartTime > 0 && gameEndTime === 0) {
+      const elapsed = Date.now() - gameStartTime;
+      const minutes = Math.floor(elapsed / 60000);
+      const seconds = Math.floor((elapsed % 60000) / 1000);
+      const milliseconds = Math.floor((elapsed % 1000) / 10);
+      if(timerEl) timerEl.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    }
+  }, 100);
   
   // Show and position rocket based on level
   const gameRocket = document.getElementById('game-rocket');
@@ -2401,6 +2433,10 @@ function createDeathAnimation(scene, x, y){
   if(isDying) return;
   isDying = true;
   
+  // Increment death counter
+  deathCount++;
+  if(deathEl) deathEl.textContent = '💀 ' + deathCount;
+  
   // Freeze player movement and hide immediately
   player.setVelocity(0, 0);
   player.body.setAllowGravity(false);
@@ -2600,6 +2636,8 @@ function nextLevel(scene){
     onComplete: () => {
       levelIndex++; // Sequential progression: 0→1→2→3→4→5→6→7→8→9
       if(levelIndex>=totalLevels){
+        // Stop timer when game is completed
+        gameEndTime = Date.now();
         // Show congratulations screen with Avdeev expression based on burgers
         showCongratsScreen();
         return;
@@ -2613,6 +2651,8 @@ function nextLevel(scene){
 function showCongratsScreen() {
   const congratsScreen = document.getElementById('congrats-screen');
   const finalBurgerScoreEl = document.getElementById('final-burger-score');
+  const finalDeathCountEl = document.getElementById('final-death-count');
+  const finalTimerEl = document.getElementById('final-timer');
   const hud = document.getElementById('game-hud');
   const gameRocket = document.getElementById('game-rocket');
   const gameAmongus = document.getElementById('game-amongus');
@@ -2624,6 +2664,25 @@ function showCongratsScreen() {
   if(spaceBackground) spaceBackground.classList.remove('active');
   
   if(finalBurgerScoreEl) finalBurgerScoreEl.textContent = burgerScore;
+  
+  // Display death count with animation
+  if(finalDeathCountEl) {
+    finalDeathCountEl.textContent = deathCount;
+    finalDeathCountEl.style.animation = 'none';
+    setTimeout(() => finalDeathCountEl.style.animation = 'pulse 1s ease-in-out', 10);
+  }
+  
+  // Display final time
+  if(finalTimerEl && gameEndTime > 0) {
+    const totalTime = gameEndTime - gameStartTime;
+    const minutes = Math.floor(totalTime / 60000);
+    const seconds = Math.floor((totalTime % 60000) / 1000);
+    const milliseconds = Math.floor((totalTime % 1000) / 10);
+    finalTimerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+    finalTimerEl.style.animation = 'none';
+    setTimeout(() => finalTimerEl.style.animation = 'pulse 1s ease-in-out', 10);
+  }
+  
   if(hud) hud.classList.add('hidden');
   
   // Create Avdeev avatar based on burger score
@@ -2844,10 +2903,9 @@ function showCongratsScreen() {
   
   if(congratsScreen) congratsScreen.classList.add('active');
   
-  // Reset for next playthrough
+  // Reset for next playthrough (but keep stats for display)
   levelIndex = 0;
-  burgerScore = 0;
-  levelBurgerScore = 0;
+  // Don't reset burgerScore, deathCount, or timer - they're displayed on congrats screen
 }
 
 window.addEventListener('resize',()=>{ if(game) game.scale.resize(GAME.width(),GAME.height()); });
