@@ -1644,7 +1644,7 @@ if(level === 0){
     addPlatform(scene, w*0.88, h*0.78, 90, 20, 0x5B3A8F); // Dark purple
     
     // Path going UP from right
-    addPlatform(scene, w*0.8, h*0.5, 100, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.8, h*0.65, 100, 20, 0x5B3A8F); // Dark purple
     addPlatform(scene, w*0.8, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
     addPlatform(scene, w*0.75, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
     addPlatform(scene, w*0.70, h*0.83, 56, 12, 0xFFE66D); // Fake trampoline (platform)
