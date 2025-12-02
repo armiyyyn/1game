@@ -1519,7 +1519,7 @@ if(level === 0){
     // Level 1: Basic platforming
    addPlatform(scene, 150, h-40, 140, 20, 0xffffff);
     addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
-    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.5, 1.5);
+    addMovingPlatform(scene, w*0.45, h*0.45, w*0.4, w*0.7, 1.5);
     addTrampoline(scene, w*0.18, h*0.65);
     addBurger(scene, w*0.16, h*0.14);
     addBurger(scene, w*0.48, h*0.12);
