@@ -1545,7 +1545,7 @@ if(level === 0){
     addSpike(scene, w*0.6, h*0.46);
     
     // Burgers
-    addBurger(scene, w*0.16, h*0.14); // Near moon
+    addBurger(scene, w*0.16, h*0.24); // Near moon
     addBurger(scene, w*0.86, h*0.84); // Below finish door
     
     // Trampoline under burger 2
@@ -1658,7 +1658,7 @@ if(level === 0){
     addSpike(scene, w*0.71, h*0.5);
     
     // Path going LEFT to finish
-    addPlatform(scene, w*0.58, h*0.35, 90, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.58, h*0.4, 90, 20, 0x5B3A8F); // Dark purple
     addPlatform(scene, w*0.505, h*0.25, 90, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.65, h*0.41);
     addSpike(scene, w*0.48, h*0.51);
