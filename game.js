@@ -1521,7 +1521,7 @@ if(level === 0){
     addPlatform(scene, w*0.8, h*0.3, 120, 20, 0xffffff);
     addMovingPlatform(scene, w*0.45, h*0.45, w*0.3, w*0.7, 2.2);
     addTrampoline(scene, w*0.18, h*0.65);
-    addBurger(scene, w*0.16, h*0.14);
+    addBurger(scene, w*0.16, h*0.24);
     addBurger(scene, w*0.48, h*0.12);
     addSpike(scene, w*0.37, h*0.75);
     addSpike(scene, w*0.38, h*0.72);
