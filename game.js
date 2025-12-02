@@ -1658,7 +1658,7 @@ if(level === 0){
     addSpike(scene, w*0.71, h*0.5);
     
     // Path going LEFT to finish
-    addPlatform(scene, w*0.58, h*0.4, 90, 20, 0x5B3A8F); // Dark purple
+    addPlatform(scene, w*0.58, h*0.5, 90, 20, 0x5B3A8F); // Dark purple
     addPlatform(scene, w*0.505, h*0.25, 90, 20, 0x5B3A8F); // Dark purple
     addSpike(scene, w*0.65, h*0.41);
     addSpike(scene, w*0.48, h*0.51);
